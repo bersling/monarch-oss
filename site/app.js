@@ -263,8 +263,11 @@ function updateLabels() {
   for (const l of state.labels) {
     const show = state.plaques && l.element.group.visible;
     if (!show) { l.el.hidden = true; continue; }
+    // Labels are for reading inside the room: beyond 14 m (or with the exhibit selected,
+    // at any distance) they would only pile up over the facade seen from the garden.
+    const far = camera.position.distanceTo(l.pos) > 14 && l.element.id !== state.sel;
     _p.copy(l.pos).project(camera);
-    if (_p.z > 1 || _p.z < -1) { l.el.hidden = true; continue; }
+    if (far || _p.z > 1 || _p.z < -1) { l.el.hidden = true; continue; }
     l.el.hidden = false;
     l.el.style.transform = `translate(-50%, -100%) translate(${((_p.x + 1) / 2 * w).toFixed(1)}px, ${((1 - _p.y) / 2 * h - 10).toFixed(1)}px)`;
     l.el.classList.toggle('sel', l.element.id === state.sel);

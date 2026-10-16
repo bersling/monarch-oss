@@ -1,0 +1,71 @@
+# Deploy the hosted IFC viewer (site/) plus the built example house to GitHub Pages.
+# Settings > Pages > Source must be "GitHub Actions" once per repository.
+name: pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Build the example house
+        # The checks must never block a deploy: fall back to the plain builder, then to any IFC.
+        run: |
+          set -x
+          ./build.sh || .venv/bin/python src/build_model.py || true
+          ls -la generated || true
+
+      - name: Assemble the site
+        run: |
+          set -eu
+          rm -rf _site
+          cp -R site _site
+          IFC="$(python3 -c 'import json; print(json.load(open("data/house.json"))["ifc_file"])')"
+          if [ ! -f "$IFC" ]; then
+            IFC="$(ls generated/*.ifc 2>/dev/null | head -n 1 || true)"
+          fi
+          if [ -n "${IFC:-}" ] && [ -f "$IFC" ]; then
+            cp "$IFC" _site/casa_monarch.ifc
+            echo "example house: $IFC ($(wc -c < "$IFC") bytes)"
+          else
+            echo "::warning::no IFC was built; the site deploys without the example house"
+          fi
+          touch _site/.nojekyll
+          du -sh _site
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

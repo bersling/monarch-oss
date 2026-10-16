@@ -4,3 +4,4 @@ generated/
 snaps/
 .DS_Store
 .claude/worktrees/
+node_modules/

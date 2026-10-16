@@ -52,6 +52,11 @@ Poly Haven sizes are the authors' real-world dimensions (the API's `dimensions`,
 (a typical 3 l enamel kettle). The desk lamp is a clamp-on model: z = 0 is the bottom of the
 clamp, so either stand it as is or sink it about 0.09 m below the table top.
 
+## Project-generated files (MIT, no attribution needed)
+
+- `assets/procedural/*.obj` are written by `src/gen_assets.py` (bush, pendant lamp, twist column): plain Python, project-owned, MIT like the rest of the repo.
+- `assets/plaques/*.png` are the gallery plaque textures rendered by `src/gen_plaques.py` from the text in `data/gallery.json` (`--check` verifies they are current); project-owned, MIT.
+
 ## How each file was made
 
 Download, then convert with headless Blender (`src/convert_asset.py`, prints the bbox):

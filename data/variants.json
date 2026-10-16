@@ -5,10 +5,18 @@
       "target": "ground_floor.json",
       "description": "Centre piece of the gallery.",
       "active": "table",
-      "id_prefixes": ["GAL_CENTRE_"],
+      "id_prefixes": [
+        "GAL_CENTRE_"
+      ],
       "variants": {
-        "table": {"description": "Round table, 100 cm.", "file": "variants/gallery_centre/table.json"},
-        "bench": {"description": "Long bench, 180 x 45 cm.", "file": "variants/gallery_centre/bench.json"}
+        "table": {
+          "description": "Round table, 100 cm.",
+          "file": "variants/gallery_centre/table.json"
+        },
+        "bench": {
+          "description": "Long bench, 180 x 45 cm.",
+          "file": "variants/gallery_centre/bench.json"
+        }
       }
     }
   }

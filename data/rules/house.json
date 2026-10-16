@@ -5,8 +5,21 @@
       "id": "furniture-in-structure",
       "rule": "no_penetration",
       "why": "Furniture poking into walls, slabs or stairs is a placement error unless it is documented here as intentional.",
-      "what": {"class": ["IfcFurnishingElement", "IfcSanitaryTerminal", "IfcElectricAppliance"]},
-      "into": {"class": ["IfcWall", "IfcWallStandardCase", "IfcSlab", "IfcStairFlight"]},
+      "what": {
+        "class": [
+          "IfcFurnishingElement",
+          "IfcSanitaryTerminal",
+          "IfcElectricAppliance"
+        ]
+      },
+      "into": {
+        "class": [
+          "IfcWall",
+          "IfcWallStandardCase",
+          "IfcSlab",
+          "IfcStairFlight"
+        ]
+      },
       "tolerance": 0.005,
       "known": {}
     }

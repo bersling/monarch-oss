@@ -1,21 +1,370 @@
 {
-  "_source": "Stub site: a flat lawn around the house, the parcel line, a terrace pad and a tree.",
+  "_source": "Casa Monarch site: a flat lawn parcel 25 x 22.5 m, the house footprint cut out, a south terrace, a path to the entrance and four trees.",
   "terrain": {
-    "id": "TERRAIN", "polygon": [[-6.0, -6.0], [14.0, -6.0], [14.0, 12.0], [-6.0, 12.0]],
-    "z": 0.0, "base_z": -0.6, "holes": [[0.0, 0.0, 8.0, 6.0]], "rgb": [0.45, 0.6, 0.35],
-    "props": {"Product": "Lawn", "Notes": "Flat terrain at finished ground floor level; the house footprint is cut out."}
+    "id": "TERRAIN",
+    "polygon": [
+      [
+        -7.0,
+        -7.0
+      ],
+      [
+        18.0,
+        -7.0
+      ],
+      [
+        18.0,
+        15.5
+      ],
+      [
+        -7.0,
+        15.5
+      ]
+    ],
+    "z": -0.15,
+    "base_z": -1.2,
+    "holes": [
+      [
+        0.0,
+        0.0,
+        11.0,
+        8.5
+      ]
+    ],
+    "rgb": [
+      0.47,
+      0.62,
+      0.36
+    ],
+    "props": {
+      "Product": "Lawn",
+      "Notes": "Finished ground 15 cm below the ground floor; the slab edge forms the plinth."
+    }
   },
   "boundaries": [
-    {"id": "PARCEL", "points": [[-6.0, -6.0], [14.0, -6.0], [14.0, 12.0], [-6.0, 12.0]], "closed": true,
-     "rgb": [0.9, 0.2, 0.2], "width": 0.08, "lift": 0.02}
+    {
+      "id": "PARCEL",
+      "points": [
+        [
+          -7.0,
+          -7.0
+        ],
+        [
+          18.0,
+          -7.0
+        ],
+        [
+          18.0,
+          15.5
+        ],
+        [
+          -7.0,
+          15.5
+        ]
+      ],
+      "closed": true,
+      "rgb": [
+        0.85,
+        0.25,
+        0.2
+      ],
+      "width": 0.08,
+      "lift": 0.02,
+      "props": {
+        "Product": "Parcel boundary (survey line)"
+      }
+    }
   ],
   "slabs": [
-    {"id": "TERRACE", "rect": [8.0, 1.0, 11.0, 5.0], "z_top": 0.0, "thickness": 0.08, "rgb": [0.7, 0.68, 0.65],
-     "props": {"Product": "Concrete paving 50 x 50", "Dimensions": "8 cm"}}
+    {
+      "id": "TERRACE",
+      "rect": [
+        0.4,
+        -3.6,
+        6.0,
+        0.0
+      ],
+      "z_top": -0.02,
+      "thickness": 0.15,
+      "rgb": [
+        0.74,
+        0.72,
+        0.68
+      ],
+      "props": {
+        "Product": "Terrace, large-format concrete pavers 80 x 80",
+        "Dimensions": "560 x 360 cm, 2 cm below the floor"
+      }
+    },
+    {
+      "id": "PATH",
+      "rect": [
+        6.3,
+        8.5,
+        7.9,
+        15.5
+      ],
+      "z_top": -0.02,
+      "thickness": 0.15,
+      "rgb": [
+        0.7,
+        0.68,
+        0.64
+      ],
+      "props": {
+        "Product": "Entrance path, concrete pavers",
+        "Dimensions": "160 x 700 cm"
+      }
+    }
   ],
   "objects": [
-    {"id": "SITE_TREE", "mesh": "assets/stub/bush.obj", "at": [11.5, 8.5, 0.0], "scale": 2.5, "rgb": [0.3, 0.5, 0.25],
-     "props": {"Product": "Tree (procedural stand-in)", "SourceURL": "src/gen_assets.py", "Dimensions": "250 x 250 x 235 cm crown, 20 cm above ground",
-               "License": "MIT (project data)", "SurfaceShading": "smooth"}}
+    {
+      "id": "SITE_TREE_1",
+      "parts": [
+        {
+          "name": "trunk",
+          "rgb": [
+            0.36,
+            0.28,
+            0.2
+          ],
+          "cylinders": [
+            [
+              -3.5,
+              11.5,
+              0.0,
+              0.184,
+              1.92
+            ]
+          ]
+        },
+        {
+          "name": "crown",
+          "rgb": [
+            0.3,
+            0.5,
+            0.26
+          ],
+          "mesh": "assets/procedural/bush_1000.obj",
+          "at": [
+            -3.5,
+            11.5,
+            1.52
+          ],
+          "scale": 3.2
+        }
+      ],
+      "props": {
+        "Product": "Tree (procedural stand-in: trunk cylinder + lofted crown)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "320 cm crown, 536 cm high",
+        "License": "MIT (project data)",
+        "Status": "Existing",
+        "MeshSource": "src/gen_assets.py bush()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "SITE_TREE_2",
+      "parts": [
+        {
+          "name": "trunk",
+          "rgb": [
+            0.36,
+            0.28,
+            0.2
+          ],
+          "cylinders": [
+            [
+              15.0,
+              2.0,
+              0.0,
+              0.176,
+              1.8399999999999999
+            ]
+          ]
+        },
+        {
+          "name": "crown",
+          "rgb": [
+            0.3,
+            0.5,
+            0.26
+          ],
+          "mesh": "assets/procedural/bush_1000.obj",
+          "at": [
+            15.0,
+            2.0,
+            1.44
+          ],
+          "scale": 2.8
+        }
+      ],
+      "props": {
+        "Product": "Tree (procedural stand-in: trunk cylinder + lofted crown)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "280 cm crown, 480 cm high",
+        "License": "MIT (project data)",
+        "Status": "Existing",
+        "MeshSource": "src/gen_assets.py bush()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "SITE_TREE_3",
+      "parts": [
+        {
+          "name": "trunk",
+          "rgb": [
+            0.36,
+            0.28,
+            0.2
+          ],
+          "cylinders": [
+            [
+              14.5,
+              12.0,
+              0.0,
+              0.192,
+              2.0
+            ]
+          ]
+        },
+        {
+          "name": "crown",
+          "rgb": [
+            0.3,
+            0.5,
+            0.26
+          ],
+          "mesh": "assets/procedural/bush_1000.obj",
+          "at": [
+            14.5,
+            12.0,
+            1.6
+          ],
+          "scale": 3.6
+        }
+      ],
+      "props": {
+        "Product": "Tree (procedural stand-in: trunk cylinder + lofted crown)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "360 cm crown, 592 cm high",
+        "License": "MIT (project data)",
+        "Status": "Existing",
+        "MeshSource": "src/gen_assets.py bush()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "SITE_TREE_4",
+      "parts": [
+        {
+          "name": "trunk",
+          "rgb": [
+            0.36,
+            0.28,
+            0.2
+          ],
+          "cylinders": [
+            [
+              -4.0,
+              -3.5,
+              0.0,
+              0.172,
+              1.7999999999999998
+            ]
+          ]
+        },
+        {
+          "name": "crown",
+          "rgb": [
+            0.3,
+            0.5,
+            0.26
+          ],
+          "mesh": "assets/procedural/bush_1000.obj",
+          "at": [
+            -4.0,
+            -3.5,
+            1.4
+          ],
+          "scale": 2.6
+        }
+      ],
+      "props": {
+        "Product": "Tree (procedural stand-in: trunk cylinder + lofted crown)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "260 cm crown, 452 cm high",
+        "License": "MIT (project data)",
+        "Status": "Existing",
+        "MeshSource": "src/gen_assets.py bush()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "SITE_TERRACE_PLANT",
+      "_comment": "On the terrace pavers (top 2 cm below the floor = 13 cm above the lawn).",
+      "parts": [
+        {
+          "name": "pot and soil",
+          "rgb": [
+            0.66,
+            0.4,
+            0.28
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_pot.obj",
+          "at": [
+            5.5,
+            -0.7,
+            0.13
+          ],
+          "rotation_z": 0
+        },
+        {
+          "name": "leaves",
+          "rgb": [
+            0.3,
+            0.52,
+            0.26
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_leaves.obj",
+          "at": [
+            5.5,
+            -0.7,
+            0.13
+          ],
+          "rotation_z": 0
+        }
+      ],
+      "mesh_bounds": [
+        5.1495,
+        -1.029,
+        0.13,
+        5.8505,
+        -0.371,
+        0.972
+      ],
+      "props": {
+        "Product": "Potted Plant 02 (caladium in a terracotta pot)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/potted_plant_02",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Rico Cilliers",
+        "Dimensions": "70 x 66 x 84 cm",
+        "MeshNote": "Split by material: pot + leaves share one origin. Leaves are flat cards; fine from room distance.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/potted_plant_02",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    }
   ]
 }

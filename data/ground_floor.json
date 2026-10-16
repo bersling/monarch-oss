@@ -1,171 +1,232 @@
 {
-  "_source": "Stub ground floor: an 8 x 6 m envelope with a west room (the gallery) and an east room.",
+  "_source": "Casa Monarch ground floor: entrance hall with the stair, open living/dining/kitchen facing the garden (south), guest WC and the Gallery (the tutorial room) in the north-west. Fictional house, all dimensions by design.",
   "units": "meters",
   "building_dimensions": {
-    "width_x": 8.0,
-    "depth_y": 6.0,
+    "width_x": 11.0,
+    "depth_y": 8.5,
     "storey_height": 2.9
   },
   "exterior_walls": [
     {
-      "id": "W_SOUTH",
+      "id": "W_S",
       "start": [
         0.0,
         0.15
       ],
       "end": [
-        8.0,
+        11.0,
         0.15
       ],
-      "thickness": 0.3
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
     },
     {
-      "id": "W_NORTH",
+      "id": "W_N",
       "start": [
         0.0,
-        5.85
+        8.35
       ],
       "end": [
-        8.0,
-        5.85
+        11.0,
+        8.35
       ],
-      "thickness": 0.3
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
     },
     {
-      "id": "W_WEST",
+      "id": "W_W",
       "start": [
         0.15,
-        0.0
+        0.3
       ],
       "end": [
         0.15,
-        6.0
+        8.2
       ],
-      "thickness": 0.3
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ],
+      "_comment": "West and east walls run between the south and north walls so corners are not modelled twice."
     },
     {
-      "id": "W_EAST",
+      "id": "W_E",
       "start": [
-        7.85,
-        0.0
+        10.85,
+        0.3
       ],
       "end": [
-        7.85,
-        6.0
+        10.85,
+        8.2
       ],
-      "thickness": 0.3
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
     }
   ],
   "interior_walls": [
     {
-      "id": "W_MID",
+      "id": "W_GAL_S",
       "start": [
-        4.0,
-        0.3
+        0.3,
+        4.14
       ],
       "end": [
-        4.0,
-        5.7
+        4.9,
+        4.14
       ],
-      "thickness": 0.12
-    }
-  ],
-  "windows": [
-    {
-      "id": "WIN_S_01",
-      "wall_id": "W_SOUTH",
-      "offset_along_wall": 1.0,
-      "width": 1.2,
-      "sill_height": 0.9,
-      "height": 1.2,
-      "props": {
-        "Product": "Stub window 120 x 120",
-        "Dimensions": "120 x 120 cm"
-      }
+      "thickness": 0.12,
+      "height": 2.65,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ],
+      "_comment": "Interior walls stop at the underside of the upper slab (2.65) instead of running through it."
     },
     {
-      "id": "WIN_N_01",
-      "wall_id": "W_NORTH",
-      "offset_along_wall": 5.4,
-      "width": 1.0,
-      "sill_height": 0.9,
-      "height": 1.2,
-      "glazing": "frosted"
+      "id": "W_GAL_E",
+      "start": [
+        4.96,
+        4.08
+      ],
+      "end": [
+        4.96,
+        8.2
+      ],
+      "thickness": 0.12,
+      "height": 2.65,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
+    },
+    {
+      "id": "W_WC_S",
+      "start": [
+        7.9,
+        6.54
+      ],
+      "end": [
+        9.64,
+        6.54
+      ],
+      "thickness": 0.12,
+      "height": 2.65,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
+    },
+    {
+      "id": "W_WC_W",
+      "start": [
+        7.96,
+        6.6
+      ],
+      "end": [
+        7.96,
+        8.2
+      ],
+      "thickness": 0.12,
+      "height": 2.65,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
+    },
+    {
+      "id": "W_WC_E",
+      "start": [
+        9.58,
+        6.6
+      ],
+      "end": [
+        9.58,
+        8.2
+      ],
+      "thickness": 0.12,
+      "height": 2.65,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
     }
   ],
+  "windows": [],
   "windows_abs": [
     {
-      "id": "WIN_E_01",
-      "host": "W_EAST",
-      "cut_axis": "x",
+      "id": "WIN_LIV_S",
+      "host": "W_S",
+      "cut_axis": "y",
       "box": [
-        7.7,
-        2.5,
+        0.7,
+        0.0,
         0.9,
-        8.0,
-        3.7,
-        2.1
+        2.9,
+        0.3,
+        2.2
       ],
-      "nominal_width": 1.2,
-      "nominal_height": 1.2,
-      "opening_boxes": [
-        [
-          7.65,
-          2.5,
-          0.9,
-          8.05,
-          3.7,
-          2.1
-        ],
-        [
-          7.65,
-          2.45,
-          2.1,
-          7.86,
-          3.75,
-          2.16
-        ]
-      ],
+      "nominal_width": 2.2,
+      "nominal_height": 1.3,
+      "_comment": "Living room glazing towards the garden.",
       "parts": [
         {
           "name": "frame",
           "rgb": [
-            0.92,
-            0.92,
-            0.9
+            0.2,
+            0.21,
+            0.22
           ],
           "boxes": [
             [
-              7.8,
-              2.5,
+              0.7,
+              0.11,
               0.9,
-              7.87,
-              3.7,
-              0.97
+              2.9,
+              0.19,
+              0.96
             ],
             [
-              7.8,
-              2.5,
-              2.03,
-              7.87,
-              3.7,
-              2.1
+              0.7,
+              0.11,
+              2.14,
+              2.9,
+              0.19,
+              2.2
             ],
             [
-              7.8,
-              2.5,
-              0.97,
-              7.87,
-              2.57,
-              2.03
+              0.7,
+              0.11,
+              0.96,
+              0.76,
+              0.19,
+              2.14
             ],
             [
-              7.8,
-              3.63,
-              0.97,
-              7.87,
-              3.7,
-              2.03
+              2.84,
+              0.11,
+              0.96,
+              2.9,
+              0.19,
+              2.14
             ]
           ]
         },
@@ -174,74 +235,798 @@
           "glazing": "clear",
           "boxes": [
             [
-              7.825,
-              2.57,
-              0.97,
-              7.845,
-              3.63,
-              2.03
+              0.76,
+              0.14,
+              0.96,
+              2.84,
+              0.16,
+              2.14
             ]
           ]
         }
       ],
       "props": {
-        "Product": "Stub stepped window with frame and glazing parts",
-        "Dimensions": "120 x 120 cm frame"
+        "Product": "Window 220 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "220 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "DOOR_GARDEN",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        3.3,
+        0.0,
+        0.0,
+        4.9,
+        0.3,
+        2.2
+      ],
+      "nominal_width": 1.6,
+      "nominal_height": 2.2,
+      "kind": "door",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              3.3,
+              0.11,
+              0.0,
+              4.9,
+              0.19,
+              0.06
+            ],
+            [
+              3.3,
+              0.11,
+              2.14,
+              4.9,
+              0.19,
+              2.2
+            ],
+            [
+              3.3,
+              0.11,
+              0.06,
+              3.36,
+              0.19,
+              2.14
+            ],
+            [
+              4.84,
+              0.11,
+              0.06,
+              4.9,
+              0.19,
+              2.14
+            ],
+            [
+              4.07,
+              0.11,
+              0.06,
+              4.13,
+              0.19,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "panel",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              3.36,
+              0.13,
+              0.06,
+              4.84,
+              0.17,
+              0.36
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              3.36,
+              0.14,
+              0.36,
+              4.07,
+              0.16,
+              2.14
+            ],
+            [
+              4.13,
+              0.14,
+              0.36,
+              4.84,
+              0.16,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "French door 160 x 220 to the terrace, two leaves, anthracite aluminium",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "160 x 220 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_LIV_W",
+      "host": "W_W",
+      "cut_axis": "x",
+      "box": [
+        0.0,
+        1.2,
+        0.9,
+        0.3,
+        2.8,
+        2.2
+      ],
+      "nominal_width": 1.6,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              0.11,
+              1.2,
+              0.9,
+              0.19,
+              2.8,
+              0.96
+            ],
+            [
+              0.11,
+              1.2,
+              2.14,
+              0.19,
+              2.8,
+              2.2
+            ],
+            [
+              0.11,
+              1.2,
+              0.96,
+              0.19,
+              1.26,
+              2.14
+            ],
+            [
+              0.11,
+              2.74,
+              0.96,
+              0.19,
+              2.8,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              0.14,
+              1.26,
+              0.96,
+              0.16,
+              2.74,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 160 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "160 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_DIN_S",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        6.0,
+        0.0,
+        0.9,
+        7.4,
+        0.3,
+        2.2
+      ],
+      "nominal_width": 1.4,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              6.0,
+              0.11,
+              0.9,
+              7.4,
+              0.19,
+              0.96
+            ],
+            [
+              6.0,
+              0.11,
+              2.14,
+              7.4,
+              0.19,
+              2.2
+            ],
+            [
+              6.0,
+              0.11,
+              0.96,
+              6.06,
+              0.19,
+              2.14
+            ],
+            [
+              7.34,
+              0.11,
+              0.96,
+              7.4,
+              0.19,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              6.06,
+              0.14,
+              0.96,
+              7.34,
+              0.16,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 140 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "140 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_KIT_S",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        8.5,
+        0.0,
+        0.9,
+        9.7,
+        0.3,
+        2.2
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              8.5,
+              0.11,
+              0.9,
+              9.7,
+              0.19,
+              0.96
+            ],
+            [
+              8.5,
+              0.11,
+              2.14,
+              9.7,
+              0.19,
+              2.2
+            ],
+            [
+              8.5,
+              0.11,
+              0.96,
+              8.56,
+              0.19,
+              2.14
+            ],
+            [
+              9.64,
+              0.11,
+              0.96,
+              9.7,
+              0.19,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              8.56,
+              0.14,
+              0.96,
+              9.64,
+              0.16,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_KIT_E",
+      "host": "W_E",
+      "cut_axis": "x",
+      "box": [
+        10.7,
+        3.8,
+        1.1,
+        11.0,
+        5.0,
+        2.2
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.1,
+      "_comment": "Sill above the worktop.",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              10.81,
+              3.8,
+              1.1,
+              10.89,
+              5.0,
+              1.16
+            ],
+            [
+              10.81,
+              3.8,
+              2.14,
+              10.89,
+              5.0,
+              2.2
+            ],
+            [
+              10.81,
+              3.8,
+              1.16,
+              10.89,
+              3.86,
+              2.14
+            ],
+            [
+              10.81,
+              4.94,
+              1.16,
+              10.89,
+              5.0,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              10.84,
+              3.86,
+              1.16,
+              10.86,
+              4.94,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 110, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 110 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_WC_N",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        8.42,
+        8.2,
+        1.5,
+        9.12,
+        8.5,
+        2.2
+      ],
+      "nominal_width": 0.7,
+      "nominal_height": 0.7,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              8.42,
+              8.31,
+              1.5,
+              9.12,
+              8.39,
+              1.56
+            ],
+            [
+              8.42,
+              8.31,
+              2.14,
+              9.12,
+              8.39,
+              2.2
+            ],
+            [
+              8.42,
+              8.31,
+              1.56,
+              8.48,
+              8.39,
+              2.14
+            ],
+            [
+              9.06,
+              8.31,
+              1.56,
+              9.12,
+              8.39,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "frosted",
+          "boxes": [
+            [
+              8.48,
+              8.34,
+              1.56,
+              9.06,
+              8.36,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 70 x 70, anthracite aluminium frame, frosted",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "70 x 70 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "frosted"
+      }
+    },
+    {
+      "id": "WIN_GAL_N1",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        0.9,
+        8.2,
+        1.7,
+        2.1,
+        8.5,
+        2.2
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 0.5,
+      "_comment": "Gallery clerestory: high sills keep the walls free for exhibits and plaques at 1.5 m.",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              0.9,
+              8.31,
+              1.7,
+              2.1,
+              8.39,
+              1.76
+            ],
+            [
+              0.9,
+              8.31,
+              2.14,
+              2.1,
+              8.39,
+              2.2
+            ],
+            [
+              0.9,
+              8.31,
+              1.76,
+              0.96,
+              8.39,
+              2.14
+            ],
+            [
+              2.04,
+              8.31,
+              1.76,
+              2.1,
+              8.39,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              0.96,
+              8.34,
+              1.76,
+              2.04,
+              8.36,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 50, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 50 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_GAL_N2",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        3.1,
+        8.2,
+        1.7,
+        4.3,
+        8.5,
+        2.2
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 0.5,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              3.1,
+              8.31,
+              1.7,
+              4.3,
+              8.39,
+              1.76
+            ],
+            [
+              3.1,
+              8.31,
+              2.14,
+              4.3,
+              8.39,
+              2.2
+            ],
+            [
+              3.1,
+              8.31,
+              1.76,
+              3.16,
+              8.39,
+              2.14
+            ],
+            [
+              4.24,
+              8.31,
+              1.76,
+              4.3,
+              8.39,
+              2.14
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              3.16,
+              8.34,
+              1.76,
+              4.24,
+              8.36,
+              2.14
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 50, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 50 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
       }
     }
   ],
   "doors": [
     {
       "id": "DOOR_ENTRY",
-      "wall_id": "W_SOUTH",
-      "offset_along_wall": 5.0,
+      "wall_id": "W_N",
+      "offset_along_wall": 6.5,
       "width": 1.0,
       "sill_height": 0.0,
-      "height": 2.1,
+      "height": 2.2,
       "rgb": [
-        0.35,
-        0.4,
-        0.45
+        0.2,
+        0.21,
+        0.22
       ],
       "props": {
-        "Product": "Stub entrance door",
-        "Dimensions": "100 x 210 cm"
+        "Product": "Entrance door 100 x 220, anthracite, solid core",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "100 x 220 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
       }
     },
     {
-      "id": "DOOR_MID",
-      "wall_id": "W_MID",
-      "offset_along_wall": 1.0,
+      "id": "DOOR_GALLERY",
+      "wall_id": "W_GAL_S",
+      "offset_along_wall": 3.5,
       "width": 0.9,
       "sill_height": 0.0,
-      "height": 2.1
-    }
-  ],
-  "free_doors": [
-    {
-      "id": "DOOR_CLOSET",
-      "center": [
-        2.0,
-        5.5
-      ],
-      "axis": "x",
-      "width": 0.8,
-      "thickness": 0.04,
-      "height": 2.0,
+      "height": 2.1,
       "rgb": [
-        0.85,
-        0.85,
-        0.82
+        0.95,
+        0.95,
+        0.94
       ],
       "props": {
-        "Product": "Stub sliding closet panel",
-        "Dimensions": "80 x 200 cm"
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
+      }
+    },
+    {
+      "id": "DOOR_WC",
+      "wall_id": "W_WC_W",
+      "offset_along_wall": 0.1,
+      "width": 0.9,
+      "sill_height": 0.0,
+      "height": 2.1,
+      "rgb": [
+        0.95,
+        0.95,
+        0.94
+      ],
+      "props": {
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
       }
     }
   ],
+  "free_doors": [],
   "slabs": [
     {
-      "id": "SLAB_GF_FLOOR",
+      "id": "SLAB_GF",
       "z_top": 0.0,
       "thickness": 0.3,
       "recess_finishes": true,
@@ -249,59 +1034,111 @@
         [
           0.0,
           0.0,
-          8.0,
-          6.0
+          11.0,
+          8.5
         ]
       ],
+      "rgb": [
+        0.7,
+        0.7,
+        0.69
+      ],
       "props": {
-        "Product": "Ground slab, reinforced concrete",
+        "Product": "Ground slab, reinforced concrete on insulation",
         "Dimensions": "30 cm"
-      }
+      },
+      "_comment": "Covers the whole footprint: the terrain is 15 cm below the floor, so the slab edge reads as a plinth."
     }
   ],
   "floorings": [
     {
-      "id": "FLOOR_GF_WEST_OAK",
+      "id": "FLOOR_GF_OAK",
       "z_top": 0.0,
       "thickness": 0.015,
       "rgb": [
-        0.68,
-        0.53,
-        0.34
+        0.7,
+        0.55,
+        0.36
       ],
       "rects": [
         [
           0.3,
           0.3,
-          3.94,
-          5.7
+          7.9,
+          4.08
+        ],
+        [
+          5.02,
+          4.08,
+          7.9,
+          8.2
         ]
       ],
       "props": {
-        "Product": "Oak plank flooring",
-        "Dimensions": "15 mm"
+        "Product": "Oak plank parquet, oiled, 15 mm",
+        "Dimensions": "15 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/flooring"
       }
     },
     {
-      "id": "FLOOR_GF_EAST_TILE",
+      "id": "FLOOR_GF_TILES",
       "z_top": 0.0,
       "thickness": 0.012,
       "rgb": [
-        0.78,
-        0.76,
-        0.72
+        0.82,
+        0.8,
+        0.76
       ],
       "rects": [
         [
-          4.06,
+          7.9,
           0.3,
-          7.7,
-          5.7
+          10.7,
+          6.48
+        ],
+        [
+          9.64,
+          6.6,
+          10.7,
+          8.2
+        ],
+        [
+          8.02,
+          6.6,
+          9.52,
+          8.2
         ]
       ],
       "props": {
-        "Product": "Porcelain tiles 60 x 60",
-        "Dimensions": "12 mm"
+        "Product": "Porcelain tiles 60 x 60, sand",
+        "Dimensions": "12 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/flooring"
+      }
+    },
+    {
+      "id": "FLOOR_GF_GALLERY",
+      "z_top": 0.0,
+      "thickness": 0.015,
+      "rgb": [
+        0.7,
+        0.7,
+        0.69
+      ],
+      "rects": [
+        [
+          0.3,
+          4.2,
+          4.9,
+          8.2
+        ]
+      ],
+      "props": {
+        "Product": "Polished concrete screed",
+        "Dimensions": "15 mm wear layer",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/flooring"
       }
     },
     {
@@ -309,78 +1146,137 @@
       "z_top": 0.002,
       "thickness": 0.002,
       "rgb": [
-        0.95,
-        0.75,
-        0.25
+        0.76,
+        0.45,
+        0.33
       ],
       "rects": [
         [
-          2.9,
-          1.2,
-          3.94,
-          2.3
+          3.85,
+          4.25,
+          4.65,
+          7.0
         ]
       ],
       "props": {
-        "Product": "Painted walkway marking (guarded by data/rules/gallery.json)",
-        "Dimensions": "2 mm"
-      }
+        "Product": "Painted walkway marking, terracotta (gallery exhibit 8; zone guarded by data/rules/gallery.json)",
+        "Dimensions": "2 mm",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/gallery.md"
+      },
+      "_comment": "Sits 2 mm above the screed so it does not recess the slab; the rule zone has the same footprint."
     }
   ],
   "stairs": [
     {
       "id": "STAIR_GF_UF",
       "x_range": [
-        6.5,
-        7.5
+        5.02,
+        6.02
       ],
-      "y_start": 1.0,
-      "y_end": 4.9,
+      "y_start": 4.5,
+      "y_end": 8.19,
       "rise_total": 2.9,
       "risers": 15,
       "riser_h": 0.19333,
-      "tread": 0.26,
+      "tread": 0.246,
       "waist_vertical": 0.19,
       "railings": [
         {
-          "side": "low_x",
+          "side": "high_x",
           "mount": "flight"
         }
       ],
       "opening_x_range": [
-        6.44,
-        7.56
-      ]
+        5.02,
+        6.08
+      ],
+      "_comment": "Straight flight against the gallery wall, climbing north; 15 x 19.3/24.6 cm. The void above starts at step 3 (headroom 2.0 m under the 25 cm slab).",
+      "props": {
+        "Product": "Precast concrete flight with oak treads (data/stair_finishes.json)",
+        "Dimensions": "100 cm wide, 15 risers"
+      }
     }
   ],
   "railings": [],
   "wall_coverings": [
     {
-      "id": "WALLTILES_WC",
+      "id": "TILES_WC",
       "rgb": [
-        0.44,
-        0.72,
-        0.7
+        0.86,
+        0.88,
+        0.86
       ],
       "boxes": [
         [
-          6.5,
-          0.3,
+          8.02,
+          8.19,
           0.0,
-          7.7,
-          0.31,
+          9.52,
+          8.2,
+          1.2
+        ],
+        [
+          9.51,
+          6.6,
+          0.0,
+          9.52,
+          8.2,
           1.2
         ]
       ],
       "props": {
-        "Product": "Glazed wall tiles 20 x 20",
-        "Dimensions": "20 x 20 cm, 6 mm"
+        "Product": "Glazed wall tiles 20 x 20, pale green",
+        "Dimensions": "20 x 20 cm, 8 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/tiles"
       }
+    },
+    {
+      "id": "TILES_KITCHEN",
+      "rgb": [
+        0.9,
+        0.9,
+        0.88
+      ],
+      "boxes": [
+        [
+          10.69,
+          2.1,
+          0.9,
+          10.7,
+          3.8,
+          1.45
+        ],
+        [
+          10.69,
+          5.0,
+          0.9,
+          10.7,
+          6.48,
+          1.45
+        ],
+        [
+          10.69,
+          3.8,
+          0.9,
+          10.7,
+          5.0,
+          1.1
+        ]
+      ],
+      "props": {
+        "Product": "Kitchen splashback, white ceramic 10 x 30",
+        "Dimensions": "10 x 30 cm, 8 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/tiles"
+      },
+      "_comment": "Split around the east window so no tile floats in the opening."
     }
   ],
   "sanitary": [
     {
-      "id": "SAN_WC",
+      "id": "WC_PAN",
       "ifc_class": "IfcSanitaryTerminal",
       "predefined_type": "TOILETPAN",
       "rgb": [
@@ -390,178 +1286,1469 @@
       ],
       "boxes": [
         [
-          7.2,
-          0.31,
-          0.0,
-          7.6,
-          0.86,
-          0.42
+          8.3,
+          7.67,
+          0.4,
+          8.7,
+          8.19,
+          0.8
         ],
         [
-          7.2,
-          0.31,
-          0.42,
-          7.6,
-          0.46,
-          1.0
+          8.2,
+          8.0,
+          0.8,
+          8.8,
+          8.19,
+          1.2
         ]
       ],
       "props": {
-        "Product": "Stub wall-hung WC",
-        "Dimensions": "40 x 55 x 42 cm"
+        "Product": "Wall-hung WC with concealed cistern panel",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "40 x 52 x 40 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "WC_BASIN",
+      "ifc_class": "IfcSanitaryTerminal",
+      "predefined_type": "WASHHANDBASIN",
+      "rgb": [
+        0.97,
+        0.97,
+        0.96
+      ],
+      "boxes": [
+        [
+          9.12,
+          6.9,
+          0.8,
+          9.51,
+          7.4,
+          0.95
+        ]
+      ],
+      "cylinders": [
+        [
+          9.45,
+          7.15,
+          0.95,
+          0.012,
+          1.2
+        ]
+      ],
+      "props": {
+        "Product": "Hand basin 40 x 50 with wall tap",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "39 x 50 x 15 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
       }
     }
   ],
   "furniture": [
     {
-      "id": "GAL_SHELF",
+      "id": "LIV_SOFA",
+      "_comment": "Back to the gallery wall, facing the garden glazing.",
+      "mesh": "assets/sofa_polyhaven_2730.obj",
+      "at": [
+        2.7,
+        4.06,
+        0.0
+      ],
+      "rotation_z": 180,
+      "rgb": [
+        0.47,
+        0.36,
+        0.27
+      ],
+      "mesh_bounds": [
+        1.3345,
+        3.135,
+        0.0,
+        4.0655,
+        4.06,
+        1.118
+      ],
+      "props": {
+        "Product": "Sofa 03 (three-seat, upholstered)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/sofa_03",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Fran Calvente",
+        "Dimensions": "273 x 92 x 112 cm",
+        "MeshNote": "Back at y=0, seat faces +Y.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/sofa_03",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LIV_COFFEE_TABLE",
+      "mesh": "assets/coffee_table_polyhaven_1300.obj",
+      "at": [
+        2.8,
+        2.1,
+        0.0
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.78,
+        0.78,
+        0.76
+      ],
+      "mesh_bounds": [
+        2.149,
+        1.449,
+        0.0,
+        3.451,
+        2.751,
+        0.491
+      ],
+      "props": {
+        "Product": "Coffee Table Round 01 (marble top, steel legs)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/coffee_table_round_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Ulan Cabanilla",
+        "Dimensions": "130 x 130 x 49 cm",
+        "MeshNote": "Rotationally symmetric.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/coffee_table_round_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LIV_ARMCHAIR",
+      "_comment": "Back to the west window, facing the coffee table.",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.62,
+            0.47,
+            0.3
+          ],
+          "mesh": "assets/armchair_polyhaven_820_legs.obj",
+          "at": [
+            0.4,
+            2.0,
+            0.0
+          ],
+          "rotation_z": 270
+        },
+        {
+          "name": "cushions",
+          "rgb": [
+            0.14,
+            0.13,
+            0.12
+          ],
+          "mesh": "assets/armchair_polyhaven_820_pillow.obj",
+          "at": [
+            0.4,
+            2.0,
+            0.0
+          ],
+          "rotation_z": 270
+        }
+      ],
+      "mesh_bounds": [
+        0.4,
+        1.59,
+        0.0,
+        1.387,
+        2.41,
+        1.023
+      ],
+      "props": {
+        "Product": "Modern Arm Chair 01 (oak frame, black leather cushions)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/modern_arm_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Vibrant Nordic",
+        "Dimensions": "82 x 99 x 102 cm",
+        "MeshNote": "Split by material: frame + cushions share one origin. Back at y=0, seat faces +Y.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/modern_arm_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LIV_SIDEBOARD",
+      "_comment": "Under the south window sill (0.9 m); the cabinet is 0.68 m high.",
+      "mesh": "assets/sideboard_polyhaven_2440.obj",
+      "at": [
+        1.62,
+        0.32,
+        0.0
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.38,
+        0.25,
+        0.16
+      ],
+      "mesh_bounds": [
+        0.4,
+        0.32,
+        0.0,
+        2.84,
+        0.84,
+        0.68
+      ],
+      "props": {
+        "Product": "Modern Wooden Cabinet (walnut slatted sideboard)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/modern_wooden_cabinet",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Patrik Pangerl",
+        "Dimensions": "244 x 52 x 68 cm",
+        "MeshNote": "Back at y=0, doors face +Y.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/modern_wooden_cabinet",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LIV_PLANT",
+      "parts": [
+        {
+          "name": "pot and soil",
+          "rgb": [
+            0.66,
+            0.4,
+            0.28
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_pot.obj",
+          "at": [
+            4.5,
+            3.72,
+            0.0
+          ],
+          "rotation_z": 0
+        },
+        {
+          "name": "leaves",
+          "rgb": [
+            0.3,
+            0.52,
+            0.26
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_leaves.obj",
+          "at": [
+            4.5,
+            3.72,
+            0.0
+          ],
+          "rotation_z": 0
+        }
+      ],
+      "mesh_bounds": [
+        4.1495,
+        3.391,
+        0.0,
+        4.8505,
+        4.049,
+        0.842
+      ],
+      "props": {
+        "Product": "Potted Plant 02 (caladium in a terracotta pot)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/potted_plant_02",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Rico Cilliers",
+        "Dimensions": "70 x 66 x 84 cm",
+        "MeshNote": "Split by material: pot + leaves share one origin. Leaves are flat cards; fine from room distance.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/potted_plant_02",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LIV_RUG",
+      "surface": true,
+      "rgb": [
+        0.48,
+        0.55,
+        0.47
+      ],
+      "boxes": [
+        [
+          1.6,
+          1.2,
+          0.0,
+          4.0,
+          3.1,
+          0.01
+        ]
+      ],
+      "props": {
+        "Product": "Wool rug 240 x 190, sage",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/rugs",
+        "Dimensions": "240 x 190 x 1 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      },
+      "_comment": "\"surface\": true tells the checks it blocks nothing."
+    },
+    {
+      "id": "DIN_TABLE",
+      "_comment": "Long side along y so the walk between the dining and the kitchen island stays 0.9 m.",
+      "mesh": "assets/dining_table_polyhaven_2400.obj",
+      "at": [
+        6.2,
+        2.4,
+        0.0
+      ],
+      "rotation_z": 90,
+      "rgb": [
+        0.36,
+        0.44,
+        0.52
+      ],
+      "mesh_bounds": [
+        5.6315,
+        1.197,
+        0.0,
+        6.7685,
+        3.603,
+        0.959
+      ],
+      "props": {
+        "Product": "Painted Wooden Table (blue-grey trestle dining table)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_table",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kirill Sannikov",
+        "Dimensions": "241 x 114 x 96 cm",
+        "MeshNote": "Symmetric; long side along X.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_table",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_1",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        5.04,
+        1.75,
+        0.0
+      ],
+      "rotation_z": 270,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        5.04,
+        1.534,
+        0.0,
+        5.58,
+        1.966,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_2",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        5.04,
+        2.4,
+        0.0
+      ],
+      "rotation_z": 270,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        5.04,
+        2.184,
+        0.0,
+        5.58,
+        2.616,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_3",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        5.04,
+        3.05,
+        0.0
+      ],
+      "rotation_z": 270,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        5.04,
+        2.834,
+        0.0,
+        5.58,
+        3.266,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_4",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        7.36,
+        1.75,
+        0.0
+      ],
+      "rotation_z": 90,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        6.82,
+        1.534,
+        0.0,
+        7.36,
+        1.966,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_5",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        7.36,
+        2.4,
+        0.0
+      ],
+      "rotation_z": 90,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        6.82,
+        2.184,
+        0.0,
+        7.36,
+        2.616,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_CHAIR_6",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        7.36,
+        3.05,
+        0.0
+      ],
+      "rotation_z": 90,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        6.82,
+        2.834,
+        0.0,
+        7.36,
+        3.266,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "DIN_PENDANT_1",
+      "mesh": "assets/procedural/pendant_lamp_400.obj",
+      "at": [
+        6.2,
+        1.9,
+        1.6
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.18,
+        0.18,
+        0.19
+      ],
+      "mesh_bounds": [
+        6.0,
+        1.7,
+        1.6,
+        6.4,
+        2.1,
+        2.65
+      ],
+      "props": {
+        "Product": "Pendant lamp, 40 cm metal shade, black (procedural mesh)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "40 x 40 x 105 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "MeshSource": "src/gen_assets.py pendant_lamp()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      },
+      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim."
+    },
+    {
+      "id": "DIN_PENDANT_2",
+      "mesh": "assets/procedural/pendant_lamp_400.obj",
+      "at": [
+        6.2,
+        2.9,
+        1.6
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.18,
+        0.18,
+        0.19
+      ],
+      "mesh_bounds": [
+        6.0,
+        2.7,
+        1.6,
+        6.4,
+        3.1,
+        2.65
+      ],
+      "props": {
+        "Product": "Pendant lamp, 40 cm metal shade, black (procedural mesh)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "40 x 40 x 105 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "MeshSource": "src/gen_assets.py pendant_lamp()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      },
+      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim."
+    },
+    {
+      "id": "KIT_RUN",
+      "access": {
+        "dir": "-x",
+        "depth": 0.9
+      },
+      "_comment": "One kitchen run along the east wall: plinth, sage fronts, stone worktop, hob, sink, wall cabinets around the window, tall fridge and oven column at the south end.",
+      "parts": [
+        {
+          "name": "plinth",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              10.17,
+              0.9,
+              0.0,
+              10.7,
+              6.48,
+              0.1
+            ]
+          ]
+        },
+        {
+          "name": "fronts",
+          "rgb": [
+            0.52,
+            0.6,
+            0.5
+          ],
+          "boxes": [
+            [
+              10.12,
+              2.1,
+              0.1,
+              10.7,
+              6.48,
+              0.86
+            ]
+          ]
+        },
+        {
+          "name": "tall units",
+          "rgb": [
+            0.52,
+            0.6,
+            0.5
+          ],
+          "boxes": [
+            [
+              10.1,
+              0.9,
+              0.1,
+              10.7,
+              2.1,
+              2.15
+            ]
+          ]
+        },
+        {
+          "name": "worktop",
+          "rgb": [
+            0.86,
+            0.85,
+            0.82
+          ],
+          "boxes": [
+            [
+              10.08,
+              2.1,
+              0.86,
+              10.7,
+              6.48,
+              0.9
+            ]
+          ]
+        },
+        {
+          "name": "hob",
+          "rgb": [
+            0.08,
+            0.08,
+            0.09
+          ],
+          "boxes": [
+            [
+              10.15,
+              5.5,
+              0.9,
+              10.65,
+              6.1,
+              0.905
+            ]
+          ]
+        },
+        {
+          "name": "sink",
+          "rgb": [
+            0.7,
+            0.71,
+            0.72
+          ],
+          "boxes": [
+            [
+              10.18,
+              4.15,
+              0.9,
+              10.6,
+              4.65,
+              0.905
+            ]
+          ],
+          "cylinders": [
+            [
+              10.62,
+              4.4,
+              0.9,
+              0.012,
+              1.22
+            ]
+          ]
+        },
+        {
+          "name": "wall cabinets",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              10.35,
+              2.1,
+              1.45,
+              10.7,
+              3.7,
+              2.15
+            ],
+            [
+              10.35,
+              5.1,
+              1.45,
+              10.7,
+              6.48,
+              2.15
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Fitted kitchen run: sage lacquer fronts, 4 cm stone worktop, induction hob, undermount sink, integrated fridge-freezer and oven column",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/kitchens",
+        "Dimensions": "60 x 558 x 215 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Worktop": "Composite stone, 4 cm",
+        "Fronts": "Lacquered MDF, sage green"
+      }
+    },
+    {
+      "id": "KIT_ISLAND",
+      "access": {
+        "dir": "+x",
+        "depth": 0.9
+      },
+      "parts": [
+        {
+          "name": "plinth",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              8.18,
+              2.65,
+              0.0,
+              8.98,
+              4.95,
+              0.1
+            ]
+          ]
+        },
+        {
+          "name": "fronts",
+          "rgb": [
+            0.62,
+            0.48,
+            0.32
+          ],
+          "boxes": [
+            [
+              8.13,
+              2.6,
+              0.1,
+              9.03,
+              5.0,
+              0.86
+            ]
+          ]
+        },
+        {
+          "name": "worktop",
+          "rgb": [
+            0.86,
+            0.85,
+            0.82
+          ],
+          "boxes": [
+            [
+              8.1,
+              2.57,
+              0.86,
+              9.06,
+              5.03,
+              0.9
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Kitchen island, oak veneer fronts, stone worktop",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/kitchens",
+        "Dimensions": "96 x 246 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      },
+      "_comment": "Rule kitchen-island-walkway keeps 1.0 m between island and run."
+    },
+    {
+      "id": "KIT_PENDANT_1",
+      "mesh": "assets/procedural/pendant_lamp_400.obj",
+      "at": [
+        8.58,
+        3.2,
+        1.6
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.18,
+        0.18,
+        0.19
+      ],
+      "mesh_bounds": [
+        8.38,
+        3.0,
+        1.6,
+        8.78,
+        3.4,
+        2.65
+      ],
+      "props": {
+        "Product": "Pendant lamp, 40 cm metal shade, black (procedural mesh)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "40 x 40 x 105 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "MeshSource": "src/gen_assets.py pendant_lamp()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "KIT_PENDANT_2",
+      "mesh": "assets/procedural/pendant_lamp_400.obj",
+      "at": [
+        8.58,
+        4.4,
+        1.6
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.18,
+        0.18,
+        0.19
+      ],
+      "mesh_bounds": [
+        8.38,
+        4.2,
+        1.6,
+        8.78,
+        4.6,
+        2.65
+      ],
+      "props": {
+        "Product": "Pendant lamp, 40 cm metal shade, black (procedural mesh)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "40 x 40 x 105 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "MeshSource": "src/gen_assets.py pendant_lamp()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      }
+    },
+    {
+      "id": "KIT_LARDER",
       "access": {
         "dir": "-y",
         "depth": 0.75
-      },
-      "gallery": {
-        "Title": "Boxes in JSON",
-        "Provenance": "Authored by hand in data/ground_floor.json",
-        "License": "MIT",
-        "HowTo": "A furniture entry with parts[].boxes; one physical thing, several colours.",
-        "Prompt": "add a 0.8 x 0.4 x 2.0 m bookshelf with three shelves on the north wall"
       },
       "parts": [
         {
           "name": "carcass",
           "rgb": [
-            0.25,
-            0.25,
-            0.27
+            0.97,
+            0.97,
+            0.96
           ],
           "boxes": [
             [
-              0.5,
-              5.3,
+              9.7,
+              7.8,
               0.0,
-              0.52,
-              5.7,
-              2.0
+              9.72,
+              8.2,
+              2.2
             ],
             [
-              1.28,
-              5.3,
+              10.68,
+              7.8,
               0.0,
-              1.3,
-              5.7,
-              2.0
+              10.7,
+              8.2,
+              2.2
             ],
             [
-              0.5,
-              5.3,
+              9.7,
+              7.8,
               0.0,
-              1.3,
-              5.7,
+              10.7,
+              8.2,
               0.02
             ],
             [
-              0.5,
-              5.3,
-              1.98,
-              1.3,
-              5.7,
-              2.0
-            ],
-            [
-              0.5,
-              5.68,
-              0.0,
-              1.3,
-              5.7,
-              2.0
+              9.7,
+              7.8,
+              2.18,
+              10.7,
+              8.2,
+              2.2
             ]
           ]
         },
         {
           "name": "shelves",
           "rgb": [
-            0.82,
             0.7,
-            0.5
+            0.55,
+            0.36
           ],
           "boxes": [
             [
-              0.52,
-              5.3,
-              0.48,
-              1.28,
-              5.68,
-              0.5
+              9.72,
+              7.8,
+              0.5,
+              10.68,
+              8.2,
+              0.525
             ],
             [
-              0.52,
-              5.3,
-              0.98,
-              1.28,
-              5.68,
-              1.0
+              9.72,
+              7.8,
+              0.95,
+              10.68,
+              8.2,
+              0.975
             ],
             [
-              0.52,
-              5.3,
-              1.48,
-              1.28,
-              5.68,
-              1.5
+              9.72,
+              7.8,
+              1.4,
+              10.68,
+              8.2,
+              1.425
+            ],
+            [
+              9.72,
+              7.8,
+              1.85,
+              10.68,
+              8.2,
+              1.875
             ]
           ]
         }
       ],
       "props": {
-        "Product": "Bookshelf authored as JSON boxes",
+        "Product": "Open larder shelving in the kitchen niche",
         "Supplier": "none (authored)",
         "SourceURL": "docs/data-format.md",
-        "Dimensions": "80 x 40 x 200 cm",
-        "License": "MIT (project data)"
+        "Dimensions": "100 x 40 x 220 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
       }
     },
     {
-      "id": "GAL_PLANT",
-      "mesh": "assets/stub/bush.obj",
-      "at": [
-        3.3,
-        0.9,
-        0.0
-      ],
-      "scale": 0.6,
-      "rgb": [
-        0.3,
-        0.52,
-        0.28
-      ],
-      "mesh_bounds": [
-        3.0,
-        0.6,
-        0.08,
-        3.6,
-        1.2,
-        0.64
+      "id": "HALL_WARDROBE",
+      "access": {
+        "dir": "+x",
+        "depth": 0.75
+      },
+      "parts": [
+        {
+          "name": "carcass",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              5.02,
+              7.6,
+              0.0,
+              5.98,
+              8.2,
+              2.0
+            ]
+          ]
+        },
+        {
+          "name": "doors",
+          "rgb": [
+            0.52,
+            0.6,
+            0.5
+          ],
+          "boxes": [
+            [
+              5.98,
+              7.61,
+              0.05,
+              6.02,
+              7.89,
+              1.98
+            ],
+            [
+              5.98,
+              7.91,
+              0.05,
+              6.02,
+              8.19,
+              1.98
+            ]
+          ]
+        }
       ],
       "props": {
-        "SurfaceShading": "smooth",
-        "Product": "Potted plant (procedural mesh)",
+        "Product": "Coat wardrobe under the stair, two sage doors",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/joinery",
+        "Dimensions": "100 x 60 x 200 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      },
+      "_comment": "Under the top of the flight: soffit is 2.2 m above the floor at y = 7.6."
+    },
+    {
+      "id": "HALL_DOORMAT",
+      "surface": true,
+      "rgb": [
+        0.35,
+        0.33,
+        0.3
+      ],
+      "boxes": [
+        [
+          6.4,
+          7.2,
+          0.0,
+          7.6,
+          8.0,
+          0.008
+        ]
+      ],
+      "props": {
+        "Product": "Coir doormat 120 x 80",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/rugs",
+        "Dimensions": "120 x 80 x 1 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "GAL_SHELF",
+      "access": {
+        "dir": "+x",
+        "depth": 0.75
+      },
+      "_comment": "Exhibit 1: authored as boxes. Five shelves on 2 cm panels; the bbox rule in data/rules/gallery.json pins its size.",
+      "parts": [
+        {
+          "name": "carcass",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              0.3,
+              4.8,
+              0.0,
+              0.7,
+              4.82,
+              2.0
+            ],
+            [
+              0.3,
+              5.58,
+              0.0,
+              0.7,
+              5.6,
+              2.0
+            ],
+            [
+              0.3,
+              4.82,
+              0.0,
+              0.7,
+              5.58,
+              0.02
+            ],
+            [
+              0.3,
+              4.82,
+              1.98,
+              0.7,
+              5.58,
+              2.0
+            ],
+            [
+              0.3,
+              4.82,
+              0.02,
+              0.32,
+              5.58,
+              1.98
+            ]
+          ]
+        },
+        {
+          "name": "shelves",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              0.32,
+              4.82,
+              0.4,
+              0.7,
+              5.58,
+              0.42
+            ],
+            [
+              0.32,
+              4.82,
+              0.8,
+              0.7,
+              5.58,
+              0.82
+            ],
+            [
+              0.32,
+              4.82,
+              1.2,
+              0.7,
+              5.58,
+              1.22
+            ],
+            [
+              0.32,
+              4.82,
+              1.6,
+              0.7,
+              5.58,
+              1.62
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Bookshelf authored as JSON boxes, anthracite carcass with oak shelves",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "40 x 80 x 200 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "gallery": {
+        "Title": "1  Boxes in JSON",
+        "Provenance": "Authored by hand in data/ground_floor.json (GAL_SHELF)",
+        "License": "MIT (project data)",
+        "HowTo": "A furniture entry with parts[].boxes: carcass and shelves as absolute metre boxes, one IFC element, two colours. The Dimensions prop is checked against the geometry on every build; data/rules/gallery.json pins the size.",
+        "Prompt": "Add a 0.8 x 0.4 x 2.0 m bookshelf with five shelves on the north wall of the study"
+      }
+    },
+    {
+      "id": "GAL_PLINTH_3",
+      "rgb": [
+        0.9,
+        0.89,
+        0.86
+      ],
+      "boxes": [
+        [
+          0.5,
+          6.6,
+          0.0,
+          1.0,
+          7.1,
+          0.9
+        ]
+      ],
+      "props": {
+        "Product": "Gallery plinth, painted MDF",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "50 x 50 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "_comment": "Exhibit 3 plinth (procedural sculpture)."
+    },
+    {
+      "id": "GAL_PROCEDURAL",
+      "mesh": "assets/procedural/twist_column_300x1000.obj",
+      "at": [
+        0.75,
+        6.85,
+        0.9
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.76,
+        0.45,
+        0.33
+      ],
+      "mesh_bounds": [
+        0.6,
+        6.7,
+        0.9,
+        0.9,
+        7.0,
+        1.9
+      ],
+      "props": {
+        "Product": "Twisted column sculpture, procedural mesh",
         "Supplier": "none (generated)",
         "SourceURL": "src/gen_assets.py",
-        "Dimensions": "60 x 60 x 56 cm above an 8 cm gap",
+        "Dimensions": "30 x 30 x 100 cm",
         "License": "MIT (project data)",
-        "MeshSource": "src/gen_assets.py bush()",
-        "MeshLicense": "MIT"
+        "Status": "Exhibit",
+        "MeshSource": "src/gen_assets.py twist_column()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth"
+      },
+      "gallery": {
+        "Title": "3  Procedural mesh (Python)",
+        "Provenance": "src/gen_assets.py twist_column() -> assets/procedural/twist_column_300x1000.obj",
+        "License": "MIT (project data)",
+        "HowTo": "Curved shapes the primitives cannot express are generated as OBJ by a Python function and referenced with {mesh, at, rotation_z, scale}. Regenerate with uv run python src/gen_assets.py.",
+        "Prompt": "Generate a 0.5 m tall spiral vase with src/gen_assets.py and put it on the sideboard in the living room"
+      }
+    },
+    {
+      "id": "GAL_PLINTH_4",
+      "rgb": [
+        0.9,
+        0.89,
+        0.86
+      ],
+      "boxes": [
+        [
+          1.25,
+          7.5,
+          0.0,
+          1.75,
+          8.0,
+          0.9
+        ]
+      ],
+      "props": {
+        "Product": "Gallery plinth, painted MDF",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "50 x 50 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "_comment": "Exhibit 4 plinth (Poly Haven bust)."
+    },
+    {
+      "id": "GAL_BUST",
+      "_comment": "Exhibit 4: face turned to the room (south).",
+      "mesh": "assets/bust_polyhaven_515.obj",
+      "at": [
+        1.5,
+        7.75,
+        0.9
+      ],
+      "rotation_z": 180,
+      "rgb": [
+        0.9,
+        0.89,
+        0.86
+      ],
+      "mesh_bounds": [
+        1.364,
+        7.6,
+        0.9,
+        1.636,
+        7.9,
+        1.415
+      ],
+      "props": {
+        "Product": "Marble Bust 01 (classical male portrait bust)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/marble_bust_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Rico Cilliers",
+        "Dimensions": "27 x 30 x 52 cm",
+        "MeshNote": "Face looks toward +Y. Gallery exhibit \"Imported from Poly Haven\".",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/marble_bust_01",
+        "License": "CC0 1.0",
+        "Status": "Exhibit"
+      },
+      "gallery": {
+        "Title": "4  Imported mesh, Poly Haven (CC0)",
+        "Provenance": "Marble Bust 01 by Rico Cilliers, polyhaven.com/a/marble_bust_01",
+        "License": "CC0 1.0",
+        "HowTo": "Found with uv run python src/find_asset.py \"bust\", converted with src/convert_asset.py (headless Blender) to metres, Z up, origin centre. The licence travels in the IFC props: MeshSource, MeshLicense, MeshURL, MeshAuthor.",
+        "Prompt": "Find a CC0 vase on Poly Haven and place it on the dining table"
+      }
+    },
+    {
+      "id": "GAL_PLINTH_5",
+      "rgb": [
+        0.9,
+        0.89,
+        0.86
+      ],
+      "boxes": [
+        [
+          3.45,
+          7.5,
+          0.0,
+          3.95,
+          8.0,
+          0.9
+        ]
+      ],
+      "props": {
+        "Product": "Gallery plinth, painted MDF",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "50 x 50 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "_comment": "Exhibit 5 plinth (Sketchfab teapot)."
+    },
+    {
+      "id": "GAL_TEAPOT",
+      "_comment": "Exhibit 5: CC-BY, attribution in props and on the plaque.",
+      "mesh": "assets/teapot_sketchfab_260.obj",
+      "at": [
+        3.7,
+        7.75,
+        0.9
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.92,
+        0.92,
+        0.9
+      ],
+      "mesh_bounds": [
+        3.57,
+        7.657,
+        0.9,
+        3.83,
+        7.843,
+        1.216
+      ],
+      "props": {
+        "Product": "Old Soviet teapot (white enamel kettle with bail handle)",
+        "MeshSource": "Sketchfab",
+        "MeshURL": "https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da",
+        "MeshLicense": "CC BY 4.0",
+        "MeshLicenseURL": "http://creativecommons.org/licenses/by/4.0/",
+        "MeshAuthor": "Amagitsune (https://sketchfab.com/Amagitsune)",
+        "Attribution": "This work is based on \"Old Soviet teapot\" (https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da) by Amagitsune (https://sketchfab.com/Amagitsune) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+        "Dimensions": "26 x 19 x 32 cm",
+        "MeshNote": "Spout points +X, handle stands up. All five source parts kept (body, lid, spout, handle, knob).",
+        "Supplier": "Sketchfab",
+        "SourceURL": "https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da",
+        "License": "CC BY 4.0",
+        "Status": "Exhibit"
+      },
+      "gallery": {
+        "Title": "5  Imported mesh, Sketchfab (CC-BY)",
+        "Provenance": "This work is based on \"Old Soviet teapot\" (https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da) by Amagitsune (https://sketchfab.com/Amagitsune) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+        "License": "CC BY 4.0",
+        "HowTo": "Same pipeline as the Poly Haven bust, plus the attribution the licence requires: on this plaque, in assets/README.md and in the Attribution prop of the element.",
+        "Prompt": "Find a CC-BY teapot on Sketchfab, convert it with src/convert_asset.py and credit the author in the props"
       }
     },
     {
       "id": "GAL_PICTURE",
-      "gallery": {
-        "Title": "Image on a surface",
-        "Provenance": "assets/stub/picture.png, generated test card",
-        "License": "MIT",
-        "HowTo": "A part with texture {image, u_axis, v_axis} projects a PNG/JPEG onto its boxes.",
-        "Prompt": "hang a 90 x 70 cm print of picture.png on the south wall at eye height"
-      },
+      "_comment": "Exhibit 6: the print is a textured box 5 mm proud of the frame back; frame 0.90 x 0.62 keeps the 1.449 aspect.",
       "parts": [
         {
           "name": "frame",
@@ -572,95 +2759,716 @@
           ],
           "boxes": [
             [
-              1.55,
-              0.3,
-              1.15,
-              2.45,
-              0.34,
-              1.85
+              4.86,
+              5.5,
+              1.2,
+              4.9,
+              6.4,
+              1.82
             ]
           ]
         },
         {
           "name": "print",
           "texture": {
-            "image": "assets/stub/picture.png",
-            "u_axis": "+x",
+            "image": "assets/picture_great_wave.jpg",
+            "u_axis": "-y",
             "v_axis": "+z"
           },
           "boxes": [
             [
-              1.6,
-              0.34,
-              1.2,
-              2.4,
-              0.345,
-              1.8
+              4.855,
+              5.53,
+              1.23,
+              4.86,
+              6.37,
+              1.79
             ]
           ]
         }
       ],
       "props": {
-        "Product": "Framed print (image texture on a box)",
-        "Supplier": "none (generated)",
-        "SourceURL": "assets/stub/picture.png",
-        "Dimensions": "90 x 70 cm",
-        "License": "MIT (project data)"
+        "Product": "Framed print: The Great Wave off Kanagawa (Hokusai, c. 1831), black frame",
+        "Supplier": "Wikimedia Commons",
+        "SourceURL": "https://commons.wikimedia.org/wiki/File:The_Great_Wave_off_Kanagawa.jpg",
+        "Dimensions": "4 x 90 x 62 cm",
+        "License": "Public domain (image); MIT (frame data)",
+        "Status": "Exhibit",
+        "Artist": "Katsushika Hokusai (1760-1849)",
+        "ImageSource": "Wikimedia Commons",
+        "ImageURL": "https://commons.wikimedia.org/wiki/File:The_Great_Wave_off_Kanagawa.jpg",
+        "ImageLicense": "Public domain (artist died more than 70 years ago; faithful reproduction of a 2D work)"
+      },
+      "gallery": {
+        "Title": "6  Image on a surface",
+        "Provenance": "The Great Wave off Kanagawa, Katsushika Hokusai, c. 1831; Wikimedia Commons, public domain",
+        "License": "Public domain (image), MIT (frame data)",
+        "HowTo": "A part with texture {image, u_axis, v_axis} projects a JPEG or PNG under assets/ onto its box; the IFC stores real UV coordinates. The frame is one plain box behind it.",
+        "Prompt": "Hang a 60 x 41 cm print of assets/picture_great_wave.jpg above the bed"
       }
     },
     {
-      "id": "GAL_CENTRE_TABLE",
+      "id": "GAL_PLINTH_EMPTY",
       "rgb": [
-        0.6,
-        0.45,
-        0.3
+        0.9,
+        0.89,
+        0.86
       ],
-      "cylinders": [
+      "boxes": [
         [
-          2.0,
-          3.0,
-          0.72,
-          0.5,
-          0.75
-        ],
-        [
-          2.0,
-          3.0,
+          4.2,
+          7.15,
           0.0,
-          0.05,
-          0.72
+          4.7,
+          7.65,
+          0.9
         ]
       ],
       "props": {
-        "Product": "Round table, 100 cm",
+        "Product": "Gallery plinth, painted MDF",
         "Supplier": "none (authored)",
         "SourceURL": "docs/data-format.md",
-        "Dimensions": "100 x 100 x 75 cm",
-        "License": "MIT (project data)"
+        "Dimensions": "50 x 50 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "_comment": "Exhibit 9: the empty plinth. 15 cm north of the walkway rule zone.",
+      "gallery": {
+        "Title": "9  Your turn",
+        "Provenance": "An empty plinth, GAL_PLINTH_EMPTY, 0.5 x 0.5 x 0.9 m",
+        "License": "MIT (project data)",
+        "HowTo": "Pick any technique from this room. The find-asset skill fetches and converts a licensed mesh; the model-change skill measures, edits, builds and renders.",
+        "Prompt": "Find a CC0 plant on Poly Haven and put it on the empty plinth in the gallery"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_WELCOME",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              3.2,
+              4.2,
+              1.4,
+              3.5,
+              4.215,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/welcome.png",
+            "u_axis": "-x",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              3.2,
+              4.215,
+              1.4,
+              3.5,
+              4.22,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: Welcome to the Gallery",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "(this plaque)",
+        "Texture": "assets/plaques/welcome.png"
+      },
+      "gallery": {
+        "Title": "Welcome to the Gallery",
+        "Provenance": "Casa Monarch, data/gallery.json",
+        "License": "MIT (project data)",
+        "HowTo": "This room is the tutorial. Every exhibit shows one way to get an object into your house. Click anything to read how it was made.",
+        "Prompt": "Walk me through the gallery exhibits and what each one teaches"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_1_BOXES",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              0.3,
+              5.75,
+              1.4,
+              0.315,
+              6.05,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/1-boxes.png",
+            "u_axis": "+y",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              0.315,
+              5.75,
+              1.4,
+              0.32,
+              6.05,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 1  Boxes in JSON",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_SHELF",
+        "Texture": "assets/plaques/1-boxes.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_2_CATALOGUE",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              1.25,
+              4.2,
+              1.4,
+              1.55,
+              4.215,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/2-catalogue.png",
+            "u_axis": "-x",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              1.25,
+              4.215,
+              1.4,
+              1.55,
+              4.22,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 2  Catalogue product, placed with ./place",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "demo-bookshelf",
+        "Texture": "assets/plaques/2-catalogue.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_3_PROCEDURAL",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              0.3,
+              7.2,
+              1.4,
+              0.315,
+              7.5,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/3-procedural.png",
+            "u_axis": "+y",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              0.315,
+              7.2,
+              1.4,
+              0.32,
+              7.5,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 3  Procedural mesh (Python)",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_PROCEDURAL",
+        "Texture": "assets/plaques/3-procedural.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_4_POLYHAVEN",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              1.9,
+              8.185,
+              1.4,
+              2.2,
+              8.2,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/4-polyhaven.png",
+            "u_axis": "+x",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              1.9,
+              8.18,
+              1.4,
+              2.2,
+              8.185,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 4  Imported mesh, Poly Haven (CC0)",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_BUST",
+        "Texture": "assets/plaques/4-polyhaven.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_5_SKETCHFAB",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              4.15,
+              8.185,
+              1.4,
+              4.45,
+              8.2,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/5-sketchfab.png",
+            "u_axis": "+x",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              4.15,
+              8.18,
+              1.4,
+              4.45,
+              8.185,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 5  Imported mesh, Sketchfab (CC-BY)",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_TEAPOT",
+        "Texture": "assets/plaques/5-sketchfab.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_6_IMAGE",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              4.885,
+              6.55,
+              1.4,
+              4.9,
+              6.85,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/6-image.png",
+            "u_axis": "-y",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              4.88,
+              6.55,
+              1.4,
+              4.885,
+              6.85,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 6  Image on a surface",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_PICTURE",
+        "Texture": "assets/plaques/6-image.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_7_VARIANTS",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              2.3,
+              4.2,
+              1.4,
+              2.6,
+              4.215,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/7-variants.png",
+            "u_axis": "-x",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              2.3,
+              4.215,
+              1.4,
+              2.6,
+              4.22,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 7  Variants",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_CENTRE_BENCH, GAL_CENTRE_SCULPTURE",
+        "Texture": "assets/plaques/7-variants.png"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_8_RULES",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              4.885,
+              4.4,
+              1.4,
+              4.9,
+              4.7,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/8-rules.png",
+            "u_axis": "-y",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              4.88,
+              4.4,
+              1.4,
+              4.885,
+              4.7,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 8  Rules on the built geometry",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "(this plaque)",
+        "Texture": "assets/plaques/8-rules.png"
+      },
+      "gallery": {
+        "Title": "8  Rules on the built geometry",
+        "Provenance": "data/rules/gallery.json, rule gallery-walkway-clear (kind: clear); the terracotta strip is FLOOR_GF_WALKWAY_MARK",
+        "License": "MIT (project data)",
+        "HowTo": "The strip marks a zone that must stay empty. Rules run on the built IFC after every build. Drag the empty plinth 20 cm south into the strip and ./build.sh fails, naming the element and the overlap.",
+        "Prompt": "Add a clear rule that keeps 90 cm in front of the bedroom wardrobe free"
+      }
+    },
+    {
+      "id": "GAL_PLAQUE_9_YOUR_TURN",
+      "_comment": "Generated by src/gen_plaques.py from data/gallery.json; edit the text there.",
+      "parts": [
+        {
+          "name": "board",
+          "rgb": [
+            0.11,
+            0.11,
+            0.13
+          ],
+          "boxes": [
+            [
+              4.885,
+              7.8,
+              1.4,
+              4.9,
+              8.1,
+              1.6
+            ]
+          ]
+        },
+        {
+          "name": "face",
+          "texture": {
+            "image": "assets/plaques/9-your-turn.png",
+            "u_axis": "-y",
+            "v_axis": "+z"
+          },
+          "boxes": [
+            [
+              4.88,
+              7.8,
+              1.4,
+              4.885,
+              8.1,
+              1.6
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery plaque: 9  Your turn",
+        "Supplier": "none (generated)",
+        "SourceURL": "data/gallery.json",
+        "Dimensions": "30 x 2 x 20 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "PlaqueFor": "GAL_PLINTH_EMPTY",
+        "Texture": "assets/plaques/9-your-turn.png"
+      }
+    },
+    {
+      "id": "GAL_CENTRE_BENCH",
+      "parts": [
+        {
+          "name": "seat",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              1.7,
+              6.075,
+              0.4,
+              3.5,
+              6.525,
+              0.45
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              1.8,
+              6.1,
+              0.0,
+              1.85,
+              6.5,
+              0.4
+            ],
+            [
+              3.35,
+              6.1,
+              0.0,
+              3.4,
+              6.5,
+              0.4
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery bench 180 x 45, oak seat on steel blades",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "180 x 45 x 45 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "gallery": {
+        "Title": "7  Variants",
+        "Provenance": "data/variants.json group gallery_centre; data/variants/gallery_centre/bench.json and sculpture.json",
+        "License": "MIT (project data)",
+        "HowTo": "A group owns the ids GAL_CENTRE_*. uv run python src/variant.py list shows the variants; load gallery_centre sculpture swaps the entries in the storey JSON and rebuilds; save captures hand edits back into the variant file.",
+        "Prompt": "Switch the gallery centre to the sculpture variant"
       }
     }
   ],
   "spaces": [
     {
-      "id": "SPACE_GALLERY",
-      "name": "GALLERY",
-      "long_name": "Gallery",
+      "id": "SPACE_HALL",
+      "name": "HALL",
+      "long_name": "Entrance hall",
       "polygon": [
         [
-          0.3,
-          0.3
+          5.02,
+          4.2
         ],
         [
-          3.94,
-          0.3
+          7.9,
+          4.2
         ],
         [
-          3.94,
-          5.7
+          7.9,
+          8.2
         ],
         [
-          0.3,
-          5.7
+          6.02,
+          8.2
+        ],
+        [
+          6.02,
+          4.5
+        ],
+        [
+          5.02,
+          4.5
         ]
       ],
       "height": 2.65,
@@ -669,59 +3477,291 @@
       }
     },
     {
-      "id": "SPACE_EAST",
-      "name": "EAST_ROOM",
-      "long_name": "East room",
+      "id": "SPACE_STAIR",
+      "name": "STAIR",
+      "long_name": "Stair",
       "polygon": [
         [
-          4.06,
-          0.3
+          5.02,
+          4.5
         ],
         [
-          7.7,
-          0.3
+          6.02,
+          4.5
         ],
         [
-          7.7,
-          5.7
+          6.02,
+          8.2
         ],
         [
-          4.06,
-          5.7
+          5.02,
+          8.2
         ]
       ],
       "height": 2.65,
       "props": {
         "RoomNumber": "GF.02"
       }
+    },
+    {
+      "id": "SPACE_LIVING",
+      "name": "LIVING",
+      "long_name": "Living and dining",
+      "polygon": [
+        [
+          0.3,
+          0.3
+        ],
+        [
+          7.9,
+          0.3
+        ],
+        [
+          7.9,
+          4.2
+        ],
+        [
+          5.02,
+          4.2
+        ],
+        [
+          5.02,
+          4.08
+        ],
+        [
+          0.3,
+          4.08
+        ]
+      ],
+      "height": 2.65,
+      "props": {
+        "RoomNumber": "GF.03"
+      }
+    },
+    {
+      "id": "SPACE_KITCHEN",
+      "name": "KITCHEN",
+      "long_name": "Kitchen",
+      "polygon": [
+        [
+          7.9,
+          0.3
+        ],
+        [
+          10.7,
+          0.3
+        ],
+        [
+          10.7,
+          8.2
+        ],
+        [
+          9.64,
+          8.2
+        ],
+        [
+          9.64,
+          6.48
+        ],
+        [
+          7.9,
+          6.48
+        ]
+      ],
+      "height": 2.65,
+      "props": {
+        "RoomNumber": "GF.04"
+      }
+    },
+    {
+      "id": "SPACE_WC",
+      "name": "WC",
+      "long_name": "Guest WC",
+      "polygon": [
+        [
+          8.02,
+          6.6
+        ],
+        [
+          9.52,
+          6.6
+        ],
+        [
+          9.52,
+          8.2
+        ],
+        [
+          8.02,
+          8.2
+        ]
+      ],
+      "height": 2.65,
+      "props": {
+        "RoomNumber": "GF.05"
+      }
+    },
+    {
+      "id": "SPACE_GALLERY",
+      "name": "GALLERY",
+      "long_name": "Gallery (tutorial room)",
+      "polygon": [
+        [
+          0.3,
+          4.2
+        ],
+        [
+          4.9,
+          4.2
+        ],
+        [
+          4.9,
+          8.2
+        ],
+        [
+          0.3,
+          8.2
+        ]
+      ],
+      "height": 2.65,
+      "props": {
+        "RoomNumber": "GF.06"
+      }
     }
   ],
   "door_swings": [
     {
-      "id": "SWING_DOOR_MID",
-      "door": "DOOR_MID",
+      "id": "SWING_ENTRY",
+      "door": "DOOR_ENTRY",
       "kind": "door",
       "hinge": [
-        4.06,
-        1.3
+        7.5,
+        8.2
       ],
       "closed": [
-        4.06,
-        2.2
+        6.5,
+        8.2
       ],
       "open": [
-        4.96,
-        1.3
+        7.5,
+        7.2
+      ]
+    },
+    {
+      "id": "SWING_GALLERY",
+      "door": "DOOR_GALLERY",
+      "kind": "door",
+      "hinge": [
+        4.7,
+        4.2
+      ],
+      "closed": [
+        3.8,
+        4.2
+      ],
+      "open": [
+        4.7,
+        5.1
+      ]
+    },
+    {
+      "id": "SWING_WC",
+      "door": "DOOR_WC",
+      "kind": "door",
+      "hinge": [
+        8.02,
+        6.7
+      ],
+      "closed": [
+        8.02,
+        7.6
+      ],
+      "open": [
+        8.92,
+        6.7
+      ]
+    },
+    {
+      "id": "SWING_GARDEN_W",
+      "door": "DOOR_GARDEN",
+      "kind": "balcony_door",
+      "hinge": [
+        3.3,
+        0.3
+      ],
+      "closed": [
+        4.1,
+        0.3
+      ],
+      "open": [
+        3.3,
+        1.1
+      ]
+    },
+    {
+      "id": "SWING_GARDEN_E",
+      "door": "DOOR_GARDEN",
+      "kind": "balcony_door",
+      "hinge": [
+        4.9,
+        0.3
+      ],
+      "closed": [
+        4.1,
+        0.3
+      ],
+      "open": [
+        4.9,
+        1.1
       ]
     }
   ],
   "outlets": [
     {
-      "id": "OUTLET_GF_01",
-      "wall": "W_NORTH",
+      "id": "OUT_LIV_W",
+      "wall": "W_W",
       "at": [
-        5.0,
-        5.7
+        0.3,
+        3.5
+      ],
+      "normal": [
+        1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_LIV_S",
+      "wall": "W_S",
+      "at": [
+        2.2,
+        0.3
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_LIV_N",
+      "wall": "W_GAL_S",
+      "at": [
+        1.5,
+        4.08
       ],
       "normal": [
         0,
@@ -730,33 +3770,326 @@
       "gangs": 2,
       "sill": 0.3,
       "props": {
-        "Product": "Double power outlet",
-        "Dimensions": "8.8 x 8.8 cm cover"
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_DIN_S",
+      "wall": "W_S",
+      "at": [
+        5.6,
+        0.3
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_KIT_E1",
+      "wall": "W_E",
+      "at": [
+        10.7,
+        3.3
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 1.15,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_KIT_E2",
+      "wall": "W_E",
+      "at": [
+        10.7,
+        5.4
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 1.15,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_KIT_S",
+      "wall": "W_S",
+      "at": [
+        10.2,
+        0.3
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_HALL_N",
+      "wall": "W_N",
+      "at": [
+        7.8,
+        8.2
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "gangs": 1,
+      "sill": 0.3,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_WC",
+      "wall": "W_WC_E",
+      "at": [
+        9.52,
+        7.9
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 1,
+      "sill": 1.1,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_GAL_W",
+      "wall": "W_W",
+      "at": [
+        0.3,
+        6.2
+      ],
+      "normal": [
+        1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_GAL_N",
+      "wall": "W_N",
+      "at": [
+        2.6,
+        8.2
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_GAL_E",
+      "wall": "W_GAL_E",
+      "at": [
+        4.9,
+        7.0
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
       }
     }
   ],
   "switches": [
     {
-      "id": "SWITCH_GF_01",
-      "wall": "W_MID",
+      "id": "SW_ENTRY",
+      "wall": "W_N",
       "at": [
-        3.94,
-        2.5
+        7.75,
+        8.2
       ],
       "normal": [
-        -1,
+        0,
+        -1
+      ],
+      "height": 1.05,
+      "columns": 2,
+      "controls": [
+        {
+          "circuit": "hall ceiling light"
+        },
+        {
+          "circuit": "outdoor light at the entrance"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_GALLERY",
+      "wall": "W_GAL_S",
+      "at": [
+        3.65,
+        4.2
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "height": 1.05,
+      "columns": 1,
+      "controls": [
+        {
+          "circuit": "gallery track lights"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_LIVING",
+      "wall": "W_GAL_S",
+      "at": [
+        4.8,
+        4.08
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "height": 1.05,
+      "columns": 2,
+      "controls": [
+        {
+          "circuit": "living room pendants"
+        },
+        {
+          "circuit": "dining pendants"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_KITCHEN",
+      "wall": "W_WC_S",
+      "at": [
+        8.3,
+        6.48
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "height": 1.05,
+      "columns": 2,
+      "controls": [
+        {
+          "circuit": "kitchen ceiling"
+        },
+        {
+          "circuit": "island pendants"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_WC",
+      "wall": "W_WC_W",
+      "at": [
+        8.02,
+        7.9
+      ],
+      "normal": [
+        1,
         0
       ],
       "height": 1.05,
       "columns": 1,
       "controls": [
         {
-          "circuit": "gallery ceiling light"
+          "circuit": "WC light"
         }
       ],
       "props": {
-        "Product": "Single light switch",
-        "Dimensions": "8.8 x 8.8 cm plate"
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
       }
     }
   ]

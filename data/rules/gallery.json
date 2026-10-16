@@ -1,19 +1,46 @@
 {
-  "_comment": "Gallery (GF.01): the marked walkway in front of the door to the east room stays free.",
+  "_comment": "Gallery (GF.06): the terracotta walkway from the door stays free (exhibit 8), the authored shelf keeps its size (exhibit 1).",
   "rules": [
     {
       "id": "gallery-walkway-clear",
       "rule": "clear",
-      "why": "The walkway strip in front of DOOR_MID must stay free of furniture so the door can be used.",
-      "zone": [2.9, 1.2, 0.0, 3.94, 2.3, 2.1],
-      "except": ["FLOOR_GF_WALKWAY_MARK"]
+      "why": "The marked walkway from the gallery door to the picture wall must stay free of furniture and plinths.",
+      "zone": [
+        3.85,
+        4.25,
+        0.0,
+        4.65,
+        7.0,
+        2.1
+      ],
+      "except": [
+        "FLOOR_GF_WALKWAY_MARK"
+      ]
     },
     {
       "id": "gallery-shelf-size",
       "rule": "bbox",
       "why": "The authored bookshelf keeps its datasheet size.",
       "element": "GAL_SHELF",
-      "size": [0.8, 0.4, 2.0]
+      "size": [
+        0.4,
+        0.8,
+        2.0
+      ]
+    },
+    {
+      "id": "gallery-plinths-inside",
+      "rule": "inside",
+      "why": "The empty plinth stays inside the gallery.",
+      "element": "GAL_PLINTH_EMPTY",
+      "zone": [
+        0.3,
+        4.2,
+        0.0,
+        4.9,
+        8.2,
+        2.65
+      ]
     }
   ]
 }

@@ -1,78 +1,3329 @@
 {
-  "_source": "Stub upper floor under a gable roof along x (ridge y = 3.0).",
+  "_source": "Casa Monarch upper floor under the gable roof (ridge along x at y = 4.25, 7.5 m above the ground floor). Cathedral ceilings: the roof lining is the ceiling, walls across the slope get a profile-wall infill.",
   "units": "meters",
-  "building_dimensions": {"width_x": 8.0, "depth_y": 6.0, "storey_height": 2.9},
+  "building_dimensions": {
+    "width_x": 11.0,
+    "depth_y": 8.5,
+    "storey_height": 2.7
+  },
   "exterior_walls": [
-    {"id": "W_SOUTH", "start": [0.0, 0.15], "end": [8.0, 0.15], "thickness": 0.3},
-    {"id": "W_NORTH", "start": [0.0, 5.85], "end": [8.0, 5.85], "thickness": 0.3},
-    {"id": "W_WEST", "start": [0.15, 0.0], "end": [0.15, 6.0], "thickness": 0.3},
-    {"id": "W_EAST", "start": [7.85, 0.0], "end": [7.85, 6.0], "thickness": 0.3}
+    {
+      "id": "W_S",
+      "start": [
+        0.0,
+        0.15
+      ],
+      "end": [
+        11.0,
+        0.15
+      ],
+      "thickness": 0.3,
+      "height": 2.85,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ],
+      "_comment": "Eaves walls are 15 cm taller than the storey so their top disappears inside the roof build-up."
+    },
+    {
+      "id": "W_N",
+      "start": [
+        0.0,
+        8.35
+      ],
+      "end": [
+        11.0,
+        8.35
+      ],
+      "thickness": 0.3,
+      "height": 2.85,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
+    },
+    {
+      "id": "W_W",
+      "start": [
+        0.15,
+        0.3
+      ],
+      "end": [
+        0.15,
+        8.2
+      ],
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
+    },
+    {
+      "id": "W_E",
+      "start": [
+        10.85,
+        0.3
+      ],
+      "end": [
+        10.85,
+        8.2
+      ],
+      "thickness": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ]
+    }
   ],
   "interior_walls": [
-    {"id": "W_UF_MID", "start": [4.0, 0.3], "end": [4.0, 5.7], "thickness": 0.12}
+    {
+      "id": "W_UF_WEST_E",
+      "start": [
+        4.96,
+        0.3
+      ],
+      "end": [
+        4.96,
+        8.2
+      ],
+      "thickness": 0.12,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ],
+      "_comment": "East wall of bedroom and guest room; PW_UF_WEST_E continues it up to the roof."
+    },
+    {
+      "id": "W_UF_MID",
+      "start": [
+        0.3,
+        4.14
+      ],
+      "end": [
+        4.9,
+        4.14
+      ],
+      "thickness": 0.12,
+      "height": 4.5548,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ],
+      "_comment": "Parallel to the ridge, so a flat top 1 cm inside the roof lining is enough."
+    },
+    {
+      "id": "W_UF_STUDY_N",
+      "start": [
+        5.02,
+        4.14
+      ],
+      "end": [
+        10.7,
+        4.14
+      ],
+      "thickness": 0.12,
+      "height": 4.5548,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
+    },
+    {
+      "id": "W_UF_BATH_W",
+      "start": [
+        7.96,
+        4.2
+      ],
+      "end": [
+        7.96,
+        8.2
+      ],
+      "thickness": 0.12,
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ]
+    }
   ],
   "profile_walls": [
-    {"id": "GABLE_WEST", "x0": 0.0, "x1": 0.3, "profile": [[0.0, 5.8], [6.0, 5.8], [3.0, 7.4]], "rgb": [0.88, 0.86, 0.82]},
-    {"id": "GABLE_EAST", "x0": 7.7, "x1": 8.0, "profile": [[0.0, 5.8], [6.0, 5.8], [3.0, 7.4]], "rgb": [0.88, 0.86, 0.82]}
+    {
+      "id": "GABLE_W",
+      "x0": 0.0,
+      "x1": 0.3,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ],
+      "profile": [
+        [
+          0.3,
+          5.6
+        ],
+        [
+          8.2,
+          5.6
+        ],
+        [
+          8.2,
+          5.7541
+        ],
+        [
+          4.25,
+          7.52
+        ],
+        [
+          0.3,
+          5.7541
+        ]
+      ],
+      "props": {
+        "Product": "Gable wall, rendered masonry",
+        "Dimensions": "30 cm"
+      },
+      "_comment": "Pentagon between the eaves walls, 2 cm into the roof so no sliver of sky shows."
+    },
+    {
+      "id": "GABLE_E",
+      "x0": 10.7,
+      "x1": 11.0,
+      "rgb": [
+        0.92,
+        0.9,
+        0.86
+      ],
+      "profile": [
+        [
+          0.3,
+          5.6
+        ],
+        [
+          8.2,
+          5.6
+        ],
+        [
+          8.2,
+          5.7541
+        ],
+        [
+          4.25,
+          7.52
+        ],
+        [
+          0.3,
+          5.7541
+        ]
+      ],
+      "props": {
+        "Product": "Gable wall, rendered masonry",
+        "Dimensions": "30 cm"
+      }
+    },
+    {
+      "id": "PW_UF_WEST_E",
+      "x0": 4.9,
+      "x1": 5.02,
+      "profile": [
+        [
+          0.3,
+          5.6
+        ],
+        [
+          8.2,
+          5.6
+        ],
+        [
+          8.2,
+          5.7113
+        ],
+        [
+          4.25,
+          7.4771
+        ],
+        [
+          0.3,
+          5.7113
+        ]
+      ],
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ],
+      "props": {
+        "Product": "Stud wall infill up to the roof lining",
+        "Dimensions": "follows the roof slope"
+      }
+    },
+    {
+      "id": "PW_UF_BATH_W",
+      "x0": 7.9,
+      "x1": 8.02,
+      "profile": [
+        [
+          4.2,
+          5.6
+        ],
+        [
+          8.2,
+          5.6
+        ],
+        [
+          8.2,
+          5.7113
+        ],
+        [
+          4.25,
+          7.4771
+        ],
+        [
+          4.2,
+          7.4548
+        ]
+      ],
+      "rgb": [
+        0.96,
+        0.95,
+        0.93
+      ],
+      "props": {
+        "Product": "Stud wall infill up to the roof lining",
+        "Dimensions": "follows the roof slope"
+      }
+    }
   ],
   "roof_finishes": {
-    "plaster": {"name": "Plasterboard lining, painted white", "thickness_m": 0.03, "rgb": [0.95, 0.95, 0.93],
-                "props": {"Product": "12.5 mm plasterboard on battens", "Dimensions": "30 mm build-up"}}
+    "plaster": {
+      "name": "Plasterboard lining, painted warm white",
+      "thickness_m": 0.03,
+      "rgb": [
+        0.95,
+        0.95,
+        0.93
+      ],
+      "props": {
+        "Product": "12.5 mm plasterboard on battens",
+        "Dimensions": "30 mm build-up"
+      }
+    }
   },
   "roof_planes": [
-    {"id": "ROOF_S", "x0": -0.4, "x1": 8.4, "profile": [[-0.4, 5.5867], [3.0, 7.4], [3.0, 7.7], [-0.4, 5.8867]],
-     "rgb": [0.42, 0.4, 0.38], "interior_finish": "plaster",
-     "props": {"Product": "Standing-seam metal roof, 30 cm build-up", "Dimensions": "pitch 28 degrees"}},
-    {"id": "ROOF_N", "x0": -0.4, "x1": 8.4, "profile": [[3.0, 7.4], [6.4, 5.5867], [6.4, 5.8867], [3.0, 7.7]],
-     "rgb": [0.42, 0.4, 0.38], "interior_finish": "plaster",
-     "props": {"Product": "Standing-seam metal roof, 30 cm build-up", "Dimensions": "pitch 28 degrees"}},
-    {"id": "SKYLIGHT_S", "ifc_class": "IfcWindow", "cuts": "ROOF_S", "x0": 1.5, "x1": 2.5, "style": "glass",
-     "profile": [[1.0, 6.3333], [2.0, 6.8667], [2.0, 6.9667], [1.0, 6.4333]],
-     "props": {"Product": "Roof window 100 x 112", "Dimensions": "100 x 112 cm"}}
+    {
+      "id": "ROOF_S",
+      "x0": -0.4,
+      "x1": 11.4,
+      "rgb": [
+        0.3,
+        0.3,
+        0.32
+      ],
+      "interior_finish": "plaster",
+      "profile": [
+        [
+          -0.4,
+          5.4212
+        ],
+        [
+          4.25,
+          7.5
+        ],
+        [
+          4.25,
+          7.8
+        ],
+        [
+          -0.4,
+          5.7212
+        ]
+      ],
+      "props": {
+        "Product": "Clay tile roof on battens and rafters, 30 cm build-up, dark grey",
+        "Dimensions": "pitch 24 degrees, 30 cm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/roofing"
+      },
+      "_comment": "Gable roof along x. Underside 5.6 at the outer wall face, ridge 7.5; profiles are (y, z) absolute."
+    },
+    {
+      "id": "ROOF_N",
+      "x0": -0.4,
+      "x1": 11.4,
+      "rgb": [
+        0.3,
+        0.3,
+        0.32
+      ],
+      "interior_finish": "plaster",
+      "profile": [
+        [
+          4.25,
+          7.5
+        ],
+        [
+          8.9,
+          5.4212
+        ],
+        [
+          8.9,
+          5.7212
+        ],
+        [
+          4.25,
+          7.8
+        ]
+      ],
+      "props": {
+        "Product": "Clay tile roof on battens and rafters, 30 cm build-up, dark grey",
+        "Dimensions": "pitch 24 degrees, 30 cm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/roofing"
+      }
+    },
+    {
+      "id": "RW_BEDROOM",
+      "ifc_class": "IfcWindow",
+      "cuts": "ROOF_S",
+      "x0": 2.0,
+      "x1": 2.78,
+      "style": "glass",
+      "profile": [
+        [
+          1.2,
+          6.1965
+        ],
+        [
+          2.25,
+          6.6659
+        ],
+        [
+          2.25,
+          6.7659
+        ],
+        [
+          1.2,
+          6.2965
+        ]
+      ],
+      "props": {
+        "Product": "Roof window 78 x 118, centre-pivot, anthracite flashing",
+        "Dimensions": "78 x 118 cm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/roof-windows"
+      },
+      "_comment": "Over the foot of the bed; \"cuts\" bores the host plane."
+    },
+    {
+      "id": "RW_GUEST",
+      "ifc_class": "IfcWindow",
+      "cuts": "ROOF_N",
+      "x0": 2.0,
+      "x1": 2.78,
+      "style": "glass",
+      "profile": [
+        [
+          6.25,
+          6.6659
+        ],
+        [
+          7.3,
+          6.1965
+        ],
+        [
+          7.3,
+          6.2965
+        ],
+        [
+          6.25,
+          6.7659
+        ]
+      ],
+      "props": {
+        "Product": "Roof window 78 x 118, centre-pivot, anthracite flashing",
+        "Dimensions": "78 x 118 cm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/roof-windows"
+      },
+      "_comment": "Guest room, north slope."
+    }
   ],
-  "windows": [
-    {"id": "WIN_UF_S_01", "wall_id": "W_SOUTH", "offset_along_wall": 1.0, "width": 1.2, "sill_height": 0.9, "height": 1.2},
-    {"id": "WIN_UF_N_01", "wall_id": "W_NORTH", "offset_along_wall": 5.4, "width": 1.0, "sill_height": 0.9, "height": 1.2}
+  "windows": [],
+  "windows_abs": [
+    {
+      "id": "WIN_BED_S",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        0.8,
+        0.0,
+        3.8,
+        2.6,
+        0.3,
+        5.1
+      ],
+      "nominal_width": 1.8,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              0.8,
+              0.11,
+              3.8,
+              2.6,
+              0.19,
+              3.86
+            ],
+            [
+              0.8,
+              0.11,
+              5.04,
+              2.6,
+              0.19,
+              5.1
+            ],
+            [
+              0.8,
+              0.11,
+              3.86,
+              0.86,
+              0.19,
+              5.04
+            ],
+            [
+              2.54,
+              0.11,
+              3.86,
+              2.6,
+              0.19,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              0.86,
+              0.14,
+              3.86,
+              2.54,
+              0.16,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 180 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "180 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "DOOR_BALCONY",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        3.3,
+        0.0,
+        2.9,
+        4.2,
+        0.3,
+        5.1
+      ],
+      "nominal_width": 0.9,
+      "nominal_height": 2.2,
+      "kind": "door",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              3.3,
+              0.11,
+              2.9,
+              4.2,
+              0.19,
+              2.96
+            ],
+            [
+              3.3,
+              0.11,
+              5.04,
+              4.2,
+              0.19,
+              5.1
+            ],
+            [
+              3.3,
+              0.11,
+              2.96,
+              3.36,
+              0.19,
+              5.04
+            ],
+            [
+              4.14,
+              0.11,
+              2.96,
+              4.2,
+              0.19,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "panel",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              3.36,
+              0.13,
+              2.96,
+              4.14,
+              0.17,
+              3.26
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              3.36,
+              0.14,
+              3.26,
+              4.14,
+              0.16,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Balcony door 90 x 220, anthracite aluminium",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "90 x 220 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_GUEST_N",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        1.5,
+        8.2,
+        3.8,
+        3.3,
+        8.5,
+        5.1
+      ],
+      "nominal_width": 1.8,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              1.5,
+              8.31,
+              3.8,
+              3.3,
+              8.39,
+              3.86
+            ],
+            [
+              1.5,
+              8.31,
+              5.04,
+              3.3,
+              8.39,
+              5.1
+            ],
+            [
+              1.5,
+              8.31,
+              3.86,
+              1.56,
+              8.39,
+              5.04
+            ],
+            [
+              3.24,
+              8.31,
+              3.86,
+              3.3,
+              8.39,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              1.56,
+              8.34,
+              3.86,
+              3.24,
+              8.36,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 180 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "180 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_STUDY_S1",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        5.8,
+        0.0,
+        3.8,
+        7.0,
+        0.3,
+        5.1
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              5.8,
+              0.11,
+              3.8,
+              7.0,
+              0.19,
+              3.86
+            ],
+            [
+              5.8,
+              0.11,
+              5.04,
+              7.0,
+              0.19,
+              5.1
+            ],
+            [
+              5.8,
+              0.11,
+              3.86,
+              5.86,
+              0.19,
+              5.04
+            ],
+            [
+              6.94,
+              0.11,
+              3.86,
+              7.0,
+              0.19,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              5.86,
+              0.14,
+              3.86,
+              6.94,
+              0.16,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_STUDY_S2",
+      "host": "W_S",
+      "cut_axis": "y",
+      "box": [
+        8.6,
+        0.0,
+        3.8,
+        9.8,
+        0.3,
+        5.1
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              8.6,
+              0.11,
+              3.8,
+              9.8,
+              0.19,
+              3.86
+            ],
+            [
+              8.6,
+              0.11,
+              5.04,
+              9.8,
+              0.19,
+              5.1
+            ],
+            [
+              8.6,
+              0.11,
+              3.86,
+              8.66,
+              0.19,
+              5.04
+            ],
+            [
+              9.74,
+              0.11,
+              3.86,
+              9.8,
+              0.19,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              8.66,
+              0.14,
+              3.86,
+              9.74,
+              0.16,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_STUDY_E",
+      "host": "W_E",
+      "cut_axis": "x",
+      "box": [
+        10.7,
+        1.2,
+        3.8,
+        11.0,
+        2.6,
+        5.1
+      ],
+      "nominal_width": 1.4,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              10.81,
+              1.2,
+              3.8,
+              10.89,
+              2.6,
+              3.86
+            ],
+            [
+              10.81,
+              1.2,
+              5.04,
+              10.89,
+              2.6,
+              5.1
+            ],
+            [
+              10.81,
+              1.2,
+              3.86,
+              10.89,
+              1.26,
+              5.04
+            ],
+            [
+              10.81,
+              2.54,
+              3.86,
+              10.89,
+              2.6,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              10.84,
+              1.26,
+              3.86,
+              10.86,
+              2.54,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 140 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "140 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_LAND_N",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        6.4,
+        8.2,
+        3.8,
+        7.6,
+        8.5,
+        5.1
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.3,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              6.4,
+              8.31,
+              3.8,
+              7.6,
+              8.39,
+              3.86
+            ],
+            [
+              6.4,
+              8.31,
+              5.04,
+              7.6,
+              8.39,
+              5.1
+            ],
+            [
+              6.4,
+              8.31,
+              3.86,
+              6.46,
+              8.39,
+              5.04
+            ],
+            [
+              7.54,
+              8.31,
+              3.86,
+              7.6,
+              8.39,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "clear",
+          "boxes": [
+            [
+              6.46,
+              8.34,
+              3.86,
+              7.54,
+              8.36,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 130, anthracite aluminium frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 130 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "clear triple glazing"
+      }
+    },
+    {
+      "id": "WIN_BATH_N",
+      "host": "W_N",
+      "cut_axis": "y",
+      "box": [
+        8.8,
+        8.2,
+        4.1,
+        10.0,
+        8.5,
+        5.1
+      ],
+      "nominal_width": 1.2,
+      "nominal_height": 1.0,
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.2,
+            0.21,
+            0.22
+          ],
+          "boxes": [
+            [
+              8.8,
+              8.31,
+              4.1,
+              10.0,
+              8.39,
+              4.16
+            ],
+            [
+              8.8,
+              8.31,
+              5.04,
+              10.0,
+              8.39,
+              5.1
+            ],
+            [
+              8.8,
+              8.31,
+              4.16,
+              8.86,
+              8.39,
+              5.04
+            ],
+            [
+              9.94,
+              8.31,
+              4.16,
+              10.0,
+              8.39,
+              5.04
+            ]
+          ]
+        },
+        {
+          "name": "glass",
+          "glazing": "frosted",
+          "boxes": [
+            [
+              8.86,
+              8.34,
+              4.16,
+              9.94,
+              8.36,
+              5.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Window 120 x 100, anthracite aluminium frame, frosted",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/windows",
+        "Dimensions": "120 x 100 cm",
+        "License": "MIT (project data)",
+        "Status": "Built",
+        "FrameColour": "anthracite (RAL 7016 approx.)",
+        "Glazing": "frosted"
+      }
+    }
   ],
   "doors": [
-    {"id": "DOOR_UF_MID", "wall_id": "W_UF_MID", "offset_along_wall": 1.0, "width": 0.9, "sill_height": 0.0, "height": 2.1}
+    {
+      "id": "DOOR_BEDROOM",
+      "wall_id": "W_UF_WEST_E",
+      "offset_along_wall": 2.7,
+      "width": 0.9,
+      "sill_height": 0.0,
+      "height": 2.1,
+      "rgb": [
+        0.95,
+        0.95,
+        0.94
+      ],
+      "props": {
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
+      }
+    },
+    {
+      "id": "DOOR_GUEST",
+      "wall_id": "W_UF_WEST_E",
+      "offset_along_wall": 4.0,
+      "width": 0.9,
+      "sill_height": 0.0,
+      "height": 2.1,
+      "rgb": [
+        0.95,
+        0.95,
+        0.94
+      ],
+      "props": {
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
+      }
+    },
+    {
+      "id": "DOOR_STUDY",
+      "wall_id": "W_UF_STUDY_N",
+      "offset_along_wall": 1.38,
+      "width": 0.9,
+      "sill_height": 0.0,
+      "height": 2.1,
+      "rgb": [
+        0.95,
+        0.95,
+        0.94
+      ],
+      "props": {
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
+      }
+    },
+    {
+      "id": "DOOR_BATH",
+      "wall_id": "W_UF_BATH_W",
+      "offset_along_wall": 2.7,
+      "width": 0.9,
+      "sill_height": 0.0,
+      "height": 2.1,
+      "rgb": [
+        0.95,
+        0.95,
+        0.94
+      ],
+      "props": {
+        "Product": "Interior door 90 x 210, white, flush",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/doors",
+        "Dimensions": "90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Built"
+      }
+    }
   ],
   "slabs": [
-    {"id": "SLAB_UF_FLOOR", "z_top": 0.0, "thickness": 0.25, "recess_finishes": true,
-     "rects": [[0.0, 0.0, 6.44, 6.0], [6.44, 0.0, 8.0, 2.0], [7.56, 2.0, 8.0, 4.9], [6.44, 4.9, 8.0, 6.0]],
-     "props": {"Product": "Upper floor slab, reinforced concrete", "Dimensions": "25 cm"}}
+    {
+      "id": "SLAB_UF",
+      "z_top": 0.0,
+      "thickness": 0.25,
+      "recess_finishes": true,
+      "rgb": [
+        0.93,
+        0.92,
+        0.9
+      ],
+      "rects": [
+        [
+          0.3,
+          0.3,
+          5.02,
+          8.2
+        ],
+        [
+          5.02,
+          0.3,
+          6.08,
+          5.24
+        ],
+        [
+          6.08,
+          0.3,
+          10.7,
+          8.2
+        ]
+      ],
+      "props": {
+        "Product": "Upper floor slab, reinforced concrete, plastered underside",
+        "Dimensions": "25 cm"
+      },
+      "_comment": "Spans between the exterior walls (which run through); the stair void is x 5.02-6.08, y 5.24-8.2."
+    },
+    {
+      "id": "SLAB_BALCONY",
+      "z_top": 0.0,
+      "thickness": 0.2,
+      "rgb": [
+        0.7,
+        0.7,
+        0.69
+      ],
+      "rects": [
+        [
+          1.0,
+          -1.6,
+          4.6,
+          0.0
+        ]
+      ],
+      "props": {
+        "Product": "Cantilevered balcony slab, thermally separated",
+        "Dimensions": "20 cm"
+      }
+    }
   ],
   "floorings": [
-    {"id": "FLOOR_UF_OAK", "z_top": 0.0, "thickness": 0.015, "rgb": [0.68, 0.53, 0.34], "rects": [[0.3, 0.3, 3.94, 5.7], [4.06, 0.3, 6.44, 5.7], [6.44, 4.9, 7.7, 5.7], [6.44, 0.3, 7.7, 2.0]],
-     "props": {"Product": "Oak plank flooring", "Dimensions": "15 mm"}}
+    {
+      "id": "FLOOR_UF_OAK",
+      "z_top": 0.0,
+      "thickness": 0.015,
+      "rgb": [
+        0.7,
+        0.55,
+        0.36
+      ],
+      "rects": [
+        [
+          0.3,
+          0.3,
+          4.9,
+          4.08
+        ],
+        [
+          0.3,
+          4.2,
+          4.9,
+          8.2
+        ],
+        [
+          5.02,
+          0.3,
+          10.7,
+          4.08
+        ],
+        [
+          5.02,
+          4.2,
+          7.9,
+          5.24
+        ],
+        [
+          6.08,
+          5.24,
+          7.9,
+          8.2
+        ]
+      ],
+      "props": {
+        "Product": "Oak plank parquet, oiled, 15 mm",
+        "Dimensions": "15 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/flooring"
+      }
+    },
+    {
+      "id": "FLOOR_UF_TILES",
+      "z_top": 0.0,
+      "thickness": 0.012,
+      "rgb": [
+        0.82,
+        0.8,
+        0.76
+      ],
+      "rects": [
+        [
+          8.02,
+          4.2,
+          10.7,
+          8.2
+        ]
+      ],
+      "props": {
+        "Product": "Porcelain tiles 60 x 60, sand",
+        "Dimensions": "12 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/flooring"
+      }
+    }
   ],
   "railings": [
-    {"id": "RAIL_UF_VOID_W", "from": [6.44, 2.0], "to": [6.44, 4.9], "height": 1.0},
-    {"id": "RAIL_UF_VOID_S", "from": [6.44, 2.0], "to": [7.56, 2.0], "height": 1.0}
+    {
+      "id": "RAIL_VOID_E",
+      "from": [
+        6.08,
+        5.24
+      ],
+      "to": [
+        6.08,
+        8.2
+      ],
+      "height": 1.0,
+      "props": {
+        "Product": "Steel rod void guard, dark grey",
+        "Dimensions": "100 cm high"
+      }
+    },
+    {
+      "id": "RAIL_VOID_S",
+      "from": [
+        5.02,
+        5.24
+      ],
+      "to": [
+        6.08,
+        5.24
+      ],
+      "height": 1.0,
+      "props": {
+        "Product": "Steel rod void guard, dark grey",
+        "Dimensions": "100 cm high"
+      }
+    },
+    {
+      "id": "RAIL_BALCONY_S",
+      "from": [
+        1.02,
+        -1.58
+      ],
+      "to": [
+        4.58,
+        -1.58
+      ],
+      "height": 1.0,
+      "rgb": [
+        0.2,
+        0.21,
+        0.22
+      ],
+      "props": {
+        "Product": "Balcony railing, steel rods, anthracite",
+        "Dimensions": "100 cm high"
+      }
+    },
+    {
+      "id": "RAIL_BALCONY_W",
+      "from": [
+        1.02,
+        -1.58
+      ],
+      "to": [
+        1.02,
+        0.0
+      ],
+      "height": 1.0,
+      "rgb": [
+        0.2,
+        0.21,
+        0.22
+      ],
+      "props": {
+        "Product": "Balcony railing, steel rods, anthracite",
+        "Dimensions": "100 cm high"
+      }
+    },
+    {
+      "id": "RAIL_BALCONY_E",
+      "from": [
+        4.58,
+        -1.58
+      ],
+      "to": [
+        4.58,
+        0.0
+      ],
+      "height": 1.0,
+      "rgb": [
+        0.2,
+        0.21,
+        0.22
+      ],
+      "props": {
+        "Product": "Balcony railing, steel rods, anthracite",
+        "Dimensions": "100 cm high"
+      }
+    }
+  ],
+  "wall_coverings": [
+    {
+      "id": "TILES_BATH",
+      "rgb": [
+        0.62,
+        0.7,
+        0.64
+      ],
+      "boxes": [
+        [
+          8.02,
+          4.2,
+          0.0,
+          10.7,
+          4.21,
+          2.1
+        ],
+        [
+          10.69,
+          4.21,
+          0.0,
+          10.7,
+          8.2,
+          2.1
+        ],
+        [
+          8.02,
+          8.19,
+          0.0,
+          10.7,
+          8.2,
+          1.2
+        ]
+      ],
+      "props": {
+        "Product": "Glazed wall tiles 10 x 30, sage",
+        "Dimensions": "10 x 30 cm, 8 mm",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/tiles"
+      },
+      "_comment": "Full height on the tub and basin walls, 1.2 m behind the WC under the window."
+    }
+  ],
+  "sanitary": [
+    {
+      "id": "BATH_TUB",
+      "ifc_class": "IfcSanitaryTerminal",
+      "predefined_type": "BATH",
+      "parts": [
+        {
+          "name": "apron",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              8.3,
+              4.21,
+              0.0,
+              10.0,
+              4.96,
+              0.58
+            ]
+          ]
+        },
+        {
+          "name": "water",
+          "rgb": [
+            0.8,
+            0.88,
+            0.9
+          ],
+          "boxes": [
+            [
+              8.38,
+              4.29,
+              0.5,
+              9.92,
+              4.88,
+              0.59
+            ]
+          ]
+        },
+        {
+          "name": "tap",
+          "rgb": [
+            0.7,
+            0.71,
+            0.72
+          ],
+          "cylinders": [
+            [
+              9.15,
+              4.3,
+              0.58,
+              0.012,
+              0.85
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Built-in bath 170 x 75 with tiled apron",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "170 x 75 x 58 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Note": "Dimensions describe the tub body; the tap adds 27 cm"
+      }
+    },
+    {
+      "id": "BATH_SHOWER",
+      "ifc_class": "IfcSanitaryTerminal",
+      "predefined_type": "SHOWER",
+      "parts": [
+        {
+          "name": "tray",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              9.8,
+              5.3,
+              0.0,
+              10.7,
+              6.2,
+              0.04
+            ]
+          ]
+        },
+        {
+          "name": "screen",
+          "rgb": [
+            0.6,
+            0.75,
+            0.85
+          ],
+          "transparency": 0.7,
+          "boxes": [
+            [
+              9.8,
+              5.3,
+              0.04,
+              9.81,
+              6.2,
+              2.0
+            ]
+          ]
+        },
+        {
+          "name": "fittings",
+          "rgb": [
+            0.7,
+            0.71,
+            0.72
+          ],
+          "cylinders": [
+            [
+              10.66,
+              5.75,
+              0.9,
+              0.012,
+              2.1
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Walk-in shower 90 x 90, glass screen, rain head",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "90 x 90 x 210 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BATH_BASIN",
+      "ifc_class": "IfcSanitaryTerminal",
+      "predefined_type": "WASHHANDBASIN",
+      "parts": [
+        {
+          "name": "counter",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              10.15,
+              6.3,
+              0.8,
+              10.69,
+              7.5,
+              0.85
+            ]
+          ]
+        },
+        {
+          "name": "basins",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              10.25,
+              6.45,
+              0.85,
+              10.6,
+              6.85,
+              0.97
+            ],
+            [
+              10.25,
+              6.95,
+              0.85,
+              10.6,
+              7.35,
+              0.97
+            ]
+          ]
+        },
+        {
+          "name": "taps",
+          "rgb": [
+            0.7,
+            0.71,
+            0.72
+          ],
+          "cylinders": [
+            [
+              10.64,
+              6.65,
+              0.97,
+              0.012,
+              1.15
+            ],
+            [
+              10.64,
+              7.15,
+              0.97,
+              0.012,
+              1.15
+            ]
+          ]
+        },
+        {
+          "name": "mirror",
+          "rgb": [
+            0.75,
+            0.82,
+            0.88
+          ],
+          "boxes": [
+            [
+              10.68,
+              6.3,
+              1.1,
+              10.69,
+              7.5,
+              1.9
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Double washstand 120 cm on an oak counter, with mirror",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "54 x 120 x 110 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BATH_WC",
+      "ifc_class": "IfcSanitaryTerminal",
+      "predefined_type": "TOILETPAN",
+      "rgb": [
+        0.97,
+        0.97,
+        0.96
+      ],
+      "boxes": [
+        [
+          9.3,
+          7.67,
+          0.4,
+          9.7,
+          8.19,
+          0.8
+        ],
+        [
+          9.2,
+          8.0,
+          0.8,
+          9.8,
+          8.19,
+          1.2
+        ]
+      ],
+      "props": {
+        "Product": "Wall-hung WC with concealed cistern panel",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/sanitary",
+        "Dimensions": "40 x 52 x 40 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    }
   ],
   "furniture": [
-    {"id": "UF_BED",
-     "parts": [
-       {"name": "frame", "rgb": [0.55, 0.42, 0.3], "boxes": [[0.5, 3.6, 0.0, 2.1, 5.65, 0.3]]},
-       {"name": "mattress", "rgb": [0.92, 0.92, 0.9], "boxes": [[0.55, 3.65, 0.3, 2.05, 5.6, 0.5]]}
-     ],
-     "props": {"Product": "Double bed 160 x 200", "Supplier": "none (authored)", "SourceURL": "docs/data-format.md",
-               "Dimensions": "160 x 205 x 50 cm", "License": "MIT (project data)"}},
-    {"id": "UF_WARDROBE", "rgb": [0.9, 0.9, 0.88], "boxes": [[2.8, 5.1, 0.0, 3.9, 5.7, 2.2]], "access": {"dir": "-y", "depth": 0.75},
-     "props": {"Product": "Wardrobe 110 x 60 x 220", "Supplier": "none (authored)", "SourceURL": "docs/data-format.md",
-               "Dimensions": "110 x 60 x 220 cm", "License": "MIT (project data)"}}
+    {
+      "id": "BED_BED",
+      "_comment": "Headboard on the wall to the guest room, facing the balcony.",
+      "mesh": "assets/bed_polyhaven_1500x2040.obj",
+      "at": [
+        2.5,
+        4.07,
+        0.0
+      ],
+      "rotation_z": 180,
+      "rgb": [
+        0.4,
+        0.27,
+        0.17
+      ],
+      "mesh_bounds": [
+        1.753,
+        2.028,
+        0.0,
+        3.247,
+        4.07,
+        1.535
+      ],
+      "props": {
+        "Product": "Gothic Bed 01 (double bed with posts and bedding)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/GothicBed_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kirill Sannikov",
+        "Dimensions": "149 x 204 x 154 cm",
+        "MeshNote": "Headboard at y=0, foot end at y=2.04. Single colour; bedding is part of the mesh.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/GothicBed_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BED_NIGHTSTAND_W",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.4,
+            0.28,
+            0.18
+          ],
+          "boxes": [
+            [
+              1.25,
+              3.65,
+              0.12,
+              1.7,
+              4.05,
+              0.5
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              1.27,
+              3.67,
+              0.0,
+              1.3,
+              3.7,
+              0.12
+            ],
+            [
+              1.65,
+              3.67,
+              0.0,
+              1.68,
+              3.7,
+              0.12
+            ],
+            [
+              1.27,
+              4.0,
+              0.0,
+              1.3,
+              4.03,
+              0.12
+            ],
+            [
+              1.65,
+              4.0,
+              0.0,
+              1.68,
+              4.03,
+              0.12
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Bedside table 45 x 40 x 50, walnut",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "45 x 40 x 50 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BED_NIGHTSTAND_E",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.4,
+            0.28,
+            0.18
+          ],
+          "boxes": [
+            [
+              3.3,
+              3.65,
+              0.12,
+              3.75,
+              4.05,
+              0.5
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              3.32,
+              3.67,
+              0.0,
+              3.35,
+              3.7,
+              0.12
+            ],
+            [
+              3.7,
+              3.67,
+              0.0,
+              3.73,
+              3.7,
+              0.12
+            ],
+            [
+              3.32,
+              4.0,
+              0.0,
+              3.35,
+              4.03,
+              0.12
+            ],
+            [
+              3.7,
+              4.0,
+              0.0,
+              3.73,
+              4.03,
+              0.12
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Bedside table 45 x 40 x 50, walnut",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "45 x 40 x 50 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BED_WARDROBE",
+      "access": {
+        "dir": "+x",
+        "depth": 0.75
+      },
+      "parts": [
+        {
+          "name": "carcass",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              0.3,
+              0.8,
+              0.0,
+              0.86,
+              3.4,
+              2.3
+            ]
+          ]
+        },
+        {
+          "name": "doors",
+          "rgb": [
+            0.93,
+            0.92,
+            0.9
+          ],
+          "boxes": [
+            [
+              0.86,
+              0.81,
+              0.05,
+              0.9,
+              1.44,
+              2.28
+            ],
+            [
+              0.86,
+              1.46,
+              0.05,
+              0.9,
+              2.09,
+              2.28
+            ],
+            [
+              0.86,
+              2.11,
+              0.05,
+              0.9,
+              2.74,
+              2.28
+            ],
+            [
+              0.86,
+              2.76,
+              0.05,
+              0.9,
+              3.39,
+              2.28
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Wardrobe 260 x 60 x 230, four doors, white",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/joinery",
+        "Dimensions": "60 x 260 x 230 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BED_RUG",
+      "surface": true,
+      "rgb": [
+        0.72,
+        0.6,
+        0.5
+      ],
+      "boxes": [
+        [
+          1.3,
+          1.1,
+          0.0,
+          3.7,
+          2.4,
+          0.01
+        ]
+      ],
+      "props": {
+        "Product": "Wool rug 240 x 130, dusty rose",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/rugs",
+        "Dimensions": "240 x 130 x 1 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "GUEST_BED",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              0.3,
+              5.2,
+              0.0,
+              1.2,
+              7.2,
+              0.3
+            ]
+          ]
+        },
+        {
+          "name": "mattress",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              0.33,
+              5.23,
+              0.3,
+              1.17,
+              7.17,
+              0.5
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Single bed 90 x 200, oak frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "90 x 200 x 50 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "GUEST_WARDROBE",
+      "access": {
+        "dir": "-x",
+        "depth": 0.75
+      },
+      "parts": [
+        {
+          "name": "carcass",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              4.34,
+              5.6,
+              0.0,
+              4.9,
+              7.6,
+              2.3
+            ]
+          ]
+        },
+        {
+          "name": "doors",
+          "rgb": [
+            0.93,
+            0.92,
+            0.9
+          ],
+          "boxes": [
+            [
+              4.3,
+              5.61,
+              0.05,
+              4.34,
+              6.59,
+              2.28
+            ],
+            [
+              4.3,
+              6.61,
+              0.05,
+              4.34,
+              7.59,
+              2.28
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Wardrobe 200 x 60 x 230, two doors, white",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/joinery",
+        "Dimensions": "60 x 200 x 230 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "GUEST_TABLE",
+      "parts": [
+        {
+          "name": "top",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              2.3,
+              7.7,
+              0.72,
+              3.5,
+              8.2,
+              0.75
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              2.32,
+              7.72,
+              0.0,
+              2.36,
+              7.76,
+              0.72
+            ],
+            [
+              3.44,
+              7.72,
+              0.0,
+              3.48,
+              7.76,
+              0.72
+            ],
+            [
+              2.32,
+              8.14,
+              0.0,
+              2.36,
+              8.18,
+              0.72
+            ],
+            [
+              3.44,
+              8.14,
+              0.0,
+              3.48,
+              8.18,
+              0.72
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Writing table 120 x 50 under the window",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "120 x 50 x 75 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "GUEST_CHAIR",
+      "_comment": "Back to the room, facing the table and the window.",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        2.9,
+        7.1,
+        0.0
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        2.684,
+        7.1,
+        0.0,
+        3.116,
+        7.64,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_DESK",
+      "access": {
+        "dir": "+y",
+        "depth": 0.75,
+        "ignore": "STUDY_CHAIR"
+      },
+      "parts": [
+        {
+          "name": "top",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              5.5,
+              0.45,
+              0.72,
+              7.1,
+              1.25,
+              0.75
+            ]
+          ]
+        },
+        {
+          "name": "frame",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              5.52,
+              0.47,
+              0.0,
+              5.56,
+              1.23,
+              0.72
+            ],
+            [
+              7.04,
+              0.47,
+              0.0,
+              7.08,
+              1.23,
+              0.72
+            ],
+            [
+              5.56,
+              0.47,
+              0.0,
+              7.04,
+              0.51,
+              0.04
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Desk 160 x 80, oak top on a black steel frame",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "160 x 80 x 75 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_LAMP",
+      "_comment": "Clamp lamp sunk 9 cm below the desk top as the sidecar suggests; arm along x.",
+      "mesh": "assets/desk_lamp_polyhaven_890.obj",
+      "at": [
+        5.85,
+        0.75,
+        0.66
+      ],
+      "rotation_z": 90,
+      "rgb": [
+        0.85,
+        0.35,
+        0.1
+      ],
+      "mesh_bounds": [
+        5.542,
+        0.6485,
+        0.66,
+        6.158,
+        0.8515,
+        1.553
+      ],
+      "props": {
+        "Product": "Desk Lamp Arm 01 (orange clamp-on architect lamp)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/desk_lamp_arm_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen (model), Yann Kervran (rig)",
+        "Dimensions": "20 x 62 x 89 cm",
+        "MeshNote": "Clamp-on lamp: z=0 is the bottom of the clamp, so either sink it 0.09 m below a table top or stand it as is. Head points +Y.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/desk_lamp_arm_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_CHAIR",
+      "mesh": "assets/dining_chair_polyhaven_430.obj",
+      "at": [
+        6.3,
+        1.85,
+        0.0
+      ],
+      "rotation_z": 180,
+      "rgb": [
+        0.9,
+        0.9,
+        0.87
+      ],
+      "mesh_bounds": [
+        6.084,
+        1.31,
+        0.0,
+        6.516,
+        1.85,
+        0.956
+      ],
+      "props": {
+        "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Kuutti Siitonen",
+        "Dimensions": "43 x 54 x 96 cm",
+        "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_SHELF",
+      "access": {
+        "dir": "-y",
+        "depth": 0.75
+      },
+      "parts": [
+        {
+          "name": "carcass",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              8.4,
+              3.73,
+              0.0,
+              8.42,
+              4.08,
+              2.2
+            ],
+            [
+              10.38,
+              3.73,
+              0.0,
+              10.4,
+              4.08,
+              2.2
+            ],
+            [
+              8.4,
+              3.73,
+              0.0,
+              10.4,
+              4.08,
+              0.02
+            ],
+            [
+              8.4,
+              3.73,
+              2.18,
+              10.4,
+              4.08,
+              2.2
+            ],
+            [
+              9.39,
+              3.73,
+              0.02,
+              9.41,
+              4.08,
+              2.18
+            ]
+          ]
+        },
+        {
+          "name": "shelves",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              8.42,
+              3.73,
+              0.36,
+              10.38,
+              4.08,
+              0.38
+            ],
+            [
+              8.42,
+              3.73,
+              0.72,
+              10.38,
+              4.08,
+              0.74
+            ],
+            [
+              8.42,
+              3.73,
+              1.08,
+              10.38,
+              4.08,
+              1.1
+            ],
+            [
+              8.42,
+              3.73,
+              1.44,
+              10.38,
+              4.08,
+              1.46
+            ],
+            [
+              8.42,
+              3.73,
+              1.8,
+              10.38,
+              4.08,
+              1.82
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Open shelving 200 x 35 x 220, white with oak shelves",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/joinery",
+        "Dimensions": "200 x 35 x 220 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_DAYBED",
+      "parts": [
+        {
+          "name": "frame",
+          "rgb": [
+            0.4,
+            0.28,
+            0.18
+          ],
+          "boxes": [
+            [
+              9.8,
+              0.5,
+              0.0,
+              10.7,
+              2.5,
+              0.3
+            ]
+          ]
+        },
+        {
+          "name": "mattress",
+          "rgb": [
+            0.52,
+            0.6,
+            0.5
+          ],
+          "boxes": [
+            [
+              9.83,
+              0.53,
+              0.3,
+              10.67,
+              2.47,
+              0.45
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Daybed 90 x 200, walnut frame, sage cushion",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "90 x 200 x 45 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_PLANT",
+      "parts": [
+        {
+          "name": "pot and soil",
+          "rgb": [
+            0.66,
+            0.4,
+            0.28
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_pot.obj",
+          "at": [
+            5.4,
+            3.6,
+            0.0
+          ],
+          "rotation_z": 0
+        },
+        {
+          "name": "leaves",
+          "rgb": [
+            0.3,
+            0.52,
+            0.26
+          ],
+          "mesh": "assets/potted_plant_polyhaven_700_leaves.obj",
+          "at": [
+            5.4,
+            3.6,
+            0.0
+          ],
+          "rotation_z": 0
+        }
+      ],
+      "mesh_bounds": [
+        5.0495,
+        3.271,
+        0.0,
+        5.7505,
+        3.929,
+        0.842
+      ],
+      "props": {
+        "Product": "Potted Plant 02 (caladium in a terracotta pot)",
+        "MeshSource": "Poly Haven",
+        "MeshURL": "https://polyhaven.com/a/potted_plant_02",
+        "MeshLicense": "CC0 1.0",
+        "MeshAuthor": "Rico Cilliers",
+        "Dimensions": "70 x 66 x 84 cm",
+        "MeshNote": "Split by material: pot + leaves share one origin. Leaves are flat cards; fine from room distance.",
+        "Supplier": "Poly Haven",
+        "SourceURL": "https://polyhaven.com/a/potted_plant_02",
+        "License": "CC0 1.0",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "LAND_SIDEBOARD",
+      "access": {
+        "dir": "-x",
+        "depth": 0.75
+      },
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              7.55,
+              5.5,
+              0.12,
+              7.9,
+              6.7,
+              0.9
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              7.57,
+              5.52,
+              0.0,
+              7.6,
+              5.55,
+              0.12
+            ],
+            [
+              7.85,
+              5.52,
+              0.0,
+              7.88,
+              5.55,
+              0.12
+            ],
+            [
+              7.57,
+              6.65,
+              0.0,
+              7.6,
+              6.68,
+              0.12
+            ],
+            [
+              7.85,
+              6.65,
+              0.0,
+              7.88,
+              6.68,
+              0.12
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Landing sideboard 120 x 35 x 90, oak",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/furniture",
+        "Dimensions": "35 x 120 x 90 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    },
+    {
+      "id": "BATH_WASHER",
+      "ifc_class": "IfcElectricAppliance",
+      "predefined_type": "WASHINGMACHINE",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.97,
+            0.97,
+            0.96
+          ],
+          "boxes": [
+            [
+              8.05,
+              5.4,
+              0.0,
+              8.65,
+              6.0,
+              0.85
+            ]
+          ]
+        },
+        {
+          "name": "door",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              8.65,
+              5.5,
+              0.25,
+              8.67,
+              5.9,
+              0.65
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Washing machine 60 x 60 x 85",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/appliances",
+        "Dimensions": "60 x 60 x 85 cm",
+        "License": "MIT (project data)",
+        "Status": "Proposed"
+      }
+    }
   ],
   "spaces": [
-    {"id": "SPACE_UF_WEST", "name": "BEDROOM", "long_name": "Bedroom", "polygon": [[0.3, 0.3], [3.94, 0.3], [3.94, 5.7], [0.3, 5.7]], "height": 2.65,
-     "props": {"RoomNumber": "UF.01"}},
-    {"id": "SPACE_UF_EAST", "name": "LANDING", "long_name": "Landing", "polygon": [[4.06, 0.3], [7.7, 0.3], [7.7, 5.7], [4.06, 5.7]], "height": 2.65,
-     "props": {"RoomNumber": "UF.02"}}
+    {
+      "id": "SPACE_LANDING",
+      "name": "LANDING",
+      "long_name": "Landing",
+      "polygon": [
+        [
+          5.02,
+          4.2
+        ],
+        [
+          7.9,
+          4.2
+        ],
+        [
+          7.9,
+          8.2
+        ],
+        [
+          6.08,
+          8.2
+        ],
+        [
+          6.08,
+          5.24
+        ],
+        [
+          5.02,
+          5.24
+        ]
+      ],
+      "height": 2.7,
+      "props": {
+        "RoomNumber": "UF.01"
+      }
+    },
+    {
+      "id": "SPACE_BEDROOM",
+      "name": "BEDROOM",
+      "long_name": "Main bedroom",
+      "polygon": [
+        [
+          0.3,
+          0.3
+        ],
+        [
+          4.9,
+          0.3
+        ],
+        [
+          4.9,
+          4.08
+        ],
+        [
+          0.3,
+          4.08
+        ]
+      ],
+      "height": 2.7,
+      "props": {
+        "RoomNumber": "UF.02"
+      }
+    },
+    {
+      "id": "SPACE_GUEST",
+      "name": "GUEST",
+      "long_name": "Guest room",
+      "polygon": [
+        [
+          0.3,
+          4.2
+        ],
+        [
+          4.9,
+          4.2
+        ],
+        [
+          4.9,
+          8.2
+        ],
+        [
+          0.3,
+          8.2
+        ]
+      ],
+      "height": 2.7,
+      "props": {
+        "RoomNumber": "UF.03"
+      }
+    },
+    {
+      "id": "SPACE_STUDY",
+      "name": "STUDY",
+      "long_name": "Study",
+      "polygon": [
+        [
+          5.02,
+          0.3
+        ],
+        [
+          10.7,
+          0.3
+        ],
+        [
+          10.7,
+          4.08
+        ],
+        [
+          5.02,
+          4.08
+        ]
+      ],
+      "height": 2.7,
+      "props": {
+        "RoomNumber": "UF.04"
+      }
+    },
+    {
+      "id": "SPACE_BATH",
+      "name": "BATH",
+      "long_name": "Bathroom",
+      "polygon": [
+        [
+          8.02,
+          4.2
+        ],
+        [
+          10.7,
+          4.2
+        ],
+        [
+          10.7,
+          8.2
+        ],
+        [
+          8.02,
+          8.2
+        ]
+      ],
+      "height": 2.7,
+      "props": {
+        "RoomNumber": "UF.05"
+      }
+    }
   ],
   "door_swings": [
-    {"id": "SWING_DOOR_UF_MID", "door": "DOOR_UF_MID", "kind": "door", "hinge": [3.94, 1.3], "closed": [3.94, 2.2], "open": [3.04, 1.3]}
+    {
+      "id": "SWING_BEDROOM",
+      "door": "DOOR_BEDROOM",
+      "kind": "door",
+      "hinge": [
+        4.9,
+        3.9
+      ],
+      "closed": [
+        4.9,
+        3.0
+      ],
+      "open": [
+        4.0,
+        3.9
+      ]
+    },
+    {
+      "id": "SWING_GUEST",
+      "door": "DOOR_GUEST",
+      "kind": "door",
+      "hinge": [
+        4.9,
+        4.3
+      ],
+      "closed": [
+        4.9,
+        5.2
+      ],
+      "open": [
+        4.0,
+        4.3
+      ]
+    },
+    {
+      "id": "SWING_STUDY",
+      "door": "DOOR_STUDY",
+      "kind": "door",
+      "hinge": [
+        7.3,
+        4.08
+      ],
+      "closed": [
+        6.4,
+        4.08
+      ],
+      "open": [
+        7.3,
+        3.18
+      ]
+    },
+    {
+      "id": "SWING_BATH",
+      "door": "DOOR_BATH",
+      "kind": "door",
+      "hinge": [
+        8.02,
+        7.8
+      ],
+      "closed": [
+        8.02,
+        6.9
+      ],
+      "open": [
+        8.92,
+        7.8
+      ]
+    },
+    {
+      "id": "SWING_BALCONY",
+      "door": "DOOR_BALCONY",
+      "kind": "balcony_door",
+      "hinge": [
+        4.2,
+        0.3
+      ],
+      "closed": [
+        3.3,
+        0.3
+      ],
+      "open": [
+        4.2,
+        1.2
+      ]
+    }
   ],
   "outlets": [
-    {"id": "OUTLET_UF_01", "wall": "W_WEST", "at": [0.3, 2.0], "normal": [1, 0], "gangs": 1, "sill": 0.3}
+    {
+      "id": "OUT_BED_N1",
+      "wall": "W_UF_MID",
+      "at": [
+        1.0,
+        4.08
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_BED_N2",
+      "wall": "W_UF_MID",
+      "at": [
+        4.0,
+        4.08
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_BED_W",
+      "wall": "W_W",
+      "at": [
+        0.3,
+        0.5
+      ],
+      "normal": [
+        1,
+        0
+      ],
+      "gangs": 1,
+      "sill": 0.3,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_GUEST_W",
+      "wall": "W_W",
+      "at": [
+        0.3,
+        7.6
+      ],
+      "normal": [
+        1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_GUEST_E",
+      "wall": "W_UF_WEST_E",
+      "at": [
+        4.9,
+        7.9
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 1,
+      "sill": 0.3,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_STUDY_S",
+      "wall": "W_S",
+      "at": [
+        6.4,
+        0.3
+      ],
+      "normal": [
+        0,
+        1
+      ],
+      "gangs": 3,
+      "sill": 0.3,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_STUDY_E",
+      "wall": "W_E",
+      "at": [
+        10.7,
+        3.4
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 2,
+      "sill": 0.3,
+      "props": {
+        "Product": "Double power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_LAND_E",
+      "wall": "W_UF_BATH_W",
+      "at": [
+        7.9,
+        6.0
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 1,
+      "sill": 0.3,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "OUT_BATH_E",
+      "wall": "W_E",
+      "at": [
+        10.7,
+        7.7
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "gangs": 1,
+      "sill": 1.1,
+      "props": {
+        "Product": "Single power outlet, white",
+        "Dimensions": "8.8 x 8.8 cm cover",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    }
   ],
-  "switches": []
+  "switches": [
+    {
+      "id": "SW_BEDROOM",
+      "wall": "W_UF_WEST_E",
+      "at": [
+        4.9,
+        2.8
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "height": 1.05,
+      "columns": 2,
+      "controls": [
+        {
+          "circuit": "bedroom ceiling"
+        },
+        {
+          "circuit": "bedside lamps"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_GUEST",
+      "wall": "W_UF_WEST_E",
+      "at": [
+        4.9,
+        5.4
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "height": 1.05,
+      "columns": 1,
+      "controls": [
+        {
+          "circuit": "guest room ceiling"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_STUDY",
+      "wall": "W_UF_STUDY_N",
+      "at": [
+        7.5,
+        4.08
+      ],
+      "normal": [
+        0,
+        -1
+      ],
+      "height": 1.05,
+      "columns": 1,
+      "controls": [
+        {
+          "circuit": "study ceiling"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_BATH",
+      "wall": "W_UF_BATH_W",
+      "at": [
+        8.02,
+        6.7
+      ],
+      "normal": [
+        1,
+        0
+      ],
+      "height": 1.05,
+      "columns": 2,
+      "controls": [
+        {
+          "circuit": "bathroom ceiling"
+        },
+        {
+          "circuit": "mirror light"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    },
+    {
+      "id": "SW_LANDING",
+      "wall": "W_UF_BATH_W",
+      "at": [
+        7.9,
+        5.4
+      ],
+      "normal": [
+        -1,
+        0
+      ],
+      "height": 1.05,
+      "columns": 1,
+      "controls": [
+        {
+          "circuit": "landing and stair light"
+        }
+      ],
+      "props": {
+        "Product": "Light switch, white",
+        "Dimensions": "8.8 x 8.8 cm plate",
+        "Supplier": "fictional",
+        "SourceURL": "https://example.com/electrical"
+      }
+    }
+  ]
 }

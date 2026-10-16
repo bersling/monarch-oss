@@ -1,21 +1,21 @@
 {
-  "_doc": "Variant INDEX. Each group owns a set of entry ids across sections of a storey JSON; loading a variant removes ALL ids owned by the group (from any of its variants) and inserts the chosen variant's items. The items live one file per variant in data/variants/<group>/<variant>.json. CLI: uv run python src/variant.py list | show <group> <variant> | load <group> <variant>",
+  "_doc": "Variant INDEX. Each group owns a set of entry ids across sections of a storey JSON; loading a variant removes ALL ids owned by the group (from any of its variants) and inserts the chosen variant's items. The items live one file per variant in data/variants/<group>/<variant>.json. CLI: uv run python src/variant.py list | show <group> <variant> | load <group> <variant> | save <group> <variant>",
   "groups": {
     "gallery_centre": {
       "target": "ground_floor.json",
-      "description": "Centre piece of the gallery.",
-      "active": "table",
+      "description": "Centre piece of the gallery (exhibit 7).",
+      "active": "bench",
       "id_prefixes": [
         "GAL_CENTRE_"
       ],
       "variants": {
-        "table": {
-          "description": "Round table, 100 cm.",
-          "file": "variants/gallery_centre/table.json"
-        },
         "bench": {
-          "description": "Long bench, 180 x 45 cm.",
+          "description": "Oak bench 180 x 45 cm to sit and look at the exhibits.",
           "file": "variants/gallery_centre/bench.json"
+        },
+        "sculpture": {
+          "description": "Terracotta sphere stack, JSON primitives only.",
+          "file": "variants/gallery_centre/sculpture.json"
         }
       }
     }

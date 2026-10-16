@@ -1,0 +1,14 @@
+{
+  "_comment": "Kitchen (GF.04): working clearances.",
+  "rules": [
+    {
+      "id": "kitchen-island-walkway",
+      "rule": "gap",
+      "why": "At least 1.0 m between the island and the run so two people can pass.",
+      "a": "KIT_ISLAND",
+      "b": "KIT_RUN",
+      "axis": "x",
+      "min": 1.0
+    }
+  ]
+}

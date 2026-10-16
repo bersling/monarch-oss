@@ -1,12 +1,22 @@
 {
   "name": "Casa Monarch",
-  "description": "Stub house that exercises every section type of the engine; the model home replaces it.",
+  "description": "Fictional two-storey family home that doubles as the Monarch tutorial: the Gallery on the ground floor shows one exhibit per way of getting an object into the model.",
   "ifc_file": "generated/casa_monarch.ifc",
   "units": "meters",
-  "origin_note": "Local frame: x east, y north, z up. Origin = south-west outer corner of the ground-floor envelope at finished floor level.",
+  "origin_note": "Local frame: x east, y north, z up. Origin = south-west outer corner of the ground-floor envelope at finished floor level. Footprint 11.0 x 8.5 m, garden and terrace to the south, entrance from the north.",
   "storeys": [
-    {"code": "GF", "name": "Ground floor", "elevation": 0.0, "file": "ground_floor.json"},
-    {"code": "UF", "name": "Upper floor", "elevation": 2.9, "file": "upper_floor.json"}
+    {
+      "code": "GF",
+      "name": "Ground floor",
+      "elevation": 0.0,
+      "file": "ground_floor.json"
+    },
+    {
+      "code": "UF",
+      "name": "Upper floor",
+      "elevation": 2.9,
+      "file": "upper_floor.json"
+    }
   ],
   "site": "site.json"
 }

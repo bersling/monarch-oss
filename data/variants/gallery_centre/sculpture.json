@@ -1,0 +1,57 @@
+{
+  "furniture": [
+    {
+      "id": "GAL_CENTRE_SCULPTURE",
+      "rgb": [
+        0.76,
+        0.45,
+        0.33
+      ],
+      "cylinders": [
+        [
+          2.6,
+          6.3,
+          0.0,
+          0.35,
+          0.1
+        ]
+      ],
+      "spheres": [
+        [
+          2.6,
+          6.3,
+          0.45,
+          0.35
+        ],
+        [
+          2.6,
+          6.3,
+          1.02,
+          0.22
+        ],
+        [
+          2.6,
+          6.3,
+          1.38,
+          0.14
+        ]
+      ],
+      "props": {
+        "Product": "Sphere stack sculpture, glazed terracotta (cylinder + spheres)",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "70 x 70 x 152 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit",
+        "SurfaceShading": "smooth"
+      },
+      "gallery": {
+        "Title": "7  Variants",
+        "Provenance": "data/variants.json group gallery_centre; data/variants/gallery_centre/bench.json and sculpture.json",
+        "License": "MIT (project data)",
+        "HowTo": "A group owns the ids GAL_CENTRE_*. uv run python src/variant.py list shows the variants; load gallery_centre sculpture swaps the entries in the storey JSON and rebuilds; save captures hand edits back into the variant file.",
+        "Prompt": "Switch the gallery centre to the sculpture variant"
+      }
+    }
+  ]
+}

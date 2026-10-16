@@ -1,7 +1,68 @@
 {
   "furniture": [
-    {"id": "GAL_CENTRE_BENCH", "rgb": [0.55, 0.42, 0.3], "boxes": [[1.1, 2.775, 0.4, 2.9, 3.225, 0.45], [1.2, 2.8, 0.0, 1.25, 3.2, 0.4], [2.75, 2.8, 0.0, 2.8, 3.2, 0.4]],
-     "props": {"Product": "Bench 180 x 45", "Supplier": "none (authored)", "SourceURL": "docs/data-format.md",
-               "Dimensions": "180 x 45 x 45 cm", "License": "MIT (project data)"}}
+    {
+      "id": "GAL_CENTRE_BENCH",
+      "parts": [
+        {
+          "name": "seat",
+          "rgb": [
+            0.7,
+            0.55,
+            0.36
+          ],
+          "boxes": [
+            [
+              1.7,
+              6.075,
+              0.4,
+              3.5,
+              6.525,
+              0.45
+            ]
+          ]
+        },
+        {
+          "name": "legs",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "boxes": [
+            [
+              1.8,
+              6.1,
+              0.0,
+              1.85,
+              6.5,
+              0.4
+            ],
+            [
+              3.35,
+              6.1,
+              0.0,
+              3.4,
+              6.5,
+              0.4
+            ]
+          ]
+        }
+      ],
+      "props": {
+        "Product": "Gallery bench 180 x 45, oak seat on steel blades",
+        "Supplier": "none (authored)",
+        "SourceURL": "docs/data-format.md",
+        "Dimensions": "180 x 45 x 45 cm",
+        "License": "MIT (project data)",
+        "Status": "Exhibit"
+      },
+      "gallery": {
+        "Title": "7  Variants",
+        "Provenance": "data/variants.json group gallery_centre; data/variants/gallery_centre/bench.json and sculpture.json",
+        "License": "MIT (project data)",
+        "HowTo": "A group owns the ids GAL_CENTRE_*. uv run python src/variant.py list shows the variants; load gallery_centre sculpture swaps the entries in the storey JSON and rebuilds; save captures hand edits back into the variant file.",
+        "Prompt": "Switch the gallery centre to the sculpture variant"
+      }
+    }
   ]
 }

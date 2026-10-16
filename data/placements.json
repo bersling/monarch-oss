@@ -1,6 +1,17 @@
 {
   "placements": [
-    {"id": "CAT_GALLERY_SHELF", "product": "demo-bookshelf", "storey": "GF", "at": [2.6, 5.3, 0.0], "rotation_z": 0,
-     "source": "data/products/demo-bookshelf.json", "status": "Proposed"}
+    {
+      "id": "CAT_GALLERY_SHELF",
+      "product": "demo-bookshelf",
+      "storey": "GF",
+      "at": [
+        1.0,
+        4.2,
+        0.0
+      ],
+      "rotation_z": 0.0,
+      "status": "Exhibit",
+      "source": "docs/gallery.md"
+    }
   ]
 }

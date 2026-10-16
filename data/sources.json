@@ -1,12 +1,81 @@
 {
   "_comment": "Provenance by element id prefix (first matching rule wins). build_model.py writes the result as Pset_Source on every element whose id starts with the prefix: Supplier, Contract, SourceURL, Plan (optionally per storey code) and Notes. Suppliers are shared records referenced by key.",
   "suppliers": {
-    "authored": {"supplier": "none (authored in this repository)", "contract": "", "url": "docs/data-format.md"},
-    "example-joinery": {"supplier": "Example Joinery Ltd", "contract": "docs/data-format.md#metadata", "url": "https://example.com/joinery"}
+    "authored": {
+      "supplier": "none (authored in this repository)",
+      "contract": "",
+      "url": "docs/data-format.md"
+    },
+    "fictional-joinery": {
+      "supplier": "Example Joinery Ltd (fictional)",
+      "contract": "docs/data-format.md#metadata",
+      "url": "https://example.com/joinery"
+    },
+    "fictional-windows": {
+      "supplier": "Example Windows AG (fictional)",
+      "contract": "docs/data-format.md#metadata",
+      "url": "https://example.com/windows"
+    },
+    "fictional-kitchens": {
+      "supplier": "Example Kitchens (fictional)",
+      "contract": "docs/data-format.md#metadata",
+      "url": "https://example.com/kitchens"
+    },
+    "fictional-sanitary": {
+      "supplier": "Example Sanitary (fictional)",
+      "contract": "docs/data-format.md#metadata",
+      "url": "https://example.com/sanitary"
+    }
   },
   "rules": [
-    {"prefix": "GAL_", "supplier": "authored", "plan": "docs/gallery.md", "notes": "Gallery exhibits: every piece documents the technique that made it."},
-    {"prefix": "DOOR_", "supplier": "example-joinery", "plan_by_storey": {"GF": "docs/data-format.md#doors", "UF": "docs/data-format.md#doors"}},
-    {"prefix": "W_", "notes": "Walls from the storey plan JSON; thickness 0.3 exterior, 0.12 interior."}
+    {
+      "prefix": "GAL_",
+      "supplier": "authored",
+      "plan": "docs/gallery.md",
+      "notes": "Gallery exhibits: every piece documents the technique that made it."
+    },
+    {
+      "prefix": "CAT_",
+      "supplier": "authored",
+      "plan": "data/placements.json",
+      "notes": "Catalogue product instances placed with ./place."
+    },
+    {
+      "prefix": "DOOR_",
+      "supplier": "fictional-joinery",
+      "plan_by_storey": {
+        "GF": "docs/data-format.md#doors",
+        "UF": "docs/data-format.md#doors"
+      }
+    },
+    {
+      "prefix": "WIN_",
+      "supplier": "fictional-windows",
+      "plan": "docs/data-format.md#windows_abs"
+    },
+    {
+      "prefix": "RW_",
+      "supplier": "fictional-windows",
+      "plan": "docs/data-format.md#roof_planes"
+    },
+    {
+      "prefix": "KIT_",
+      "supplier": "fictional-kitchens",
+      "plan": "docs/data-format.md#furniture"
+    },
+    {
+      "prefix": "BATH_",
+      "supplier": "fictional-sanitary",
+      "plan": "docs/data-format.md#sanitary"
+    },
+    {
+      "prefix": "WC_",
+      "supplier": "fictional-sanitary",
+      "plan": "docs/data-format.md#sanitary"
+    },
+    {
+      "prefix": "W_",
+      "notes": "Walls from the storey plan JSON; thickness 0.3 exterior, 0.12 interior."
+    }
   ]
 }

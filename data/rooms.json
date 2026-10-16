@@ -1,13 +1,232 @@
 {
-  "_doc": "Room cards for ./q room and ./room: where a room's data lives, which element prefixes belong to it, its sketch extent and the variant group it uses. Every field except id, name, storey, target, prefixes and bounds is optional.",
+  "_doc": "Room cards for ./q room and ./room: where a room's data lives, which element prefixes belong to it, its sketch extent and the variant group it uses. Only id, name, storey, target, prefixes and bounds are required.",
   "rooms": [
-    {"id": "gallery", "name": "Gallery (GF.01)", "aliases": ["gal", "GF.01"], "storey": "GF", "target": "ground_floor.json",
-     "prefixes": ["GAL_", "CAT_GALLERY_"], "bounds": [0.0, 0.0, 4.2, 6.0], "group": "gallery_centre",
-     "rules": ["gallery"], "docs": ["docs/gallery.md"],
-     "notes": "The tutorial room: one exhibit per modelling technique."},
-    {"id": "east-room", "name": "East room (GF.02)", "aliases": ["east", "GF.02"], "storey": "GF", "target": "ground_floor.json",
-     "prefixes": ["SAN_", "STAIR_"], "bounds": [3.8, 0.0, 8.2, 6.0]},
-    {"id": "bedroom", "name": "Bedroom (UF.01)", "aliases": ["bed", "UF.01"], "storey": "UF", "target": "upper_floor.json",
-     "prefixes": ["UF_"], "bounds": [0.0, 0.0, 4.2, 6.0]}
+    {
+      "id": "hall",
+      "name": "Entrance hall (GF.01)",
+      "aliases": [
+        "entrance",
+        "GF.01"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "HALL_"
+      ],
+      "bounds": [
+        4.8,
+        4.0,
+        8.2,
+        8.5
+      ],
+      "notes": "Entrance from the north; the stair climbs along the gallery wall; coat wardrobe under its top."
+    },
+    {
+      "id": "stair",
+      "name": "Stair (GF.02)",
+      "aliases": [
+        "GF.02"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "STAIR_"
+      ],
+      "bounds": [
+        4.8,
+        4.2,
+        6.3,
+        8.5
+      ],
+      "notes": "15 risers 19.3 cm, treads 24.6 cm, oak treads from data/stair_finishes.json; void above x 5.02-6.08, y 5.24-8.2."
+    },
+    {
+      "id": "living",
+      "name": "Living and dining (GF.03)",
+      "aliases": [
+        "dining",
+        "GF.03"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "LIV_",
+        "DIN_"
+      ],
+      "bounds": [
+        0.0,
+        0.0,
+        8.0,
+        4.4
+      ],
+      "notes": "Open to the kitchen; French door to the terrace at x 3.3-4.9."
+    },
+    {
+      "id": "kitchen",
+      "name": "Kitchen (GF.04)",
+      "aliases": [
+        "GF.04"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "KIT_"
+      ],
+      "bounds": [
+        7.6,
+        0.0,
+        11.0,
+        8.5
+      ],
+      "rules": [
+        "kitchen"
+      ],
+      "notes": "Run along the east wall, island at x 8.2-9.1; larder niche next to the WC."
+    },
+    {
+      "id": "wc",
+      "name": "Guest WC (GF.05)",
+      "aliases": [
+        "GF.05",
+        "toilet"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "WC_"
+      ],
+      "bounds": [
+        7.7,
+        6.3,
+        9.8,
+        8.5
+      ]
+    },
+    {
+      "id": "gallery",
+      "name": "Gallery (GF.06)",
+      "aliases": [
+        "gal",
+        "GF.06",
+        "tutorial"
+      ],
+      "storey": "GF",
+      "target": "ground_floor.json",
+      "prefixes": [
+        "GAL_",
+        "CAT_GALLERY_"
+      ],
+      "bounds": [
+        0.0,
+        4.0,
+        5.2,
+        8.5
+      ],
+      "group": "gallery_centre",
+      "rules": [
+        "gallery"
+      ],
+      "docs": [
+        "docs/gallery.md"
+      ],
+      "notes": "The tutorial room: one exhibit per modelling technique, plaques from data/gallery.json via src/gen_plaques.py."
+    },
+    {
+      "id": "landing",
+      "name": "Landing (UF.01)",
+      "aliases": [
+        "UF.01"
+      ],
+      "storey": "UF",
+      "target": "upper_floor.json",
+      "prefixes": [
+        "LAND_"
+      ],
+      "bounds": [
+        4.8,
+        4.0,
+        8.2,
+        8.5
+      ]
+    },
+    {
+      "id": "bedroom",
+      "name": "Main bedroom (UF.02)",
+      "aliases": [
+        "bed",
+        "UF.02",
+        "master"
+      ],
+      "storey": "UF",
+      "target": "upper_floor.json",
+      "prefixes": [
+        "BED_"
+      ],
+      "bounds": [
+        0.0,
+        -1.8,
+        5.2,
+        4.4
+      ],
+      "notes": "Balcony to the south, roof window over the foot of the bed."
+    },
+    {
+      "id": "guest",
+      "name": "Guest room (UF.03)",
+      "aliases": [
+        "UF.03"
+      ],
+      "storey": "UF",
+      "target": "upper_floor.json",
+      "prefixes": [
+        "GUEST_"
+      ],
+      "bounds": [
+        0.0,
+        4.0,
+        5.2,
+        8.5
+      ],
+      "notes": "Above the gallery."
+    },
+    {
+      "id": "study",
+      "name": "Study (UF.04)",
+      "aliases": [
+        "office",
+        "UF.04"
+      ],
+      "storey": "UF",
+      "target": "upper_floor.json",
+      "prefixes": [
+        "STUDY_"
+      ],
+      "bounds": [
+        4.8,
+        0.0,
+        11.0,
+        4.4
+      ],
+      "notes": "Desk under the south window with the Poly Haven desk lamp."
+    },
+    {
+      "id": "bath",
+      "name": "Bathroom (UF.05)",
+      "aliases": [
+        "bathroom",
+        "UF.05"
+      ],
+      "storey": "UF",
+      "target": "upper_floor.json",
+      "prefixes": [
+        "BATH_"
+      ],
+      "bounds": [
+        7.7,
+        4.0,
+        11.0,
+        8.5
+      ]
+    }
   ]
 }

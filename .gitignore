@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+generated/
+snaps/
+.DS_Store
+.claude/worktrees/

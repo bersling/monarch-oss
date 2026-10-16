@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Haus Nord viewer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/web/style.css">
+<script type="importmap">
+{ "imports": {
+    "three": "/web/vendor/three/build/three.module.js",
+    "three/addons/": "/web/vendor/three/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div class="vignette"></div>
+
+<header id="bar">
+  <div class="brand">
+    <div class="eyebrow"><i></i>Monarch · IFC</div>
+    <strong>Haus Nord</strong>
+  </div>
+  <button id="documents" class="tg plain" title="Open source plans and their printed dates">Plans</button>
+  <div class="sep"></div>
+  <div class="group">
+    <span class="lab">Storeys</span>
+    <div class="chips" id="storeys" title="Click: toggle storey. Alt-click: show only this storey."></div>
+  </div>
+  <div class="sep"></div>
+  <div class="group">
+    <label class="lab" for="cut">Cut</label>
+    <select id="cut" title="Show this storey and those below, clipped at elevation + height">
+      <option value="">off</option><option>UG</option><option>EG</option><option>OG</option><option>DG</option>
+    </select>
+    <span class="num"><input id="cutHeight" type="number" step="0.1" value="1.2" title="Cut height above storey floor (m)"><small>m</small></span>
+  </div>
+  <div class="sep"></div>
+  <div class="group">
+    <span class="lab">View</span>
+    <button id="navMode" class="seg" data-mode="look" title="Left-drag looks around (turn in place) or orbits. Middle-drag always orbits (O)"><span class="look">Look</span><span class="orbit">Orbit</span><kbd>O</kbd></button>
+    <label class="lab" for="fov">FOV</label>
+    <select id="fov" aria-label="Field of view" title="Vertical field of view: wider angles show more of the room">
+      <option value="30">Narrow 30°</option><option value="45" selected>Normal 45°</option>
+      <option value="60">Wide 60°</option><option value="75">Extra wide 75°</option>
+    </select>
+    <button id="plan" class="tg" title="Top-down plan of the cut storey, north up (P)"><i></i>Plan<kbd>P</kbd></button>
+    <button id="measure" class="tg" title="Measure: click two points. Snaps to corners and edges (Alt: off), Shift locks an axis, Space+drag looks around (M)"><i></i>Measure<kbd>M</kbd></button>
+    <button id="edges" class="tg on" title="Toggle edge lines"><i></i>Edges</button>
+    <button id="spaces" class="tg" title="Toggle IfcSpace volumes"><i></i>Spaces</button>
+    <button id="trueColour" class="tg" title="True colour: flat even light, no shadows, no bloom, no tone mapping. For judging finishes (T)"><i></i>True colour<kbd>T</kbd></button>
+    <button id="home" class="tg plain" title="Reset the camera (H)">Home<kbd>H</kbd></button>
+  </div>
+  <div class="search">
+    <input id="search" type="search" placeholder="Search key, product, class" autocomplete="off" spellcheck="false">
+    <kbd>/</kbd>
+    <ul id="results" hidden></ul>
+  </div>
+</header>
+
+<div id="status" class="pills" role="status">
+  <button id="buildPill" class="pill" hidden></button>
+  <button id="checksPill" class="pill" hidden></button>
+</div>
+<div id="hint"></div>
+
+<aside id="panel" hidden>
+  <button id="panelClose" class="close" title="Clear selection (Esc, or click the object again)">×</button>
+  <div id="panelBody"></div>
+</aside>
+
+<div id="measureBox" hidden></div>
+<svg id="measureSvg" aria-hidden="true"></svg>
+<div id="measureLabel" class="mlab main" hidden></div>
+<div class="mlab axis x" hidden></div><div class="mlab axis y" hidden></div><div class="mlab axis z" hidden></div>
+
+<footer id="stats">
+  <div class="ro"><div class="k">View</div><div class="v" id="stView">—</div><div class="w" id="stViewSub"></div></div>
+  <div class="ro"><div class="k">Cut</div><div class="v" id="stCut">off</div><div class="w" id="stCutSub"></div></div>
+  <div class="ro"><div class="k">Storeys shown</div><div class="v" id="stStoreys">—</div><div class="w">Alt-click a storey to solo it</div></div>
+  <div class="ro wide"><div class="k">Cursor · IFC m</div><div class="v"><span id="cursor"></span></div><div class="w" id="cursorSub"></div></div>
+  <div class="ro wide"><div class="k">Selected</div><div class="v small" id="stSel">—</div><div class="w" id="stSelSub"></div></div>
+  <div class="ro"><div class="k">Model</div><div class="v" id="stModel">—</div><div class="w" id="stModelSub"></div></div>
+</footer>
+<div id="loading"><i></i>Loading model…</div>
+
+<dialog id="logDialog">
+  <form method="dialog"><h3 id="logTitle"></h3><pre id="logText"></pre><button>Close</button></form>
+</dialog>
+<dialog id="documentsDialog">
+  <form method="dialog"><h3>Model source plans</h3>
+    <p>Printed dates identify these references. Site measurements and signed product specifications can override specific details.</p>
+    <div id="documentsBody">Loading plans…</div>
+    <button>Close</button>
+  </form>
+</dialog>
+
+<script type="module" src="/web/viewer.js"></script>
+</body>
+</html>

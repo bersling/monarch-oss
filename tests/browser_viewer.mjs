@@ -1,6 +1,6 @@
 // Real viewer regressions using Chrome's built-in DevTools protocol, no npm dependencies.
 // Start ./open.sh --no-browser --wait, then: node tests/browser_viewer.mjs http://127.0.0.1:PORT/
-// Expects the stub/model home in data/ (storeys GF + UF, gallery exhibits GAL_SHELF and GAL_PICTURE).
+// Expects Casa Monarch in data/ (storeys GF + UF, gallery exhibits GAL_SHELF and GAL_PICTURE, roof plane ROOF_S).
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -106,10 +106,11 @@ try {
 
   // Plaques: one label per Pset_Gallery element, on by default, clickable, hash override.
   assert.equal(await evaluate('window.__monarch.state.plaques'), true);
-  assert.deepEqual(await evaluate('window.__monarch.galleryKeys'), ['GAL_SHELF', 'GAL_PICTURE']);
-  await until('[...document.querySelectorAll("#plaques .plaque")].filter(p => !p.hidden).length === 2');
-  assert.deepEqual(await evaluate('[...document.querySelectorAll("#plaques .plaque")].map(p => p.textContent).sort()'),
-    ['Boxes in JSON', 'Image on a surface']);
+  const galleryKeys = await evaluate('window.__monarch.galleryKeys');
+  assert.ok(galleryKeys.includes('GAL_SHELF') && galleryKeys.includes('GAL_PICTURE'), JSON.stringify(galleryKeys));
+  await until('[...document.querySelectorAll("#plaques .plaque")].filter(p => !p.hidden).length >= 2');
+  const titles = await evaluate('[...document.querySelectorAll("#plaques .plaque")].map(p => p.textContent)');
+  assert.ok(titles.some(t => t.includes('Boxes in JSON')) && titles.some(t => t.includes('Image on a surface')), JSON.stringify(titles));
   assert.equal(await evaluate('document.getElementById("plaques").hidden'), false);
   await evaluate('document.getElementById("plaques").querySelector(".plaque[data-key=GAL_PICTURE]").click()');
   assert.equal(await evaluate('window.__monarch.state.sel'), 'GAL_PICTURE');
@@ -121,7 +122,7 @@ try {
   await until('/plaques=0/.test(location.hash)');
   await evaluate('document.querySelector("button#plaques").click()');
   assert.equal(await evaluate('window.__monarch.state.plaques'), true);
-  console.log('PASS plaques: one label per Pset_Gallery element, click selects, toggle and hash');
+  console.log(`PASS plaques: one label per Pset_Gallery element (${galleryKeys.length}), click selects, toggle and hash`);
 
   await evaluate('document.getElementById("documents").click()');
   const documents = await (await fetch(new URL('/api/documents', viewer))).json();
@@ -176,7 +177,7 @@ try {
   assert.deepEqual(await evaluate('[...document.querySelectorAll("#storeys button")].map(b => b.textContent)'),
     [...house.storeys.map(s => s.code), 'SITE']);
   // The camera moved during the tests above, so the labels may be off screen; the set is rebuilt.
-  await until('document.querySelectorAll("#plaques .plaque").length === 2 && !document.getElementById("plaques").hidden');
+  await until(`document.querySelectorAll("#plaques .plaque").length === ${galleryKeys.length} && !document.getElementById("plaques").hidden`);
   assert.deepEqual(errors, []);
   console.log('PASS reload preserves camera, selection, storeys and plaques; no JavaScript errors');
 
@@ -185,15 +186,16 @@ try {
   assert.deepEqual(errors, []);
   console.log('PASS coplanar finishes remain visible and cannot bleed through a solid 5 mm in front');
 
-  // Camera obstruction diagnostics on the stub: ROOF_S spans y -0.4..3 at z 5.59..7.7 (UF).
+  // Camera obstruction diagnostics on Casa Monarch: ROOF_S (south roof plane, UF) spans y -0.4..4.25 at z 5.42..7.8;
+  // its slab centre line passes through (4, 1.925, 6.61). (2, 2, 4.5) is free air in the main bedroom.
   const cameras = await evaluate(`(() => {
     const m=window.__monarch;
     const check=raw => {m.applyView(m.parseView(raw)); return m.cameraObstructions();};
     return {
-      inRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'UF'}),
+      inRoof:check({cam:[4,1.925,6.61],target:[4,3,5],storeys:'UF'}),
       inRoom:check({cam:[2,2,4.5],target:[4,3,5],storeys:'UF'}),
-      cutRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'UF',cut:'UF@1.2'}),
-      hiddenRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'GF'})
+      cutRoof:check({cam:[4,1.925,6.61],target:[4,3,5],storeys:'UF',cut:'UF@1.2'}),
+      hiddenRoof:check({cam:[4,1.925,6.61],target:[4,3,5],storeys:'GF'})
     };
   })()`);
   assert.ok(cameras.inRoof.includes('ROOF_S'), JSON.stringify(cameras));

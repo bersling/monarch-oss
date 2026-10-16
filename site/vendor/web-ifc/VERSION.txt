@@ -1,0 +1,6 @@
+web-ifc 0.0.78
+Source: https://registry.npmjs.org/web-ifc/-/web-ifc-0.0.78.tgz (https://github.com/ThatOpen/engine_web-ifc)
+Licence: MPL-2.0 (see LICENSE.md in this directory)
+Files vendored: web-ifc-api.js (ESM build), web-ifc.wasm (single-thread build), LICENSE.md
+Not vendored: web-ifc-mt.wasm (multi-threaded; needs cross-origin isolation, which GitHub Pages does not provide).
+Update: curl the tarball, tar -xzf, copy the three files, bump this note.

@@ -1,7 +1,7 @@
 """Minimal COLLADA (.dae) -> OBJ converter, pure stdlib.
 
-Blender 5.x dropped its Collada importer, but Collada is what SketchUp / 3D
-Warehouse exports — so this keeps that source usable:
+Blender 5.x dropped its Collada importer, but Collada is what SketchUp and many
+model archives export, so this keeps that source usable:
 
     uv run python src/dae_to_obj.py ~/Downloads/model.dae /tmp/model.obj
     blender -b --python src/convert_asset.py -- /tmp/model.obj assets/x.obj up=Z fit_x=0.38
@@ -166,7 +166,7 @@ for vs in (findall(scene, 'visual_scene') if scene is not None else []):
 if not chunks:
     sys.exit('no geometry found in ' + src_path)
 
-# --cluster: keep only the biggest spatial cluster. SketchUp / 3D Warehouse
+# --cluster: keep only the biggest spatial cluster. SketchUp scene
 # exports routinely ship the object *plus* the "Susan" scale figure and stray
 # helper boxes, parked metres away from the thing you actually want.
 if '--cluster' in sys.argv:

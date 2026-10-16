@@ -1,77 +1,74 @@
 ---
 name: model-change
-description: Furnish or revise the monarch2 IFC house from plans, site measurements, screenshots and real products. Use for room layouts, furniture placement, materials, floors, roofs, doors and windows; includes clearance checks, actual-IFC visual review and safe Blender reload.
+description: Change the Monarch house model (this repository's data/*.json -> IFC). Use whenever the user wants to change their house model, add or move furniture, place a product, move or add a wall, window, door, stair or roof, change a floor or finish, or asks "put X in room Y". Covers measuring from the built model, 2D sketch first, editing the JSON, build, numeric verification with ./q, rules as data, product metadata and the screenshot review.
 ---
 
 # Change the house model
 
-Produce an editable, sourced IFC change that fits the room, works in use, and has
-been inspected in a room view. Preserve the owner's selected layout and products.
+Deliver an editable, sourced change to `data/` that builds with zero check failures, is
+verified against the built IFC geometry, and has been looked at in a render. Never edit
+`generated/`; never describe an unbuilt or unviewed change as done.
 
-## Start with the right evidence
+## 1. Find the measurement first
 
-Read `CLAUDE.md`, inspect git/worktrees, and locate the room and relevant source
-plans. Use a separate worktree when other sessions may edit the checkout. Establish
-compass orientation, storey datum and what the user actually changed before making
-geometry. Treat incoming corrections as steering the active task, not a reset.
+- `./q storeys` lists storey codes and floor elevations (from `data/house.json`).
+- `./q at X,Y --storey GF` tells you what is at a point and how far the wall faces,
+  furniture and slab are in +x -x +y -y up down. `./q near ID` gives gaps to neighbours,
+  `./q show ID` the bounds, size, properties and the `data/` file + JSON path that
+  defines an element. `./q room` lists room cards (files, prefixes, variant group).
+- Real products: read the manufacturer's datasheet or dimension drawing the user gave
+  you (open images with the Read tool) and write the numbers down before modelling.
+  Look at the product photo and write one sentence describing its shape.
+- Coordinates: metres, x east, y north, z up. Furniture z is above the finished storey
+  floor; roof planes, profile walls and `windows_abs` use absolute z.
 
-- For furnishing/product work, read [furnishing.md](references/furnishing.md).
-- For dimensions, roofs, windows, finishes or source conflicts, read
-  [sources-and-datums.md](references/sources-and-datums.md).
-- Before building, rendering, merging or reloading, read
-  [verification-and-delivery.md](references/verification-and-delivery.md).
-- For an imported mesh, also use `../find-asset/SKILL.md`.
-- For any IKEA product that is added, swapped or removed, also follow
-  `../ikea-shopping-list/SKILL.md` before declaring the change done.
+## 2. Think in 2D before 3D
 
-## Work from layout to verified model
+For a room layout, sketch first: `./room sketch <room>` (or
+`.venv/bin/python src/plan2d.py GF x0,y0,x1,y1 out.png concept.json`) draws walls,
+openings, door swings, outlets and existing furniture; a concept file adds labelled
+rectangles. Move rectangles until walkways, door swings and access zones work, then
+write the 3D entries. Resolve circulation and usable storage before visual detail.
 
-1. Measure first: `./q at X,Y --storey S` gives the wall faces around a spot, and
-   `./q near ID` the gaps. Record footprints, heights and access reserves in
-   editable room layout data.
-   Show walls, openings, door arcs and relevant roof contours in 2D. Reuse the
-   existing room layout/checks for small edits.
-2. Resolve circulation and usable storage before adding visual detail. A cabinet
-   fitting under a roof is not proof that someone can stand at its front.
-3. Generate from that layout, keeping one physical item as one IFC entity with
-   differently styled `parts`. Update the saved active variant as well as the
-   storey JSON; a generator/variant reload must not undo the change.
-4. Validate every changed item against actual IFC geometry, not only the JSON:
-   `./q show/at/near/clash/free` give exact numbers from the built model, and
-   room constraints belong in `data/rules/<room>.json`. Then inspect a
-   `src/snap_web.py` room view next to the user's reference and fix visible issues.
-5. Land reviewed changes in main when authorized, then run
-   `./open.sh --no-browser --wait` from main (hot reload plus checks). Report what
-   actually finished and any material approximation. Do not call an unchecked
-   build or an unviewed render complete.
+## 3. Edit the JSON
 
-## Project decisions that must not be lost
+- Storey files are named in `data/house.json`; sections and keys are documented in
+  `docs/data-format.md` and in `src/build_model.py` comments.
+- One physical thing is one entry with styled `parts` (boxes, cylinders, spheres,
+  prisms, `mesh`, `texture`), never several half-objects.
+- Catalogue products: define once in `data/products/<id>.json`, place with
+  `./place add <product> CAT_<ID> --storey GF --at x,y,z --rotation 90 --status Proposed`.
+- Alternatives for a room: variants (`src/variant.py list|load|save`), owned by a group
+  in `data/variants.json`. Update the saved variant too, or a reload undoes your change.
+- Give an `access` zone (`{"dir": "-y", "depth": 0.75}`) to anything you stand in front of.
+- Metadata on every product entry: `Product`, `Supplier`, `SourceURL` (or `Plan`),
+  `Dimensions` ("W x D x H cm", checked against the geometry), `License`; for meshes
+  also `MeshSource`, `MeshLicense`, `MeshURL`, `MeshAuthor`. Mark estimates as estimates.
+- Need a mesh? Follow `../find-asset/SKILL.md`.
 
-These apply to this house unless the user changes them:
+## 4. Build, then verify with numbers
 
-- Covering power outlets with furniture is allowed and is never a reason to lift,
-  shift, shrink or notch a piece (owner, 2026-09-19). The only fixture rule is:
-  light switches stay uncovered and reachable. Keep doors and circulation usable.
-  Window obstruction is decided case by case; identify the operable leaf and its
-  sweep before moving anything in front of it.
-- Catalogue furniture must retain actual catalogue sizes and configuration.
-  Do not invent a narrow IKEA end module or protective socket niche and call it
-  a real product. Distinguish custom, owned and proposed purchased furniture.
-- Floors have a concrete slab and a finish build-up. Preserve the established
-  finished floor and knee heights when furnishing; measure before and after if
-  architecture/flooring is touched. Current values come from source data/checks.
-- RAL 7021 applies to stair and landing metalwork only, not outdoor railings.
-- DG foyer: no chairs beside the railings; user allows at most beanbags. A reading
-  nook requested for the kids' room is a separate decision.
-- Keep model information honest: measured, inferred, approximate geometry,
-  proposed product and contracted finish are different kinds of evidence.
+- `./build.sh` builds IFC, cache, glTF and runs every check (about 2 s). Read the
+  output: FAIL lines block, warn lines are design conflicts to resolve or justify.
+- Verify the actual geometry, not the JSON: `./q show ID` (size), `./q clash ID`
+  (interpenetrations), `./q fits ID --at X,Y` (does it fit there),
+  `./q free x0,y0,z0,x1,y1,z1` (is a zone empty).
+- Constraints that must keep holding become rules in `data/rules/<room>.json`
+  (`clear` walkway zones, `bbox` sizes, `gap`, `no_penetration`, `inside`, `ray`).
+  A rule in data beats a paragraph in a skill and a new check script.
+- An intentional overlap (flush-mounted cabinet) gets a reason in the rule's `known`.
+
+## 5. Look at it, then report
+
+- `.venv/bin/python src/snap_web.py room=PREFIX plan=GF ext=-9,-12,9,4,3,2` renders
+  PNGs with the browser renderer; open them with the Read tool. A single-colour image
+  means the camera is inside a wall: move it. Compare against the user's reference.
+- `./open.sh --no-browser --wait` keeps the user's viewer current and waits for checks.
+- Report what changed, the measured numbers, what is approximate, and anything the
+  user still has to decide. Work in a worktree when other sessions may be editing.
 
 ## Make failures reproducible
 
-For a demonstrated geometry failure, extend an appropriate existing check to cover
-all affected items. Tests should catch a meaningful failure, not mirror wording.
-Global warnings are not success: inspect newly introduced door/access warnings.
-Do not expand a local furnishing task into unrelated model cleanup.
-
-Maintain this skill from demonstrated lessons. Keep changing task status in the
-handoff, and project dimensions/catalogue lists in their source files or room docs.
+When a mistake slipped through, add the check that would have caught it (a rule in
+`data/rules/`, or an invariant in `src/check_model.py` if it is generic) and the
+measurement to the room's card in `data/rooms.json`.

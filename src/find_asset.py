@@ -1,15 +1,16 @@
 """Search the mesh-asset platforms from one command and print download URLs.
 
 Usage:
-    uv run python src/find_asset.py "intex pool" [--count 12] [--platform 3dw|sketchfab|polyhaven]
+    uv run python src/find_asset.py "office chair" [--count 12] [--platform sketchfab|polyhaven]
 
 Prints one row per candidate: platform, title, whatever dimensions the uploader
 wrote into the description, licence, a preview image URL and a direct download
 URL. Feed the download URL straight into src/convert_asset.py.
 
-Why this exists: 3D Warehouse has by far the best hit rate for real building
-products, and its API is open but undocumented, so it kept getting rediscovered
-by hand. See assets/README.md for the per-platform caveats.
+Platforms: Poly Haven (CC0, correctly scaled, small props catalogue) and Sketchfab
+(mostly CC-BY, needs an API token in $SKETCHFAB for downloads). Record the licence,
+author and URL in the element's props (MeshSource, MeshLicense, MeshURL, MeshAuthor)
+and in assets/README.md. Only CC0 and CC-BY assets may be committed.
 """
 import json
 import re
@@ -30,30 +31,6 @@ def get(url, headers=None):
 def dims_of(text):
     m = DIMS.search(text or '')
     return m.group(0).strip() if m else ''
-
-
-def warehouse(query, count):
-    """3D Warehouse: open API, no key. The glb binary is a public direct download."""
-    url = ('https://3dwarehouse.sketchup.com/warehouse/v1.0/entities'
-           f'?contentType=3dw&q={urllib.parse.quote(query)}&count={count}')
-    for e in get(url).get('entries', []):
-        try:
-            full = get(f"https://3dwarehouse.sketchup.com/warehouse/v1.0/entities/{e['id']}")
-        except Exception:
-            continue
-        b = full.get('binaries', {})
-        glb = (b.get('glb') or {}).get('contentUrl')
-        if not glb:
-            continue                        # older uploads are .skp/.dae only
-        yield {
-            'platform': '3dwarehouse',
-            'title': full.get('title') or '',
-            'dims': dims_of(full.get('description')),
-            'license': '3D Warehouse General Model Terms',
-            'preview': (b.get('bot_lt') or {}).get('contentUrl', ''),
-            'download': glb,
-            'page': f"https://3dwarehouse.sketchup.com/model/{full['id']}",
-        }
 
 
 def sketchfab(query, count, token):
@@ -105,8 +82,6 @@ def main():
 
     import os
     sources = []
-    if only in (None, '3dw'):
-        sources.append(('3dwarehouse', lambda: warehouse(query, count)))
     if only in (None, 'sketchfab') and os.environ.get('SKETCHFAB'):
         sources.append(('sketchfab', lambda: sketchfab(query, count, os.environ['SKETCHFAB'])))
     if only in (None, 'polyhaven'):

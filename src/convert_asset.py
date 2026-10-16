@@ -15,7 +15,7 @@ Options (key=value):
                       mesh with the right plan proportions but the wrong height
                       for the product it stands in for.
     exclude=A,B       drop imported objects by name before joining. glTF scene
-                      exports from 3D Warehouse routinely ship the prop plus a
+                      downloaded from asset sites routinely ship the prop plus a
                       backdrop plane, ground and trees, which would otherwise
                       dominate the bounding box that fit_* measures.
     decimate=20000    collapse to at most this many triangles

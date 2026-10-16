@@ -75,7 +75,7 @@ class FakeGeometry:
     def __init__(self, boxes):
         self.elements, self.meshes = [], {}
         for key, (cls, box) in boxes.items():
-            self.elements.append({'key': key, 'name': key, 'class': cls, 'storey': 'EG', 'bbox': list(box)})
+            self.elements.append({'key': key, 'name': key, 'class': cls, 'storey': 'GF', 'bbox': list(box)})
             self.meshes[key] = cube(*box)
 
     def mesh(self, e):

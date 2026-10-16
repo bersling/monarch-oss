@@ -1,0 +1,19 @@
+{
+  "_comment": "Gallery (GF.01): the marked walkway in front of the door to the east room stays free.",
+  "rules": [
+    {
+      "id": "gallery-walkway-clear",
+      "rule": "clear",
+      "why": "The walkway strip in front of DOOR_MID must stay free of furniture so the door can be used.",
+      "zone": [2.9, 1.2, 0.0, 3.94, 2.3, 2.1],
+      "except": ["FLOOR_GF_WALKWAY_MARK"]
+    },
+    {
+      "id": "gallery-shelf-size",
+      "rule": "bbox",
+      "why": "The authored bookshelf keeps its datasheet size.",
+      "element": "GAL_SHELF",
+      "size": [0.8, 0.4, 2.0]
+    }
+  ]
+}

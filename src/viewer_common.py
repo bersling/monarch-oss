@@ -1,4 +1,4 @@
-"""File protocol and content fingerprints shared by the launcher and Blender."""
+"""Content fingerprints of the build inputs, build/validation stamps and IFC identity hashes."""
 import hashlib
 from functools import lru_cache
 import json
@@ -6,7 +6,14 @@ import os
 from pathlib import Path
 import tempfile
 
-MODEL = 'haus_nord_essentials.ifc'
+from house import HOUSE
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def model_path(root=ROOT):
+    """The built IFC (data/house.json: ifc_file), for any checkout root."""
+    return Path(root) / HOUSE.ifc_file
 
 
 def state_dir(root):
@@ -44,9 +51,9 @@ def _file_hash(path, device, inode, size, mtime, ctime):
 
 
 # Python modules the build imports; with data/**/*.json and assets/** they are the build inputs.
-BUILD_SOURCES = ('build_model.py', 'floor_finishes.py', 'stair_finishes.py', 'cellar_services.py',
-                 'light_switches.py', 'terrain_cutouts.py', 'viewer_common.py',
-                 'geometry_cache.py', 'export_glb.py', 'documents.py', 'products.py', 'model_lock.py', 'pipeline.py', 'image_textures.py')
+BUILD_SOURCES = ('build_model.py', 'house.py', 'floor_finishes.py', 'stair_finishes.py', 'roof_finishes.py',
+                 'light_switches.py', 'viewer_common.py', 'geometry_cache.py', 'export_glb.py',
+                 'documents.py', 'products.py', 'model_lock.py', 'pipeline.py', 'image_textures.py')
 
 
 def source_hash(root):
@@ -57,7 +64,7 @@ def source_hash(root):
     # Replacing a reference PDF must invalidate the model just like editing its
     # extracted geometry. Pin verification then stops an unreviewed rebuild.
     registry = read_json(root / 'data/plan_documents.json')
-    paths += [root / d['path'] for d in registry.get('documents', [])]
+    paths += [root / d['path'] for d in registry.get('documents', []) if 'path' in d]
     digest = hashlib.sha256()
     for path in sorted(p for p in paths if p.is_file()):
         digest.update(str(path.relative_to(root)).encode())
@@ -70,7 +77,7 @@ def record_build(root, before):
     if before != source_hash(root):
         raise RuntimeError('Build inputs changed during generation; retry with stable inputs.')
     atomic_json(Path(root) / 'generated/viewer-build.json', {
-        'sources': before, 'ifc': file_hash(Path(root) / 'generated' / MODEL)})
+        'sources': before, 'ifc': file_hash(model_path(root)), 'house': HOUSE.summary()})
 
 
 def validation_hash(root):
@@ -90,14 +97,14 @@ def validation_current(root):
     stamp = read_json(root / 'generated/viewer-build.json')
     return (stamp.get('sources') == source_hash(root)
             and stamp.get('validation') == validation_hash(root)
-            and (root / 'generated' / MODEL).is_file()
-            and stamp.get('ifc') == file_hash(root / 'generated' / MODEL))
+            and model_path(root).is_file()
+            and stamp.get('ifc') == file_hash(model_path(root)))
 
 
 def record_validation(root):
     path = Path(root) / 'generated/viewer-build.json'
     stamp = read_json(path)
-    if stamp.get('sources') != source_hash(root) or stamp.get('ifc') != file_hash(Path(root) / 'generated' / MODEL):
+    if stamp.get('sources') != source_hash(root) or stamp.get('ifc') != file_hash(model_path(root)):
         raise RuntimeError('Build inputs changed during validation; rebuild before opening.')
     stamp['validation'] = validation_hash(root)
     atomic_json(path, stamp)

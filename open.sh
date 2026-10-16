@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Browser viewer with hot reload: ./open.sh [--wait] [--no-browser] [--stop] [--blender ...]
-# Details: src/open_viewer.py. The legacy Blender viewer is ./open.sh --blender.
+# Browser viewer with hot reload: ./open.sh [--wait] [--no-browser] [--stop]
+# Details: src/open_viewer.py and docs/viewer.md.
 set -euo pipefail
 cd "$(dirname "$0")"
 if [[ -x .venv/bin/python ]]; then

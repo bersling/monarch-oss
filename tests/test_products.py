@@ -17,8 +17,8 @@ class ProductTest(unittest.TestCase):
                         'geometry': {'parts': [{'name': 'frame', 'rgb': [.9, .9, .9],
                                                 'boxes': [[0, 0, 0, .8, .4, 1.2]]}],
                                      'access': {'dir': '+y', 'depth': .75}}}
-        self.instance = {'id': 'CAT_SHELF', 'product': 'shelf', 'storey': 'DG', 'at': [10, 2, 0],
-                         'rotation_z': 90, 'plan': 'plans/DG.pdf', 'status': 'Proposed, not ordered'}
+        self.instance = {'id': 'CAT_SHELF', 'product': 'shelf', 'storey': 'UF', 'at': [10, 2, 0],
+                         'rotation_z': 90, 'source': 'docs/data-format.md', 'status': 'Proposed, not ordered'}
 
     def test_cardinal_rotation_and_identity_are_exact_and_pure(self):
         before = copy.deepcopy(self.product)
@@ -28,11 +28,11 @@ class ProductTest(unittest.TestCase):
         self.assertEqual(item['access'], {'dir': '-x', 'depth': .75})
         self.assertEqual(item['props']['TechnicalID'], 'CAT_SHELF')
         self.assertEqual(item['props']['Product'], 'Real selected shelf')
-        self.assertEqual(item['props']['Plan'], 'plans/DG.pdf')
+        self.assertEqual(item['props']['Plan'], 'docs/data-format.md')
         self.assertEqual(item['props']['Status'], 'Proposed, not ordered')
 
     def test_no_unverified_scaling_or_missing_status(self):
-        for changes in [{'rotation_z': 45}, {'scale': .9}, {'status': ''}, {'at': [1, 2, float('nan')]}, {'id': 'DG_SE_NEW'}]:
+        for changes in [{'rotation_z': 45}, {'scale': .9}, {'status': ''}, {'at': [1, 2, float('nan')]}, {'id': 'UF_NEW'}, {'storey': 'XX'}]:
             with self.assertRaises(ValueError):
                 products.expand({**self.instance, **changes}, self.product)
 
@@ -43,18 +43,19 @@ class ProductTest(unittest.TestCase):
             (root / 'data/products/shelf.json').write_text(json.dumps(self.product))
             (root / 'data/placements.json').write_text(json.dumps({'placements': [self.instance]}))
             plan = {'furniture': [{'id': 'EXISTING'}]}
-            result = products.augment(plan, 'DG', root)
+            result = products.augment(plan, 'UF', root)
             self.assertEqual(plan, {'furniture': [{'id': 'EXISTING'}]})
             self.assertEqual([f['id'] for f in result['furniture']], ['EXISTING', 'CAT_SHELF'])
-            self.assertIs(products.augment(plan, 'OG', root), plan)
+            self.assertIs(products.augment(plan, 'GF', root), plan)
             with self.assertRaises(ValueError):
-                products.augment(result, 'DG', root)
+                products.augment(result, 'UF', root)
 
-    def test_reusable_kallax_has_manufacturer_envelope_and_real_compartments(self):
+    def test_catalogue_product_keeps_its_envelope_and_shelves(self):
         library = products.catalogue()
-        for pid, width, columns in [('ikea-kallax-2x2-white', .765, 2), ('ikea-kallax-4x2-white', 1.465, 4)]:
-            item = products.expand({**self.instance, 'product': pid, 'rotation_z': 0, 'at': [0, 0, 0]}, library[pid])
-            self.assertEqual(bbox(bodyboxes(item)), (0, 0, 0, width, .39, .765))
-            dividers = next(p for p in item['parts'] if p['name'] == 'white_internal_dividers')
-            self.assertEqual(len(dividers['boxes']), 1 + 2*(columns-1))
-            self.assertEqual(item['props']['ProductKind'], 'catalogue_product')
+        item = products.expand({**self.instance, 'product': 'demo-bookshelf', 'rotation_z': 0, 'at': [0, 0, 0]},
+                               library['demo-bookshelf'])
+        self.assertEqual(bbox(bodyboxes(item)), (0, 0, 0, .8, .4, 1.2))
+        shelves = next(p for p in item['parts'] if p['name'] == 'shelves')
+        self.assertEqual(len(shelves['boxes']), 2)
+        self.assertEqual(item['props']['ProductKind'], 'catalogue_product')
+        self.assertEqual(products.check(), [])

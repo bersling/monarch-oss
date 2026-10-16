@@ -1,7 +1,7 @@
 """Declarative model rules: data/rules/*.json evaluated on the actual IFC geometry.
 
     uv run python src/rules.py                  all rule files
-    uv run python src/rules.py gym              files whose name contains "gym"
+    uv run python src/rules.py gallery          files whose name contains "gallery"
 
 Rooms are data, not scripts: prefer a few lines here over a new check_*.py. Rule
 kinds (every rule may carry "id", "why" and "severity": "error" | "warn"):
@@ -21,9 +21,9 @@ kinds (every rule may carry "id", "why" and "severity": "error" | "warn"):
   ray             nearest surface of "element" from "origin" in "direction";
                   "distance" in metres (null requires an unobstructed ray).
 
-Selectors ("what", "into"): {"class": [...], "storey": "UG|EG|OG|DG|SITE",
-"name": "GYM_*" (glob, list allowed), "exclude": [globs]}. Element references are the
-IFC Name (= JSON id), with "@EG" when the name repeats on several storeys.
+Selectors ("what", "into"): {"class": [...], "storey": "<code from house.json>|SITE",
+"name": "ROOM_*" (glob, list allowed), "exclude": [globs]}. Element references are the
+IFC Name (= JSON id), with "@<storey code>" when the name repeats on several storeys.
 """
 import fnmatch
 import json

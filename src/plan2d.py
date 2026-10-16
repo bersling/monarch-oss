@@ -3,7 +3,7 @@
 
     uv run python src/plan2d.py <storey> <x0,y0,x1,y1> <out.png> [concept.json] [--no-furniture]
 
---clean drops sockets, switches and headroom lines. Storey accepts UG/EG/OG/DG or a storey JSON basename.
+--clean drops sockets, switches and headroom lines. Storey accepts a code from data/house.json or a storey JSON basename.
 
 Draws, in model coordinates (x east, y north), everything that constrains a layout:
 walls (exterior/interior/profile), windows and roof windows, door swings, sockets
@@ -11,8 +11,8 @@ with their ids, the roof-headroom contours 1.0 / 1.5 / 2.0 / 2.2 m (attic storey
 and the footprints of the furniture already in the JSON. A concept file adds
 labelled rectangles/circles on top:
 
-    [{"label": "Flexa 210x110", "box": [9.25, 5.645, 11.35, 6.745], "rgb": [0.8, 0.6, 0.4]},
-     {"label": "Teppich d160", "circle": [11.0, 7.65, 0.8]}]
+    [{"label": "Bed 210x110", "box": [9.25, 5.645, 11.35, 6.745], "rgb": [0.8, 0.6, 0.4]},
+     {"label": "Rug d160", "circle": [11.0, 7.65, 0.8]}]
 
 Workflow: sketch the concept here, look at the PNG, move rectangles until the plan
 reads right (walkways, door swing, headroom, sockets), THEN write the 3D entries.
@@ -27,7 +27,8 @@ import sys
 import pymupdf
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-from check_model import underside, bodyboxes, furniture_prisms, prism_bounds, STOREYS  # noqa: E402
+from check_model import underside, bodyboxes, furniture_prisms, prism_bounds  # noqa: E402
+from house import HOUSE  # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 K = 120.0            # pt per metre
@@ -47,9 +48,9 @@ def main(argv):
     # --highlight=<json> {"labels": {furniture id: number}, "hide": [id substrings]}: numbered
     # furniture orange with a big number, the rest grey without ids (assembly handout)
     hl = next((json.load(open(a.split("=", 1)[1])) for a in argv if a.startswith("--highlight=")), None)
-    from products import load_plan, STOREYS as STOREY_FILES
+    from products import load_plan
     plan = load_plan(storey, ROOT)
-    elev = STOREYS[STOREY_FILES.get(storey, storey.removesuffix(".json"))]
+    elev = HOUSE.elevation[HOUSE.code(storey)]
     X0, Y0, X1, Y1 = bbox
     W, H = (X1 - X0) * K + 2 * M, (Y1 - Y0) * K + 2 * M
     doc = pymupdf.open()
@@ -210,7 +211,7 @@ def main(argv):
         sh.draw_line(P(ax - abs(ny) * width / 2, ay - abs(nx) * width / 2),
                      P(ax + abs(ny) * width / 2, ay + abs(nx) * width / 2))
         sh.draw_line(P(ax, ay), P(ax + nx * .24, ay + ny * .24))
-        label = '/'.join(c['circuit'] for c in switch['controls'])
+        label = '/'.join(str(c.get('circuit', '')) for c in switch.get('controls', []))
         text(ax + nx * .26, ay + ny * .26, f"S{switch['id'][-2:]} {label}", 5.5, (.65, 0, .65))
     sh.finish(color=(.65, 0, .65), width=1.5)
 
@@ -287,8 +288,8 @@ def main(argv):
     for lx, ly, s, size in labels:
         text(lx, ly, s, size)
     r = (hl or {}).get("disc", 11)
-    # one disc per group of touching pieces with the same number (a TROFAST row gets one "5"):
-    # a lone piece keeps the centre of its largest part (L-shaped IVAR), a group its middle
+    # one disc per group of touching pieces with the same number (a row of drawers gets one "5"):
+    # a lone piece keeps the centre of its largest part (an L-shaped unit), a group its middle
     groups = []
     for n, centre, ext in hl_text:
         g = next((g for g in groups if g[0] == n and ext[0] < g[2][2] + .3 and g[2][0] < ext[2] + .3

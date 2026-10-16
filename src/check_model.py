@@ -1,28 +1,33 @@
 """Invariants over data/*.json. Run by build.sh -- a failing check fails the build.
 
-This exists because prose rules in a skill file are advisory and get skipped. Every
-check below is here because it caught a real bug that shipped:
+Prose rules in a skill file are advisory and get skipped; these are enforced:
 
-  MOUNTED   17 of 78 sockets hung in door openings or in mid-air (2026-09-14)
-  COVER     a 3 x T13 was modelled 26.4 cm wide; it is ONE 88 mm box (2026-09-14)
-  SWING     nightstands were placed into a door's swing arc (2026-09-14)
-  HEADROOM  attic storey: a cupboard must fit under the roof where it stands
-  COVERED   report covered sockets (owner accepts coverage, 2026-09-18)
-  ACCESS    the standing space in front of a cupboard must stay empty. A plant
-            13 cm off a wardrobe door passes every collision check and is still
-            obviously wrong (2026-09-14)
-  DIMS      geometry must match the Dimensions the datasheet claims
-  META      CLAUDE.md requires Product/Lieferant/Contract/Plan/Dimensions
+  IDS       every id is unique within a storey (across all sections)
+  REFS      wall_id / host / door / cuts / interior_finish / mesh / texture references resolve
+  MOUNTED   outlets and switches sit on an existing wall face, not in an opening or mid-air
+  SWING     furniture inside a door's swing arc (warn; fail below 60 degrees of opening)
+  HEADROOM  under a roof, a cupboard must fit below the slope where it stands
+  ACCESS    the standing space in front of a cupboard (`access`) must stay empty (warn)
+  DIMS      geometry must match the Dimensions the datasheet claims (cm x cm x cm)
+  META      furniture props should carry Product, Dimensions and a source (warn)
 
-When a new failure mode turns up, add a check here -- not a paragraph to the skill.
+When a new failure mode turns up, add a check here or a rule in data/rules/, not a
+paragraph to the skill.
 
-    uv run python src/check_model.py [--warn]      # --warn: report, never exit 1
+    uv run python src/check_model.py [--warn] [--meta]     # --warn: report, never exit 1
 """
 import json, math, pathlib, re, sys
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from house import HOUSE  # noqa: E402
+
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-STOREYS = {"basement": -2.85, "ground_floor": 0.00, "first_floor": 2.85, "second_floor": 5.70}
+STOREYS = {code: HOUSE.elevation[code] for code in HOUSE.codes}
 COVER = 0.088
+SECTIONS_WITH_IDS = ('exterior_walls', 'interior_walls', 'profile_walls', 'roof_planes', 'windows', 'windows_abs',
+                     'doors', 'free_doors', 'slabs', 'floor_build_up', 'stairs', 'railings', 'floorings',
+                     'wall_coverings', 'spaces', 'furniture', 'sanitary', 'door_hardware', 'door_swings',
+                     'outlets', 'switches')
 fails, warns = [], []
 def bad(c, m): fails.append(f"{c:8s} {m}")
 def warn(c, m): warns.append(f"{c:8s} {m}")
@@ -88,6 +93,60 @@ def wall_index(plan, z):
     return walls, blocked, H
 
 
+def check_ids_and_refs(tag, plan, elev):
+    seen = {}
+    for section in SECTIONS_WITH_IDS:
+        for item in plan.get(section, []):
+            pid = item.get("id")
+            if not pid:
+                bad("IDS", f"{tag} {section}: entry without id: {json.dumps(item)[:80]}")
+                continue
+            if pid in seen:
+                bad("IDS", f"{tag} {pid}: defined twice ({seen[pid]} and {section})")
+            seen[pid] = section
+    walls = {w["id"] for k in ("exterior_walls", "interior_walls", "profile_walls") for w in plan.get(k, [])}
+    for key in ("windows", "doors"):
+        for o in plan.get(key, []):
+            if "parts" in o and key == "windows":
+                continue
+            if o.get("wall_id") not in walls:
+                bad("REFS", f"{tag} {o.get('id')}: wall_id {o.get('wall_id')!r} is not a wall on this storey")
+    for wa in plan.get("windows_abs", []) + [w for w in plan.get("windows", []) if "parts" in w]:
+        if wa.get("host", wa.get("wall_id")) not in walls:
+            bad("REFS", f"{tag} {wa['id']}: host {wa.get('host')!r} is not a wall on this storey")
+        for b in [wa["box"], *wa.get("opening_boxes", [])] + [b for p in wa.get("parts", []) for b in p.get("boxes", [])]:
+            if not (b[0] < b[3] and b[1] < b[4] and b[2] < b[5]):
+                bad("REFS", f"{tag} {wa['id']}: degenerate absolute box {b}")
+    doors = {d["id"] for d in plan.get("doors", []) + plan.get("free_doors", [])}
+    doors |= {w["id"] for w in plan.get("windows_abs", []) if w.get("kind") == "door"}
+    for sw in plan.get("door_swings", []):
+        if sw.get("door") not in doors:
+            bad("REFS", f"{tag} {sw['id']}: door {sw.get('door')!r} does not exist")
+    roofs = {rp["id"]: rp for rp in plan.get("roof_planes", [])}
+    for rp in roofs.values():
+        if rp.get("cuts") and rp["cuts"] not in roofs:
+            bad("REFS", f"{tag} {rp['id']}: cuts {rp['cuts']!r} is not a roof plane")
+        if rp.get("interior_finish") and rp["interior_finish"] not in plan.get("roof_finishes", {}):
+            bad("REFS", f"{tag} {rp['id']}: interior_finish {rp['interior_finish']!r} is not in roof_finishes")
+    for o in plan.get("outlets", []) + plan.get("switches", []):
+        if o.get("wall") not in walls:
+            bad("REFS", f"{tag} {o['id']}: wall {o.get('wall')!r} does not exist")
+    for f in plan.get("furniture", []) + plan.get("sanitary", []) + plan.get("door_hardware", []):
+        for node in [f, *f.get("parts", [])]:
+            if node.get("mesh") and not (ROOT / node["mesh"]).is_file():
+                bad("REFS", f"{tag} {f['id']}: mesh {node['mesh']} not found")
+            if node.get("texture") and not (ROOT / node["texture"]["image"]).is_file():
+                bad("REFS", f"{tag} {f['id']}: texture image {node['texture']['image']} not found")
+        if f.get("access") and f["access"].get("dir") not in ("+x", "-x", "+y", "-y"):
+            bad("REFS", f"{tag} {f['id']}: access.dir must be one of +x -x +y -y")
+        if not allboxes(f) and not f.get("cylinders") and not f.get("spheres") and not f.get("mesh") \
+                and not any(p.get("cylinders") or p.get("spheres") or p.get("mesh") for p in f.get("parts", [])):
+            bad("REFS", f"{tag} {f['id']}: no geometry (boxes, cylinders, spheres, prisms or mesh)")
+    for b in [b for f in plan.get("furniture", []) for b in allboxes(f)]:
+        if not (b[0] < b[3] and b[1] < b[4] and b[2] < b[5]):
+            bad("REFS", f"{tag}: degenerate furniture box {b}")
+
+
 def check_outlets(tag, plan, elev):
     walls, blocked, H = wall_index(plan, 0.30)
     prof = {p["id"]: p for p in plan.get("profile_walls", [])}
@@ -112,16 +171,13 @@ def check_outlets(tag, plan, elev):
                 bad("MOUNTED", f"{tag} {oid}: wall {wid} is only {w.get('height', H)} m high")
                 continue
         elif pw:
-            # Profile faces may be X- or Y-normal; validate the entire 88 mm
-            # plate, including the absolute profile height and through-openings.
             from light_switches import validate
             bank = dict(o, height=o.get('sill', .30), columns=1, controls=[{}])
             for error in validate(bank, plan, elev):
                 bad("MOUNTED", f"{tag} {oid}: {error}")
             continue
         else:
-            bad("MOUNTED", f"{tag} {oid}: host wall {wid!r} does not exist")
-            continue
+            continue            # REFS reported the missing wall
         if not (lo - 0.05 <= free <= hi + 0.05):
             bad("MOUNTED", f"{tag} {oid}: sits {free:.2f} past the end of {wid} ({lo:.2f}..{hi:.2f})")
         for a, b in blocked.get(wid, []):
@@ -163,15 +219,19 @@ def check_swings(tag, plan):
                 if worst is not None:
                     break
             if worst is not None:
-                warn("SWING", f"{tag} {sw['door']} hits {fid} at {worst:.0f} deg open"
-                              f"{' -- PASSAGE BLOCKED, under 60 deg' if worst < 60 else ' (passage still clear, leaf not flat)'}")
+                message = f"{tag} {sw['door']} hits {fid} at {worst:.0f} deg open"
+                if worst < 60:
+                    bad("SWING", message + " -- PASSAGE BLOCKED, under 60 deg")
+                else:
+                    warn("SWING", message + " (passage still clear, leaf not flat)")
 
 
 def underside(plan, x, y):
-    """Lowest roof underside over (x, y) -- absolute z. 99 where there is no roof."""
+    """Lowest roof underside over (x, y) -- absolute z. 99 where there is no roof.
+    Roof windows (ifc_class IfcWindow) and planes marked "headroom": false do not count."""
     best = 99.0
     for rp in plan.get("roof_planes", []):
-        if rp["id"].startswith(("DACHFENSTER", "PERGOLA")):
+        if rp.get("ifc_class") == "IfcWindow" or rp.get("headroom") is False or rp.get("cuts"):
             continue
         if not (rp["x0"] - 1e-9 <= x <= rp["x1"] + 1e-9):
             continue
@@ -239,8 +299,8 @@ def check_headroom(tag, plan, elev):
 def check_access(tag, plan):
     """Furniture may declare an `access` zone -- the floor you must stand on to use
     it. Nothing else may sit in it. Collision checks alone never catch this."""
-    # Per BOX prüfen, nicht per Objekt-Bounding-Box: eine Stufe am Westende darf nicht
-    # als Blocker eines Regals am Ostende zaehlen. Flaches (Teppich) blockiert gar nichts.
+    # Per box, not per object bounding box: a step at one end must not count as a
+    # blocker of a shelf at the other end. Flat things (rugs) block nothing.
     items = [(f["id"], b) for f in solids_of(plan)
              for b in allboxes(f) if b[5] > 0.20]
     items += [(f["id"], (f["at"][0] - 0.5, f["at"][1] - 0.5, 0.0,
@@ -262,47 +322,15 @@ def check_access(tag, plan):
                 warn("ACCESS", f"{tag} {oid} stands in the {dep:.2f} m access zone of {f['id']}")
 
 
-def check_covered(tag, plan):
-    # Trace the complete cover's access corridor through individual solids.
-    # A whole-product envelope incorrectly closes open service bays and bed frames.
-    furniture = [(f["id"], bodyboxes(f)) for f in solids_of(plan) if bodyboxes(f)]
-    for o in plan.get("outlets", []):
-        ox, oy = o["at"]; sill = o.get("sill", .3)
-        nx, ny = o.get("normal", [0, 1]); half = COVER / 2
-        for fid, solids in furniture:
-            x0, y0, _, x1, y1, _ = bbox(solids)
-            if not (x0-.05 <= ox <= x1+.05 and y0-.05 <= oy <= y1+.05):
-                continue
-            # Include the front of a closed cupboard, even if its rear is open.
-            ray = [ox-half, oy-half, sill-half, ox+half, oy+half, sill+half]
-            if nx > 0: ray[3] = max(ray[3], x1)
-            if nx < 0: ray[0] = min(ray[0], x0)
-            if ny > 0: ray[4] = max(ray[4], y1)
-            if ny < 0: ray[1] = min(ray[1], y0)
-            if any(b[3] > ray[0] and b[0] < ray[3] and b[4] > ray[1] and b[1] < ray[4]
-                   and b[5] > ray[2] and b[2] < ray[5] for b in solids):
-                print(f"COVERED (owner accepted): {tag} {o['id']} ({o['gangs']} x T13) sits behind {fid}")
-                break
-
-
 DIM3 = re.compile(r"(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*x\s*(\d+(?:\.\d+)?)\s*cm")
 
 
 def check_switches(tag, plan, elev):
     from light_switches import boxes, validate
-    seen = set()
     furniture = [(f["id"], bodyboxes(f)) for f in plan.get("furniture", [])]
     for switch in plan.get("switches", []):
         for error in validate(switch, plan, elev):
-            bad("SWITCH", f"{tag} {switch['id']}: {error}")
-        for control in switch["controls"]:
-            source = control["source_symbol"]
-            if source in seen:
-                bad("SWITCH", f"{tag}: source symbol {source} duplicated")
-            seen.add(source)
-        for key in ("Product", "Lieferant", "Contract", "Plan", "Dimensions"):
-            if not switch.get("props", {}).get(key):
-                bad("SWITCH", f"{switch['id']}: missing {key}")
+            bad("MOUNTED", f"{tag} {switch['id']}: {error}")
         x0, y0, z0, x1, y1, z1 = bbox(boxes(switch))
         nx, ny = switch["normal"]
         # Include 5 cm immediately in front of the plate for hand access.
@@ -311,24 +339,26 @@ def check_switches(tag, plan, elev):
         for fid, parts in furniture:
             if any(b[3] > x0 and b[0] < x1 and b[4] > y0 and b[1] < y1
                    and b[5] > z0 and b[2] < z1 for b in parts):
-                warn("COVERED", f"{tag} {switch['id']} sits behind {fid}")
+                bad("MOUNTED", f"{tag} {switch['id']} sits behind {fid}; switches stay reachable")
 
 
 def check_dims_and_meta(tag, plan):
-    need = ("Product", "Lieferant", "Contract", "Plan", "Dimensions")
     for f in plan.get("furniture", []) + plan.get("sanitary", []):
         if f.get("parts") and not f.get("boxes"):        # flatten parts for the checks
             f = dict(f, boxes=bodyboxes(f), _allparts=f["parts"])
         pr = f.get("props") or {}
         if not pr:
+            warn("META", f"{tag} {f['id']}: no props (Product, Dimensions, SourceURL/Plan, Supplier, License)")
             continue
-        missing = [k for k in need if not pr.get(k)]
+        missing = [k for k in ("Product", "Dimensions") if not pr.get(k)]
+        if not (pr.get("SourceURL") or pr.get("Plan") or pr.get("MeshURL")):
+            missing.append("SourceURL/Plan")
         if missing:
-            warn("META", f"{tag} {f['id']}: props missing {missing} (CLAUDE.md data labelling)")
+            warn("META", f"{tag} {f['id']}: props missing {missing}")
         m = DIM3.search(pr.get("Dimensions", ""))
         if m and f.get("boxes"):
             claim = sorted(float(v) / 100 for v in m.groups())
-            # An entry may hold several parts ("je 88 x 50 x 13", frame + headboard).
+            # An entry may hold several parts ("each 88 x 50 x 13", frame + headboard).
             # The claim must describe the whole thing OR one of its parts.
             cands = [sorted((b[3] - b[0], b[4] - b[1], b[5] - b[2])) for b in f["boxes"]]
             for prt in f.get("_allparts", []):           # a whole part may be the claim
@@ -339,7 +369,7 @@ def check_dims_and_meta(tag, plan):
             cands.append(sorted((x1 - x0, y1 - y0, z1 - z0)))
             # Hybrid furniture includes authored meshes (frames, cushions,
             # foliage). Its overall dimensions include both solids and mesh.
-            if f.get("mesh"):
+            if f.get("mesh") and (ROOT / f["mesh"]).is_file():
                 angle = math.radians(f.get("rotation_z", 0))
                 c, s = math.cos(angle), math.sin(angle)
                 tx, ty, tz = f.get("at", (0, 0, 0))
@@ -359,32 +389,19 @@ def check_dims_and_meta(tag, plan):
 
 
 def main():
-    for name, elev in STOREYS.items():
-        from products import load_plan
-        plan = load_plan(name, ROOT)
-        tag = name[:2].upper()
-        if name in ('first_floor', 'second_floor'):
-            from floor_finishes import check_plan as check_floor_plan
-            try:
-                check_floor_plan(plan, 'OG' if name == 'first_floor' else 'DG')
-            except (AssertionError, StopIteration) as error:
-                bad("FLOOR", f"{name}: {error}")
-        if name == "second_floor":
-            from check_dg_sections import check_plan
-            try:
-                check_plan(plan)
-            except AssertionError as error:
-                bad("SECTION", f"DG geometry no longer agrees with architect sections: {error}")
+    from products import load_plan
+    for tag, elev in STOREYS.items():
+        plan = load_plan(tag, ROOT)
+        check_ids_and_refs(tag, plan, elev)
         check_outlets(tag, plan, elev)
         check_switches(tag, plan, elev)
         check_swings(tag, plan)
         check_headroom(tag, plan, elev)
-        check_covered(tag, plan)
         check_access(tag, plan)
         check_dims_and_meta(tag, plan)
-        for o in plan.get("outlets", []):          # COVER: a 3xT13 is one 88 mm box
+        for o in plan.get("outlets", []):
             if o.get("gangs", 1) not in (1, 2, 3, 4):
-                bad("COVER", f"{tag} {o['id']}: implausible gang count {o.get('gangs')}")
+                bad("MOUNTED", f"{tag} {o['id']}: implausible gang count {o.get('gangs')}")
     # A wall of warnings is the same as no warnings: summarise the routine ones,
     # spell out the conflicts.
     meta = [w for w in warns if w.startswith("META")]
@@ -392,7 +409,7 @@ def main():
     for w in rest:
         print(f"  warn  {w}")
     if meta:
-        print(f"  warn  META     {len(meta)} elements missing data-labelling fields "
+        print(f"  warn  META     {len(meta)} elements missing metadata fields "
               f"(run with --meta to list them)")
         if "--meta" in sys.argv:
             for w in meta:

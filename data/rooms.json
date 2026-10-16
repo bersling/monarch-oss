@@ -1,0 +1,13 @@
+{
+  "_doc": "Room cards for ./q room and ./room: where a room's data lives, which element prefixes belong to it, its sketch extent and the variant group it uses. Every field except id, name, storey, target, prefixes and bounds is optional.",
+  "rooms": [
+    {"id": "gallery", "name": "Gallery (GF.01)", "aliases": ["gal", "GF.01"], "storey": "GF", "target": "ground_floor.json",
+     "prefixes": ["GAL_", "CAT_GALLERY_"], "bounds": [0.0, 0.0, 4.2, 6.0], "group": "gallery_centre",
+     "rules": ["gallery"], "docs": ["docs/gallery.md"],
+     "notes": "The tutorial room: one exhibit per modelling technique."},
+    {"id": "east-room", "name": "East room (GF.02)", "aliases": ["east", "GF.02"], "storey": "GF", "target": "ground_floor.json",
+     "prefixes": ["SAN_", "STAIR_"], "bounds": [3.8, 0.0, 8.2, 6.0]},
+    {"id": "bedroom", "name": "Bedroom (UF.01)", "aliases": ["bed", "UF.01"], "storey": "UF", "target": "upper_floor.json",
+     "prefixes": ["UF_"], "bounds": [0.0, 0.0, 4.2, 6.0]}
+  ]
+}

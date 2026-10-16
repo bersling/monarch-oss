@@ -1,0 +1,22 @@
+{
+  "_doc": "Optional stair finishes (src/stair_finishes.py). timber_flights get a wood tread on an adhesive bed per step (the concrete core is lowered by the build-up); metal_railings colours every stair balustrade and interior void guard except excluded_railings; handrails use the treads colour. Delete this file to build bare concrete stairs.",
+  "timber_flights": ["STAIR_GF_UF"],
+  "treads": {
+    "wood_thickness": 0.037, "adhesive_thickness": 0.003, "nosing": 0.02, "rgb": [0.72, 0.55, 0.35],
+    "material": "Oak, oiled",
+    "props": {"Product": "Oak block tread 37 mm on 3 mm adhesive", "Supplier": "none (authored)", "SourceURL": "docs/data-format.md",
+              "License": "MIT (project data)"}
+  },
+  "painted_concrete": {
+    "material": "Precast concrete, painted white", "rgb": [0.91, 0.9, 0.87],
+    "props": {"Product": "Precast concrete flight with timber treads"}
+  },
+  "metal_railings": {
+    "material": "Steel, powder coated", "rgb": [0.18, 0.19, 0.2], "excluded_railings": [],
+    "props": {"Product": "Steel rod balustrade, dark grey", "Colour": "RAL 7021 (screen colour approximate)"}
+  },
+  "handrail": {
+    "material": "Oak, oiled",
+    "props": {"Product": "Oak handrail, oiled"}
+  }
+}

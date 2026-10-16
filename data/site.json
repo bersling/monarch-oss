@@ -1,0 +1,21 @@
+{
+  "_source": "Stub site: a flat lawn around the house, the parcel line, a terrace pad and a tree.",
+  "terrain": {
+    "id": "TERRAIN", "polygon": [[-6.0, -6.0], [14.0, -6.0], [14.0, 12.0], [-6.0, 12.0]],
+    "z": 0.0, "base_z": -0.6, "holes": [[0.0, 0.0, 8.0, 6.0]], "rgb": [0.45, 0.6, 0.35],
+    "props": {"Product": "Lawn", "Notes": "Flat terrain at finished ground floor level; the house footprint is cut out."}
+  },
+  "boundaries": [
+    {"id": "PARCEL", "points": [[-6.0, -6.0], [14.0, -6.0], [14.0, 12.0], [-6.0, 12.0]], "closed": true,
+     "rgb": [0.9, 0.2, 0.2], "width": 0.08, "lift": 0.02}
+  ],
+  "slabs": [
+    {"id": "TERRACE", "rect": [8.0, 1.0, 11.0, 5.0], "z_top": 0.0, "thickness": 0.08, "rgb": [0.7, 0.68, 0.65],
+     "props": {"Product": "Concrete paving 50 x 50", "Dimensions": "8 cm"}}
+  ],
+  "objects": [
+    {"id": "SITE_TREE", "mesh": "assets/stub/bush.obj", "at": [11.5, 8.5, 0.0], "scale": 2.5, "rgb": [0.3, 0.5, 0.25],
+     "props": {"Product": "Tree (procedural stand-in)", "SourceURL": "src/gen_assets.py", "Dimensions": "250 x 250 x 235 cm crown, 20 cm above ground",
+               "License": "MIT (project data)", "SurfaceShading": "smooth"}}
+  ]
+}

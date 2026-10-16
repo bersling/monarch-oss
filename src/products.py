@@ -4,6 +4,9 @@ Products are local geometry in data/products/*.json. Instances live in
 data/placements.json and survive room regeneration and variant reloads.
 Coordinates are metres, x east / y north, z above finished storey floor.
 The placement origin is the product's LOCAL origin, not its rotated bbox min.
+
+    ./place list | show PRODUCT | add PRODUCT CAT_ID --storey GF --at x,y,z [--rotation 90]
+            [--source PATH_OR_URL] [--status TEXT] | move CAT_ID --at x,y,z | remove CAT_ID | check
 """
 import argparse
 import copy
@@ -12,8 +15,11 @@ import math
 from pathlib import Path
 import sys
 
+from house import HOUSE
+
 ROOT = Path(__file__).resolve().parents[1]
-STOREYS = {'UG': 'basement', 'EG': 'ground_floor', 'OG': 'first_floor', 'DG': 'second_floor'}
+STOREYS = dict(HOUSE.stem)          # storey code -> plan file stem
+PLACEMENT_FIELDS = {'id', 'product', 'storey', 'at', 'rotation_z', 'source', 'plan', 'status', 'notes'}
 
 
 def catalogue(root=ROOT):
@@ -33,7 +39,7 @@ def placements(root=ROOT):
     seen = set()
     for item in items:
         if item['storey'] not in STOREYS:
-            raise ValueError(f"Unknown placement storey: {item['storey']}")
+            raise ValueError(f"Unknown placement storey: {item['storey']} (codes: {', '.join(STOREYS)})")
         if item['id'] in seen:
             raise ValueError(f"Duplicate placed identity: {item['id']}")
         seen.add(item['id'])
@@ -51,16 +57,19 @@ def expand(instance, product):
         raise ValueError('Placement needs three finite coordinates and a finite rotation.')
     if rotation % 90 != 0:
         raise ValueError('Use 0, 90, 180 or 270 degrees; cardinal rotations preserve exact solid bounds.')
-    if set(instance) - {'id', 'product', 'storey', 'at', 'rotation_z', 'plan', 'status', 'notes'}:
+    if set(instance) - PLACEMENT_FIELDS:
         raise ValueError('Unknown placement field; scaling and product dimension overrides are not supported.')
-    if not instance.get('plan') or not instance.get('status'):
-        raise ValueError('Every placement needs a source plan and a selection/order status.')
+    if not instance.get('status'):
+        raise ValueError('Every placement needs a status (e.g. "Proposed", "Ordered", "Owned").')
     item = copy.deepcopy(product['geometry'])
     item['id'] = instance['id']
-    item['props'] = {**product['props'], 'Product': product['label'], 'ProductLabel': product['label'],
-                     'TechnicalID': instance['id'], 'ProductKind': product['kind'],
+    item['props'] = {**product.get('props', {}), 'Product': product['label'], 'ProductLabel': product['label'],
+                     'TechnicalID': instance['id'], 'ProductKind': product.get('kind', 'catalogue_product'),
                      'CatalogueDefinition': product['_file'], 'PlacementSource': 'data/placements.json',
-                     'Plan': instance['plan'], 'Status': instance['status']}
+                     'Status': instance['status']}
+    source = instance.get('source') or instance.get('plan')
+    if source:
+        item['props']['Plan'] = source
     if instance.get('notes'):
         item['props']['PlacementNotes'] = instance['notes']
     # Bake cardinal rotation/translation into the editable native primitives.
@@ -118,22 +127,42 @@ def augment(plan, storey, root=ROOT):
 
 
 def load_plan(name, root=ROOT):
-    name = STOREYS.get(name, name.removesuffix('.json'))
-    code = next(s for s, n in STOREYS.items() if n == name)
-    return augment(json.loads((Path(root) / f'data/{name}.json').read_text()), code, root)
+    """Storey plan with its placements merged in; `name` is a code, storey name or file stem."""
+    code = HOUSE.code(name)
+    return augment(json.loads((Path(root) / 'data' / HOUSE.file[code]).read_text()), code, root)
+
+
+def check(root=ROOT):
+    """Every placement expands against the catalogue and collides with no storey id. Returns errors."""
+    errors = []
+    try:
+        products = catalogue(root)
+        for instance in placements(root):
+            if instance['product'] not in products:
+                errors.append(f"{instance['id']}: unknown product {instance['product']!r}")
+                continue
+            expand(instance, products[instance['product']])
+            plan = json.loads((Path(root) / 'data' / HOUSE.file[instance['storey']]).read_text())
+            if any(it.get('id') == instance['id'] for entries in plan.values() if isinstance(entries, list)
+                   for it in entries if isinstance(it, dict)):
+                errors.append(f"{instance['id']} is also defined in data/{HOUSE.file[instance['storey']]}")
+    except (ValueError, KeyError, OSError) as error:
+        errors.append(str(error))
+    return errors
 
 
 def main(argv):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = parser.add_subparsers(dest='command', required=True)
     sub.add_parser('list')
+    sub.add_parser('check')
     show = sub.add_parser('show'); show.add_argument('product')
     add = sub.add_parser('add'); add.add_argument('product'); add.add_argument('id')
-    add.add_argument('--storey', choices=STOREYS, required=True)
+    add.add_argument('--storey', choices=list(STOREYS), required=True)
     add.add_argument('--at', required=True, help='x,y,z; metres above finished storey floor')
     add.add_argument('--rotation', type=float, default=0)
-    add.add_argument('--plan', required=True)
-    add.add_argument('--status', required=True)
+    add.add_argument('--source', default='', help='plan, datasheet path or URL this placement follows')
+    add.add_argument('--status', default='Proposed')
     move = sub.add_parser('move'); move.add_argument('id'); move.add_argument('--at', required=True)
     move.add_argument('--rotation', type=float)
     remove = sub.add_parser('remove'); remove.add_argument('id')
@@ -141,8 +170,12 @@ def main(argv):
     products = catalogue()
     if args.command == 'list':
         for p in products.values():
-            print(f"{p['id']} · {p['label']} · {p['props']['Dimensions']} · {p['_file']}")
+            print(f"{p['id']} · {p['label']} · {p.get('props', {}).get('Dimensions', '?')} · {p['_file']}")
         return 0
+    if args.command == 'check':
+        errors = check()
+        print('\n'.join(errors) if errors else f'products: {len(products)} definitions, {len(placements())} placements consistent')
+        return 1 if errors else 0
     if args.command == 'show':
         if args.product not in products:
             parser.error(f'Unknown product {args.product!r}; use ./place list')
@@ -163,7 +196,9 @@ def main(argv):
         if any(p['id'] == args.id for p in items):
             parser.error(f'{args.id} already exists; use move')
         instance = {'id': args.id, 'product': args.product, 'storey': args.storey, 'at': at,
-                    'rotation_z': args.rotation, 'plan': args.plan, 'status': args.status}
+                    'rotation_z': args.rotation, 'status': args.status}
+        if args.source:
+            instance['source'] = args.source
         items.append(instance)
     else:
         hits = [p for p in items if p['id'] == args.id]
@@ -174,14 +209,11 @@ def main(argv):
         if args.rotation is not None:
             instance['rotation_z'] = args.rotation
     expand(instance, products[instance['product']])
-    from documents import resolve
-    if not resolve(instance['plan']):
-        parser.error('Source plan does not resolve; use ./q plans')
-    for code, name in STOREYS.items():
-        plan = json.loads((ROOT / f'data/{name}.json').read_text())
+    for code in STOREYS:
+        plan = json.loads((ROOT / 'data' / HOUSE.file[code]).read_text())
         if any(it.get('id') == args.id for entries in plan.values() if isinstance(entries, list)
                for it in entries if isinstance(it, dict)):
-            parser.error(f'{args.id} is already defined in data/{name}.json')
+            parser.error(f'{args.id} is already defined in data/{HOUSE.file[code]}')
     atomic_json(ROOT / 'data/placements.json', {'placements': items})
     print(f"Placed {args.id}: {products[instance['product']]['label']}. Viewer rebuilds on save; run ./build.sh to verify.")
     return 0

@@ -1,13 +1,13 @@
 """Export the actual IFC cache to OBJ/MTL, including explicit IFC image textures."""
 from pathlib import Path
 import numpy as np
-from geometry_cache import load, GENERATED, atomic_write
+from geometry_cache import load, GENERATED, MODEL, atomic_write
 from model_lock import Lease
 
 
 def build(geometry=None, output=None):
     g = geometry or load()
-    output = Path(output or GENERATED / 'haus_nord_essentials.obj').resolve()
+    output = Path(output or MODEL.with_suffix('.obj')).resolve()
     lines = [f'mtllib {output.with_suffix(".mtl").name}']
     materials = {}
     voff, uoff = 1, 1

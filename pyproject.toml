@@ -1,7 +1,7 @@
 [project]
 name = "monarch"
 version = "0.1.0"
-description = "AI-editable IFC model of Haus Nord"
+description = "AI-editable IFC house model: JSON in, IFC + viewer out"
 requires-python = ">=3.14"
 dependencies = [
     "ifcopenshell>=0.8.5",

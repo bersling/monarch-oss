@@ -25,7 +25,7 @@ def make_ifc(path, shelf_x=1.0, wall_colour=(0.8, 0.8, 0.8)):
                target_view='MODEL_VIEW', parent=model)
     site = run('root.create_entity', f, ifc_class='IfcSite', name='S')
     building = run('root.create_entity', f, ifc_class='IfcBuilding', name='B')
-    storey = run('root.create_entity', f, ifc_class='IfcBuildingStorey', name='Erdgeschoss')
+    storey = run('root.create_entity', f, ifc_class='IfcBuildingStorey', name='Ground floor')
     run('aggregate.assign_object', f, products=[site], relating_object=project)
     run('aggregate.assign_object', f, products=[building], relating_object=site)
     run('aggregate.assign_object', f, products=[storey], relating_object=building)
@@ -83,7 +83,7 @@ class GeometryCacheTest(unittest.TestCase):
     def test_incremental_equals_full_and_reuses(self):
         self.build(incremental=False)
         geometry = geometry_cache.Geometry(self.dir)
-        self.assertEqual(geometry.get('SHELF@EG'), geometry.get('SHELF'))
+        self.assertEqual(geometry.get('SHELF@GF'), geometry.get('SHELF'))
         self.assertEqual(geometry.get('SHELF@UG'), [])
         again = flat(self.dir)
         # Rebuilding the same content (fresh GUIDs, same STEP content) reuses everything.

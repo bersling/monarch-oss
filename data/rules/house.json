@@ -1,50 +1,14 @@
 {
- "_comment": "House-wide rules on the actual IFC geometry (src/rules.py). Room rules live in their own file named after the room.",
- "rules": [
-  {
-   "id": "furniture-in-structure",
-   "rule": "no_penetration",
-   "why": "Furniture poking into walls, slabs or stairs is a placement error unless it is documented here as intentional.",
-   "what": {
-    "class": [
-     "IfcFurnishingElement",
-     "IfcSanitaryTerminal",
-     "IfcElectricAppliance"
-    ]
-   },
-   "into": {
-    "class": [
-     "IfcWall",
-     "IfcWallStandardCase",
-     "IfcSlab",
-     "IfcStairFlight"
-    ]
-   },
-   "tolerance": 0.005,
-   "known": {
-    "SAN_SPIEGEL_EG_A|W_VORWAND_WC_A_EG": "Flush (UP) mirror cabinet set into the Vorwand (data comment 'UP in Vorwand')",
-    "SAN_SPIEGEL_EG_B|W_VORWAND_BAD_B_EG": "Flush (UP) mirror cabinet set into the Vorwand",
-    "SAN_SPIEGEL_OG_A|W_VORWAND_BAD_A_OG": "Flush (UP) mirror cabinet set into the Vorwand",
-    "SAN_SPIEGEL_OG_B|W_VORWAND_BAD_B_OG": "Flush (UP) mirror cabinet set into the Vorwand",
-    "SAN_WC_MODENA_EG_A|W_VORWAND_WC_A_EG": "Wall-hung WC: flush actuator plate modelled as a box set into the Vorwand",
-    "SAN_WC_ALBA_EG_B|W_VORWAND_BAD_B_EG": "Wall-hung WC: flush actuator plate set into the Vorwand",
-    "SAN_WC_ALBA_OG_A|W_VORWAND_BAD_A_OG": "Wall-hung WC: flush actuator plate set into the Vorwand",
-    "KITCHEN_ISLAND_TOP|W_WC_WEST_V": "Accepted by owner 26 Sep 2026 (not worth fixing): island worktop corner overlaps the WC wall end by 2 x 4 cm",
-    "MARKISE_SONNENSTORE_OST|W_EAST@EG": "Accepted by owner 26 Sep 2026 (not worth fixing): awning box 6.5 cm into the facade",
-    "MARKISE_SONNENSTORE_OST|W_SOUTH_STEP": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "MARKISE_SONNENSTORE_OST|W_SOUTH_EAST": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "MARKISE_SONNENSTORE_OST|SLAB_OG_TERRACE": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "PERGOLA_POSTS|W_EAST@EG": "Accepted by owner 26 Sep 2026 (not worth fixing): pergola posts 6 cm into the facade",
-    "PERGOLA_POSTS|W_SOUTH_STEP": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "PERGOLA_POSTS|W_SOUTH_EAST": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "PERGOLA_POSTS|PERGOLA_SPARREN_OST": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "SAN_BADETUCHSTANGEN_DG|ROOF_N_W": "Accepted by owner 26 Sep 2026 (not worth fixing): towel rails 9.7 cm into the sloped roof",
-    "VELOPA_BIGROOF|PARKPLATZ": "Accepted by owner 26 Sep 2026 (not worth fixing): bike shelter feet bedded 1.7 cm into the paving",
-    "VELOPA_BIGROOF|EINGANGSWEG_NORD": "Accepted by owner 26 Sep 2026 (not worth fixing)",
-    "PERGOLA_POSTS|SLAB_OG_TERRACE": "Accepted by owner 26 Sep 2026 (not worth fixing): pergola posts run through the terrace slab edge",
-    "PERGOLA_POSTS|SLAB_OG_BALKON": "Accepted by owner 26 Sep 2026 (not worth fixing): pergola posts run through the balcony slab edge",
-    "PERGOLA_TRAEGER_TOP|PERGOLA_SPARREN_OST": "Accepted by owner 26 Sep 2026 (not worth fixing): pergola top beam and east rafter interpenetrate"
-   }
-  }
- ]
+  "_comment": "House-wide rules on the actual IFC geometry (src/rules.py). Room rules live in their own file named after the room.",
+  "rules": [
+    {
+      "id": "furniture-in-structure",
+      "rule": "no_penetration",
+      "why": "Furniture poking into walls, slabs or stairs is a placement error unless it is documented here as intentional.",
+      "what": {"class": ["IfcFurnishingElement", "IfcSanitaryTerminal", "IfcElectricAppliance"]},
+      "into": {"class": ["IfcWall", "IfcWallStandardCase", "IfcSlab", "IfcStairFlight"]},
+      "tolerance": 0.005,
+      "known": {}
+    }
+  ]
 }

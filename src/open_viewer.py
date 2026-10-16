@@ -7,7 +7,6 @@
     ./open.sh --wait-build          return as soon as the model is built (checks keep running in
                                     the background; take screenshots meanwhile, then --wait before landing)
     ./open.sh --stop       stop this checkout's server
-    ./open.sh --blender    legacy Blender/Bonsai viewer (src/viewer.py), other flags pass through
 
 The server (src/serve.py) watches data/, assets/ and the builder sources and rebuilds on
 every save, so after an edit you normally do nothing: the open tab hot-reloads.
@@ -208,9 +207,6 @@ def stop():
 
 
 def main(args):
-    if '--blender' in args:
-        rest = [a for a in args if a != '--blender']
-        os.execv(sys.executable, [sys.executable, str(ROOT / 'src/viewer.py'), *rest])
     if '--stop' in args:
         stop()
         return 0

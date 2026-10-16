@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # All model checks in one process (src/run_checks.py lists them): invariants over data/,
-# declarative rules in data/rules/, and the per-room checks on the actual IFC geometry.
-#   ./check.sh            everything          ./check.sh gym kids   only matching checks
+# variant drift, product placements and declarative rules in data/rules/ on the actual IFC geometry.
+#   ./check.sh            everything          ./check.sh rules      only matching checks
 set -euo pipefail
 cd "$(dirname "$0")"
 

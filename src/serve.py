@@ -10,7 +10,9 @@ or crashing build only turns the viewer's status red, the last good model stays 
 HTTP API (all JSON, consumed by web/viewer.js and src/snap_web.py):
   GET  /                      web/index.html          GET /web/*   static viewer files
   GET  /generated/model.glb   GET /generated/elements.json
-  GET  /files/<path>          read-only plans/, docs/, assets/, renders/ (PDF links in the panel)
+  GET  /files/<path>          read-only plans/, docs/, assets/, data/ (links in the panel)
+  GET  /api/documents         registered source documents (data/plan_documents.json), may be empty
+  GET  /api/house             data/house.json summary: name and storeys
   GET  /events                Server-Sent Events: a status object on connect and on every change
   GET  /api/status            the same status object + "viewers" (open tabs) and "root"
   POST /api/rebuild           force a rebuild
@@ -46,7 +48,6 @@ GENERATED = ROOT / 'generated'
 PYTHON = sys.executable
 WATCH_DIRS = ['data', 'assets']
 PIPELINE = ('geometry_cache.py', 'export_glb.py')      # build steps after build_model.py
-PUBLIC_DIRS = ('plans', 'docs', 'assets', 'renders')
 
 
 def runtime_fingerprint(root=ROOT):
@@ -94,16 +95,16 @@ def snapshot(root=None):
         remember(p)
     from viewer_common import read_json
     for doc in read_json(root / 'data/plan_documents.json').get('documents', []):
-        p = root / doc['path']
-        remember(p)
+        if 'path' in doc:
+            remember(root / doc['path'])
     return files
 
 
 def up_to_date(root=ROOT):
     """The viewer model reflects the current sources: same test as build.sh's build stamp
     (content hash), plus geometry cache and model.glb at least as new as the IFC."""
-    from viewer_common import MODEL, file_hash, read_json, source_hash
-    ifc, glb, cache = root / 'generated' / MODEL, root / 'generated/model.glb', root / 'generated/elements.json'
+    from viewer_common import file_hash, model_path, read_json, source_hash
+    ifc, glb, cache = model_path(root), root / 'generated/model.glb', root / 'generated/elements.json'
     if not (ifc.exists() and glb.exists() and cache.exists()):
         return False
     stamp = read_json(root / 'generated/viewer-build.json')
@@ -382,6 +383,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                            'snapdir': str(STATE.snapdir)}})
         if path == '/api/documents':
             return self.send_json({'documents': documents.listing(ROOT), 'errors': documents.verify(ROOT)})
+        if path == '/api/house':
+            from house import load as load_house
+            return self.send_json(load_house(ROOT).summary())
         if path.startswith('/web/'):
             return self.send_file(safe(WEB, path[5:]))
         if path in ('/generated/model.glb', '/generated/elements.json'):
@@ -403,7 +407,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if child.name.startswith('.') or documents.resolve(reference, ROOT) is None:
                 continue
             links.append(f'<li><a href="{html.escape(documents.href(reference))}">{html.escape(child.name)}</a></li>')
-        body = ('<!doctype html><meta charset="utf-8"><title>Model documents</title>'
+        body = ('<!doctype html><meta charset="utf-8"><title>Source documents</title>'
                 '<style>body{font:16px system-ui;max-width:75rem;margin:3rem auto;padding:0 2rem}li{margin:.8rem 0}</style>'
                 f'<h1>{html.escape(rel)}</h1><ul>{"".join(links)}</ul>').encode()
         self.send_response(200)

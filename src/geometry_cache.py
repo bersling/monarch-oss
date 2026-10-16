@@ -2,16 +2,17 @@
 
     uv run python src/geometry_cache.py          (build.sh runs this after the build)
 
-Everything downstream reads this cache instead of re-tessellating the 45 MB IFC:
-the browser viewer (via export_glb.py), the query CLI (src/q.py), the generic
-rules (src/rules.py) and the per-room checks (run_checks.py seeds create_shape).
+Everything downstream reads this cache instead of re-tessellating the IFC: the
+browser viewer (via export_glb.py), the query CLI (src/q.py), the declarative rules
+(src/rules.py) and the checks (run_checks.py serves create_shape from it).
 
-Kernel: ifcopenshell's hybrid CGAL/OpenCASCADE mesher, ~3x faster than plain
-OpenCASCADE on this model (face-set meshes are 15x faster). Measured 26 Sep 2026
-over all 1003 products: every bounding box within 1 mm of the OpenCASCADE result.
+Kernel: ifcopenshell's hybrid CGAL/OpenCASCADE mesher, about 3x faster than plain
+OpenCASCADE (face-set meshes are 15x faster); bounding boxes agree within 1 mm.
 
 Coordinates stay IFC world coordinates (metres, z up). Element keys are the IFC
-Name (= the JSON "id"); a Name used on several storeys gets "@UG/EG/OG/DG".
+Name (= the JSON "id"); a Name used on several storeys gets "@<storey code>".
+Storey codes come from data/house.json (the IfcBuildingStorey name maps to its code);
+everything contained in the IfcSite is storey "SITE".
 """
 import hashlib
 import json
@@ -26,17 +27,18 @@ import ifcopenshell
 import ifcopenshell.geom
 import ifcopenshell.util.element as util
 import numpy as np
-from viewer_common import file_hash
+from viewer_common import file_hash, model_path
+from house import HOUSE, SITE
 
 ROOT = Path(__file__).resolve().parent.parent
 GENERATED = ROOT / 'generated'
-MODEL = GENERATED / 'haus_nord_essentials.ifc'
+MODEL = model_path(ROOT)
 GEOMETRY = GENERATED / 'geometry.npz'
 ELEMENTS = GENERATED / 'elements.json'
 KERNEL = 'hybrid-cgal-simple-opencascade'
-STOREY_CODE = {'Untergeschoss': 'UG', 'Erdgeschoss': 'EG', 'Obergeschoss': 'OG', 'Dachgeschoss': 'DG'}
+STOREY_CODE = dict(HOUSE.by_name)
 SKIP = ('IfcOpeningElement',)
-CACHE_VERSION = 3       # explicit IFC image maps retained through cache reuse
+CACHE_VERSION = 4       # storey codes from house.json; house summary in the metadata
 
 
 def settings():
@@ -80,7 +82,7 @@ def tessellate(model, threads=None, include=None):
     """Yield (entity, verts[n,3] float64, faces[m,3] int, material_ids[m], materials) per product.
 
     Multi-threaded iterator for the bulk; per-element create_shape for representations the
-    iterator mis-meshes (verified 26 Sep 2026: every bbox then equals create_shape exactly).
+    iterator mis-meshes (every bbox then equals create_shape exactly).
     """
     extra = {'include': include} if include is not None else {}
     it = ifcopenshell.geom.iterator(settings(), model, threads or multiprocessing.cpu_count(),
@@ -141,6 +143,19 @@ def geometry_keys(model):
     return keys
 
 
+def storey_code(container):
+    """Storey code of a spatial container: house.json name -> code, site (or nothing) -> SITE."""
+    if container is None or container.is_a('IfcSite'):
+        return SITE
+    name = getattr(container, 'Name', None)
+    if name in STOREY_CODE:
+        return STOREY_CODE[name]
+    if container.is_a('IfcBuildingStorey'):
+        return name or SITE
+    parent = getattr(container, 'Decomposes', None)
+    return storey_code(parent[0].RelatingObject) if parent else SITE
+
+
 def previous_meshes(out_dir):
     """{geometry key: (verts, faces, material_ids, materials)} from the last cache, if compatible."""
     try:
@@ -189,7 +204,7 @@ def build(model_path=MODEL, out_dir=GENERATED, incremental=True):
         if not len(f):
             continue
         container = util.get_container(entity) or util.get_aggregate(entity)   # spaces are aggregated
-        storey = STOREY_CODE.get(getattr(container, 'Name', None), getattr(container, 'Name', None) or 'SITE')
+        storey = storey_code(container)
         name = entity.Name or f'#{entity.id()}'
         key = name if len(names.get(entity.Name, [])) <= 1 else f'{name}@{storey}'
         # Per-face palette index; faces without a material get the default grey.
@@ -224,7 +239,7 @@ def build(model_path=MODEL, out_dir=GENERATED, incremental=True):
     if file_hash(model_path) != model_digest:
         raise RuntimeError('IFC changed during tessellation; retry before publishing geometry.')
     meta = {'version': CACHE_VERSION, 'ifc': str(Path(model_path).name), 'ifc_mtime': os.path.getmtime(model_path),
-            'build_id': model_digest,
+            'build_id': model_digest, 'house': HOUSE.summary(),
             'kernel': KERNEL, 'palette': palette, 'elements': elements}
     atomic_write(out_dir / GEOMETRY.name, lambda p: np.savez(p, build_id=model_digest, **arrays))
     atomic_write(out_dir / ELEMENTS.name, lambda p: Path(p).write_text(json.dumps(meta, ensure_ascii=False)))

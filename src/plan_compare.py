@@ -1,13 +1,20 @@
 """Overlay actual IFC horizontal sections on pinned architectural floor plans.
 
-    ./q compare EG
+    ./q compare GF
     ./q compare all --height 1.2
     ./q compare roof
 
+Needs data/plan_documents.json (the PDFs) and data/plan_registration.json:
+
+    {"documents": {"GF": "floor-gf", "UF": "floor-uf", "roof": "roof-plan"},
+     "anchor_model_xy": [0.0, 0.0], "anchor_pdf_pt": [120.5, 800.2],
+     "points_per_metre": 56.69, "clip_pdf_pt": [0, 0, 1190, 842],
+     "roof_prefixes": ["ROOF_"]}
+
 Produces source and overlay PNGs, a vector PDF and an evidence manifest under
- generated/plan-audit/. This is visual comparison evidence, not automatic proof
+generated/plan-audit/. This is visual comparison evidence, not automatic proof
 of agreement. Roof profiles, elevations and objects outside the selected slice
-require their own comparisons. Coordinates come from data/plan_registration.json.
+require their own comparisons.
 """
 import argparse
 import json
@@ -21,9 +28,11 @@ from documents import catalogue, resolve, verify
 from geometry_cache import load
 from model_lock import Lease
 from viewer_common import atomic_json, read_json, source_hash
+from house import HOUSE
 
 ROOT=Path(__file__).resolve().parents[1]
-FLOORS={'UG':-2.85,'EG':0.,'OG':2.85,'DG':5.7}
+FLOORS=dict(HOUSE.elevation)
+REGISTRATION=ROOT/'data/plan_registration.json'
 CLASSES={'walls':({'IfcWall','IfcWallStandardCase'},(.85,0.,.65)),
          'windows':({'IfcWindow'},(0.,.4,.85)), 'doors':({'IfcDoor'},(0.,.6,.2)),
          'roofs':({'IfcSlab','IfcRoof'},(.85,0.,.65)),
@@ -65,11 +74,11 @@ def projected_segments(verts,faces):
     return np.asarray(segments).reshape(-1,2,2)
 
 
-def matches(element,label):
+def matches(element,label,registration):
     if element['class'] not in CLASSES[label][0]:return False
     if label=='roofs':
-        return element['name'].startswith(('ROOF_','SHED_')) and not element['name'].endswith('INNER_RETURN')
-    if label=='skylights':return element['name'].startswith('DACHFENSTER')
+        return element['name'].startswith(tuple(registration.get('roof_prefixes',['ROOF_'])))
+    if label=='skylights':return element['name'].startswith(tuple(registration.get('skylight_prefixes',['SKYLIGHT'])))
     return True
 
 
@@ -82,6 +91,9 @@ def main(args):
     options=parser.parse_args(args)
     if options.classes is None:options.classes=['roofs','skylights'] if options.storey=='roof' else ['walls','windows','doors']
     if not np.isfinite(options.height):parser.error('height must be finite')
+    if not REGISTRATION.is_file():
+        raise SystemExit('No data/plan_registration.json: register a PDF per storey (see the module docstring) to compare the built model against drawings.')
+    registration=json.loads(REGISTRATION.read_text())
     with Lease(ROOT):
         errors=verify(ROOT)
         if errors:raise SystemExit('\n'.join(errors))
@@ -90,11 +102,13 @@ def main(args):
         if stamp.get('sources')!=fingerprint:
             raise SystemExit('IFC sources changed: run ./open.sh --no-browser --wait-build or ./build.sh first.')
         geometry=load()
-        registration=json.loads((ROOT/'data/plan_registration.json').read_text())
         documents={d['id']:d for d in catalogue(ROOT)}
         options.out.mkdir(parents=True,exist_ok=True)
-        selected=FLOORS if options.storey=='all' else [options.storey]
+        selected=[c for c in [*FLOORS,'roof'] if c in registration['documents']] if options.storey=='all' else [options.storey]
+        roof_storey=registration.get('roof_storey', HOUSE.codes[-1])
         for code in selected:
+            if code not in registration['documents']:
+                raise SystemExit(f'{code}: no registered plan document in data/plan_registration.json')
             document=documents[registration['documents'][code]]
             with pymupdf.open(resolve(document['path'],ROOT)) as original:
                 clip=pymupdf.Rect(registration['clip_pdf_pt'])
@@ -105,7 +119,7 @@ def main(args):
                 for label in options.classes:
                     _,colour=CLASSES[label];shape=page.new_shape()
                     for element in geometry.elements:
-                        if element['storey']!=('DG' if code=='roof' else code) or not matches(element,label):continue
+                        if element['storey']!=(roof_storey if code=='roof' else code) or not matches(element,label,registration):continue
                         segments=projected_segments(*geometry.mesh(element)) if z is None else section_segments(*geometry.mesh(element),z)
                         projected=to_pdf(segments,registration)-[clip.x0,clip.y0]
                         for a,b in projected:shape.draw_line(pymupdf.Point(a),pymupdf.Point(b))

@@ -1,9 +1,10 @@
 """Ask the built model instead of guessing coordinates.  ./q <command> ...
 
   find TEXT                   elements whose key, product label or class contains TEXT
-  plans [TEXT]                authoritative plan paths, printed dates and verification scope
-  compare [UG|EG|OG|DG|roof|all] overlay actual IFC sections/projections on source PDFs
-  room [NAME]                 current room files, generator, active variant and decisions
+  storeys                     storey codes, names, floor elevations and plan files (data/house.json)
+  sources [TEXT]              registered source documents (data/plan_documents.json), if any
+  compare [CODE|roof|all]     overlay actual IFC sections on registered PDF plans (plan_compare.py)
+  room [NAME]                 room cards from data/rooms.json: files, prefixes, active variant
   show REF                    class, storey, bounds, size, product label, properties and the
                               data/*.json file + path that defines it (where to edit)
   at X,Y[,Z] [--storey S]     what is at a point, and the distance to the nearest surface in
@@ -13,9 +14,9 @@
   clash REF                   actual-mesh penetrations of REF into anything else (> 5 mm)
   fits REF --at X,Y[,Z]       would REF's current footprint fit with its min corner moved to X,Y(,Z)?
 
-REF is the IFC Name (= the JSON "id"), with @UG/@EG/@OG/@DG when a name repeats on
-several storeys. Coordinates are IFC world metres: x east, y north, z up; storey
-finished floors at UG -2.85, EG 0.00, OG 2.85, DG 5.70. Finishes sit below these datums.
+REF is the IFC Name (= the JSON "id"), with @<storey code> when a name repeats on
+several storeys. Coordinates are IFC world metres: x east, y north, z up; storey codes
+and floor elevations come from data/house.json. Finishes sit below these datums.
 Everything answers from the actual built IFC geometry (generated/geometry.npz), so
 run ./build.sh (or keep ./open.sh's viewer running) after editing data/.
 """
@@ -28,9 +29,10 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import spatial  # noqa: E402
 from geometry_cache import load  # noqa: E402
+from house import HOUSE  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-STOREY_Z = {'UG': -2.85, 'EG': 0.0, 'OG': 2.85, 'DG': 5.70}
+STOREY_Z = dict(HOUSE.elevation)
 SOLID = {'IfcWall', 'IfcWallStandardCase', 'IfcSlab', 'IfcStairFlight', 'IfcRailing', 'IfcDoor', 'IfcWindow',
          'IfcCovering', 'IfcFooting'}
 IGNORE = {'IfcSpace', 'IfcAnnotation', 'IfcGeographicElement'}
@@ -69,7 +71,7 @@ def option(args, name, default=None):
 
 
 def storey_of(z):
-    return max((s for s, z0 in STOREY_Z.items() if z >= z0 - 0.4), key=lambda s: STOREY_Z[s], default='UG')
+    return HOUSE.storey_of_z(z)
 
 
 def resolve(g, ref):
@@ -174,7 +176,9 @@ def cmd_at(g, args):
     storey = option(args, '--storey')
     xyz = parse_floats(args[0], (2, 3))
     if len(xyz) == 2:
-        s = storey or 'EG'
+        s = storey or HOUSE.default_code()
+        if s not in STOREY_Z:
+            raise SystemExit(f'unknown storey {s!r}; codes: {", ".join(STOREY_Z)}')
         xyz.append(STOREY_Z[s] + 1.0)
         print(f'(z = {s} floor + 1.00 m = {m(xyz[2])})')
     p = np.array(xyz)
@@ -272,6 +276,12 @@ def cmd_fits(g, args):
     print('FITS (actual meshes, 5 mm tolerance)' if not blocked else f'{blocked} collision(s)')
 
 
+def cmd_storeys():
+    for s in HOUSE.storeys:
+        print(f"{s['code']:5} {s['name']:24} floor at z = {float(s['elevation']):+.3f}   data/{s['file']}")
+    print('SITE  everything contained in the IfcSite' + (f"   data/{HOUSE.site_file}" if HOUSE.site_file else ''))
+
+
 COMMANDS = {'find': cmd_find, 'show': cmd_show, 'at': cmd_at, 'near': cmd_near, 'free': cmd_free,
             'clash': cmd_clash, 'fits': cmd_fits}
 
@@ -284,9 +294,12 @@ def main(argv):
         from rooms import info
         info(argv[1:])
         return 0
-    if argv and argv[0] == 'plans':
-        from documents import cmd_plans
-        cmd_plans(argv[1:])
+    if argv and argv[0] in ('sources', 'plans'):
+        from documents import cmd_sources
+        cmd_sources(argv[1:])
+        return 0
+    if argv and argv[0] == 'storeys':
+        cmd_storeys()
         return 0
     if not argv or argv[0] in ('-h', '--help', 'help') or argv[0] not in COMMANDS:
         print(__doc__)

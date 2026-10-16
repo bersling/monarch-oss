@@ -1,0 +1,7 @@
+{
+  "furniture": [
+    {"id": "GAL_CENTRE_BENCH", "rgb": [0.55, 0.42, 0.3], "boxes": [[1.1, 2.775, 0.4, 2.9, 3.225, 0.45], [1.2, 2.8, 0.0, 1.25, 3.2, 0.4], [2.75, 2.8, 0.0, 2.8, 3.2, 0.4]],
+     "props": {"Product": "Bench 180 x 45", "Supplier": "none (authored)", "SourceURL": "docs/data-format.md",
+               "Dimensions": "180 x 45 x 45 cm", "License": "MIT (project data)"}}
+  ]
+}

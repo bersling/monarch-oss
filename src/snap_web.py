@@ -6,11 +6,11 @@ A VIEW starts with a name and takes options until the next name. Coordinates are
 (x east, y north, z up, metres):
 
     exterior=-9,-16,12,7,4,1                 NAME=cam_x,cam_y,cam_z,target_x,target_y,target_z
-    exterior=-9,-16,12,7,4,1 hide=SITE       options: storeys=UG,EG  hide=SITE  cut=EG@1.2  sel=KEY
-    eg plan=EG                               top-down storey plan, north up (span=18 target=x,y)
-    gym room=UG_GYM_                         frame an element (or every key with that prefix) from
+    exterior=-9,-16,12,7,4,1 hide=SITE       options: storeys=GF,UF  hide=SITE  cut=GF@1.2  sel=KEY
+    gf plan=GF                               top-down storey plan, north up (span=18 target=x,y)
+    gallery room=GAL_                        frame an element (or every key with that prefix) from
                                              the south-east, storeys above cut away (cut= overrides)
-    plan=EG   room=UG_GYM_BENCH              without a name: auto-named plan_EG / room_UG_GYM_BENCH
+    plan=GF   room=GAL_SHELF                 without a name: auto-named plan_GF / room_GAL_SHELF
 
 All views render in ONE Chrome launch. The script reuses this checkout's compatible viewer server
 or starts one on the checkout's default port. Obsolete server code is replaced;

@@ -25,7 +25,7 @@ class SketchOpeningsTest(unittest.TestCase):
         def capture(page, **kwargs):
             drawings.extend(page.get_drawings())
             return SimpleNamespace(width=1, height=1, save=lambda _: None)
-        for storey in ('OG', 'first_floor', 'first_floor.json'):
+        for storey in ('UF', 'upper_floor', 'upper_floor.json'):
             with self.subTest(storey=storey):
                 drawings.clear()
                 with patch('products.load_plan', return_value=plan), \

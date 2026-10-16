@@ -1,0 +1,12 @@
+{
+  "name": "Casa Monarch",
+  "description": "Stub house that exercises every section type of the engine; the model home replaces it.",
+  "ifc_file": "generated/casa_monarch.ifc",
+  "units": "meters",
+  "origin_note": "Local frame: x east, y north, z up. Origin = south-west outer corner of the ground-floor envelope at finished floor level.",
+  "storeys": [
+    {"code": "GF", "name": "Ground floor", "elevation": 0.0, "file": "ground_floor.json"},
+    {"code": "UF", "name": "Upper floor", "elevation": 2.9, "file": "upper_floor.json"}
+  ],
+  "site": "site.json"
+}

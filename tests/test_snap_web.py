@@ -13,8 +13,8 @@ class SnapshotArgumentsTest(unittest.TestCase):
                              [dict(name=name, cam=[1,2,3], target=[4,5,6], fov='75')])
 
     def test_room_and_plan_selectors_still_start_views(self):
-        self.assertEqual(parse_views(['room=KIDS_DG_', 'plan=DG']),
-                         [dict(name='room_KIDS_DG', frame='KIDS_DG_'), dict(name='plan_DG', plan='DG')])
+        self.assertEqual(parse_views(['room=GAL_', 'plan=GF']),
+                         [dict(name='room_GAL', frame='GAL_'), dict(name='plan_GF', plan='GF')])
 
     def test_incomplete_room_coordinates_fail_early(self):
         with self.assertRaisesRegex(SystemExit, 'expected NAME=cam_x'):

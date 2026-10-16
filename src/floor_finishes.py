@@ -70,20 +70,3 @@ def slab_solids(slab, floorings):
             if bottom >= top:
                 raise ValueError(f"{slab['id']}: underside reaches above slab top")
             yield part, bottom, top
-
-
-def check_plan(plan, tag):
-    """Keep missing finishes/raised datums from returning on ordinary builds."""
-    slab = next(s for s in plan['slabs'] if s['id'] == f'SLAB_{tag}_FLOOR')
-    assert slab.get('recess_finishes') or plan.get('floor_build_up'), 'Floor requires recessed finishes or separate construction layers'
-    parquet = [f for f in plan['floorings'] if f['id'].startswith(f'FLOOR_PARKETT_{tag}_')]
-    assert len(parquet) == (4 if tag == 'DG' else 1), 'Missing upper-storey parquet'
-    for fl in plan['floorings']:
-        assert fl.get('z_top') == slab.get('finished_z_top',slab['z_top']) == 0, 'Finished-floor datum moved'
-        assert fl.get('thickness', 0) > 0, 'Finish needs a physical thickness'
-    for fl in parquet:
-        assert fl['rects'], f"Empty parquet: {fl['id']}"
-        for other in plan['floorings']:
-            if other is fl:
-                continue
-            assert not any(intersection(a, b) for a in fl['rects'] for b in other['rects']), 'Overlapping floor finishes'

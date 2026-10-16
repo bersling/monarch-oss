@@ -1,5 +1,6 @@
 // Real viewer regressions using Chrome's built-in DevTools protocol, no npm dependencies.
 // Start ./open.sh --no-browser --wait, then: node tests/browser_viewer.mjs http://127.0.0.1:PORT/
+// Expects the stub/model home in data/ (storeys GF + UF, gallery exhibits GAL_SHELF and GAL_PICTURE).
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
@@ -12,11 +13,12 @@ const base = process.argv[2];
 if (!base) throw new Error('Usage: node tests/browser_viewer.mjs http://127.0.0.1:PORT/');
 const viewer = new URL(base);
 if (!['127.0.0.1', 'localhost'].includes(viewer.hostname)) throw new Error('Use a local viewer');
-assert.equal(fileHref('../felsenhofstrasse/werkvertraege/Haus Nord.pdf'), '/files/felsenhofstrasse/werkvertraege/Haus%20Nord.pdf');
+assert.equal(fileHref('plans/ground floor.pdf'), '/files/plans/ground%20floor.pdf');
 assert.match(linkify('  docs/viewer.md  '), /^  <a .*<\/a>  $/);
-assert.match(linkify('../felsenhofstrasse/plaene/A.pdf'), /^<a /);
+assert.match(linkify('data/house.json'), /^<a /);
 assert.equal(linkify('<img src=x onerror=alert(1)>'), '&lt;img src=x onerror=alert(1)&gt;');
 assert.equal((linkify('https://host.test/plans/A.pdf').match(/<a /g) || []).length, 1);
+assert.equal((linkify('renders/x.png').match(/<a /g) || []).length, 0, 'only registered roots link');
 
 const profile = await mkdtemp(join(tmpdir(), 'monarch-browser-test-'));
 const chrome = spawn(process.env.MONARCH_CHROME || '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -71,15 +73,25 @@ try {
   await cdp('Runtime.enable');
   await cdp('Page.enable');
   await cdp('Emulation.setDeviceMetricsOverride', { width: 1600, height: 1000, deviceScaleFactor: 1, mobile: false });
-  await cdp('Page.navigate', { url: new URL('#frame=DG_SE_&storeys=DG&hide=SITE&cut=DG@1.5&sel=DG_SE_STORAGE_WEST', viewer).href });
+  await cdp('Page.navigate', { url: new URL('#frame=GAL_&storeys=GF&hide=SITE&cut=GF@1.5&sel=GAL_SHELF', viewer).href });
   await until('window.__monarchReady === true && !!window.__monarch');
-  assert.equal(await evaluate('window.__monarch.state.sel'), 'DG_SE_STORAGE_WEST');
-  assert.match(await evaluate('document.getElementById("panelBody").textContent'), /KALLAX/);
+  assert.equal(await evaluate('window.__monarch.state.sel'), 'GAL_SHELF');
+  assert.match(await evaluate('document.getElementById("panelBody").textContent'), /Bookshelf/);
   console.log('PASS selected IFC product identity');
+
+  const house = await (await fetch(new URL('/api/house', viewer))).json();
+  assert.equal(await evaluate('document.querySelector("#bar .brand strong").textContent'), house.name);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll("#storeys button")].map(b => b.textContent)'),
+    [...house.storeys.map(s => s.code), 'SITE']);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll("#cut option")].map(o => o.value)'), ['', ...house.storeys.map(s => s.code)]);
+  assert.deepEqual(await evaluate('window.__monarch.storeys.ELEV'), Object.fromEntries(house.storeys.map(s => [s.code, s.elevation])));
+  assert.deepEqual(await evaluate('[...window.__monarch.state.storeys]'), ['GF']);
+  console.log(`PASS house name and storey buttons come from the house index (${house.name}: ${house.storeys.map(s => s.code).join(', ')})`);
+
   const artwork = await evaluate(`(() => {
     const found = [];
     window.__monarch.scene.traverse(o => {
-      if (o.userData?.key === 'UG_GYM_POSTER' || o.userData?.key === 'UG_GYM_POSTER_POKEMON') {
+      if (o.userData?.key === 'GAL_PICTURE') {
         const images=[]; o.traverse(m => { if(m.isMesh && m.material.map) images.push({
           width:m.material.map.image.width, height:m.material.map.image.height,
           uv:!!m.geometry.attributes.uv, colour:m.material.color.getHexString()}); });
@@ -88,21 +100,39 @@ try {
     });
     return found;
   })()`);
-  assert.equal(artwork.length, 2);
+  assert.equal(artwork.length, 1);
   assert.ok(artwork.every(o => o.images.length === 1 && o.images[0].width > 500 && o.images[0].height > 500 && o.images[0].uv && o.images[0].colour === 'ffffff'), JSON.stringify(artwork));
-  console.log('PASS both owner-supplied poster images load from the IFC export with UVs and neutral colour');
+  console.log('PASS image texture loads from the IFC export with UVs and neutral colour');
+
+  // Plaques: one label per Pset_Gallery element, on by default, clickable, hash override.
+  assert.equal(await evaluate('window.__monarch.state.plaques'), true);
+  assert.deepEqual(await evaluate('window.__monarch.galleryKeys'), ['GAL_SHELF', 'GAL_PICTURE']);
+  await until('[...document.querySelectorAll("#plaques .plaque")].filter(p => !p.hidden).length === 2');
+  assert.deepEqual(await evaluate('[...document.querySelectorAll("#plaques .plaque")].map(p => p.textContent).sort()'),
+    ['Boxes in JSON', 'Image on a surface']);
+  assert.equal(await evaluate('document.getElementById("plaques").hidden'), false);
+  await evaluate('document.getElementById("plaques").querySelector(".plaque[data-key=GAL_PICTURE]").click()');
+  assert.equal(await evaluate('window.__monarch.state.sel'), 'GAL_PICTURE');
+  await evaluate('document.getElementById("plaques").querySelector(".plaque[data-key=GAL_SHELF]").click()');
+  assert.equal(await evaluate('window.__monarch.state.sel'), 'GAL_SHELF');
+  await evaluate('document.querySelector("button#plaques").click()');
+  assert.equal(await evaluate('window.__monarch.state.plaques'), false);
+  assert.equal(await evaluate('document.getElementById("plaques").hidden'), true);
+  await until('/plaques=0/.test(location.hash)');
+  await evaluate('document.querySelector("button#plaques").click()');
+  assert.equal(await evaluate('window.__monarch.state.plaques'), true);
+  console.log('PASS plaques: one label per Pset_Gallery element, click selects, toggle and hash');
 
   await evaluate('document.getElementById("documents").click()');
-  const expectedDocuments = (await (await fetch(new URL('/api/documents', viewer))).json()).documents.length;
-  await until(`document.querySelectorAll("#documentsBody a").length === ${expectedDocuments}`);
-  const documents = await evaluate(`Promise.all([...document.querySelectorAll('#documentsBody a')].map(async a => {
-    const r = await fetch(a.href); return {status:r.status,type:r.headers.get('content-type')}; }))`);
-  assert.ok(documents.every(d => d.status === 200 && d.type.includes('pdf')));
+  const documents = await (await fetch(new URL('/api/documents', viewer))).json();
+  if (documents.documents.length) {
+    await until(`document.querySelectorAll("#documentsBody a").length === ${documents.documents.filter(d => d.available).length}`);
+  } else {
+    await until('document.querySelector("#documentsBody .empty") !== null');
+    assert.match(await evaluate('document.querySelector("#documentsBody .empty").textContent'), /No source documents registered/);
+  }
   await evaluate('document.getElementById("documentsDialog").close()');
-  console.log('PASS all architectural PDF links');
-  const contracts = await evaluate(`fetch('/files/felsenhofstrasse/werkvertraege/Werkvertrag_2730_TT_Haus%20Nord.pdf').then(r=>r.status)`);
-  assert.equal(contracts, 200);
-  console.log('PASS worktree contract link');
+  console.log(`PASS sources dialog (${documents.documents.length} registered documents)`);
 
   const camera = () => evaluate('window.__monarch.camera.position.toArray()');
   const close = (actual, expected, message) => assert.ok(actual.every((x, i) => Math.abs(x - expected[i]) < 1e-9), message);
@@ -143,30 +173,44 @@ try {
   await until(`window.__monarch.version !== ${JSON.stringify(oldVersion)}`);
   close(await camera(), beforeReload, 'Reload must keep the camera position');
   assert.equal(await evaluate('window.__monarch.state.sel'), selected);
+  assert.deepEqual(await evaluate('[...document.querySelectorAll("#storeys button")].map(b => b.textContent)'),
+    [...house.storeys.map(s => s.code), 'SITE']);
+  // The camera moved during the tests above, so the labels may be off screen; the set is rebuilt.
+  await until('document.querySelectorAll("#plaques .plaque").length === 2 && !document.getElementById("plaques").hidden');
   assert.deepEqual(errors, []);
-  console.log('PASS reload preserves camera and selection; no JavaScript errors');
+  console.log('PASS reload preserves camera, selection, storeys and plaques; no JavaScript errors');
 
   const depths = await evaluate('window.__monarch.depthCheck()');
   assert.ok(depths.every(r => r.samples > 100 && r.wrong / r.samples < .01), JSON.stringify(depths));
   assert.deepEqual(errors, []);
   console.log('PASS coplanar finishes remain visible and cannot bleed through a solid 5 mm in front');
 
+  // Camera obstruction diagnostics on the stub: ROOF_S spans y -0.4..3 at z 5.59..7.7 (UF).
   const cameras = await evaluate(`(() => {
     const m=window.__monarch;
     const check=raw => {m.applyView(m.parseView(raw)); return m.cameraObstructions();};
     return {
-      inRoof:check({cam:[9.2,8.5,7.3],target:[13.7,6.7,6.85],storeys:'DG'}),
-      inRoom:check({cam:[9.2,7.8,6.8],target:[13.7,6.7,6.85],storeys:'DG'}),
-      cutRoof:check({cam:[9.2,8.5,7.3],target:[13.7,6.7,6.85],storeys:'DG',cut:'DG@1.2'}),
-      hiddenRoof:check({cam:[9.2,8.5,7.3],target:[13.7,6.7,6.85],storeys:'EG'})
+      inRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'UF'}),
+      inRoom:check({cam:[2,2,4.5],target:[4,3,5],storeys:'UF'}),
+      cutRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'UF',cut:'UF@1.2'}),
+      hiddenRoof:check({cam:[4,0.6,6.25],target:[4,3,5],storeys:'GF'})
     };
   })()`);
-  assert.ok(cameras.inRoof.includes('ROOF_N_E'), JSON.stringify(cameras));
+  assert.ok(cameras.inRoof.includes('ROOF_S'), JSON.stringify(cameras));
   assert.deepEqual(cameras.inRoom, []);
   assert.deepEqual(cameras.cutRoof, []);
   assert.deepEqual(cameras.hiddenRoof, []);
   assert.deepEqual(errors, []);
   console.log('PASS screenshot camera diagnostics detect the actual roof, respecting empty room space, cuts and hidden storeys');
+
+  // plaques=0 in the hash starts with the labels off; plan view uses the ground storey by default.
+  await cdp('Page.navigate', { url: new URL('?fresh=1#plan=GF&plaques=0', viewer).href });   // query forces a full load
+  await until('window.__monarchReady === true && !!window.__monarch && window.__monarch.state.plan === "GF"');
+  assert.equal(await evaluate('window.__monarch.state.plaques'), false);
+  assert.equal(await evaluate('document.getElementById("plaques").hidden'), true);
+  assert.deepEqual(await evaluate('window.__monarch.state.cut'), { storey: 'GF', height: 1.2 });
+  assert.deepEqual(errors, []);
+  console.log('PASS plaques=0 hash override and plan on the ground storey');
 
   if (process.env.MONARCH_BROWSER_SCREENSHOT) {
     const shot = await cdp('Page.captureScreenshot', { format: 'png' });

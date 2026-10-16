@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Haus Nord viewer</title>
+<title>Monarch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -22,9 +22,9 @@
 <header id="bar">
   <div class="brand">
     <div class="eyebrow"><i></i>Monarch · IFC</div>
-    <strong>Haus Nord</strong>
+    <strong>Monarch</strong>
   </div>
-  <button id="documents" class="tg plain" title="Open source plans and their printed dates">Plans</button>
+  <button id="documents" class="tg plain" title="Registered source documents (data/plan_documents.json)">Sources</button>
   <div class="sep"></div>
   <div class="group">
     <span class="lab">Storeys</span>
@@ -34,7 +34,7 @@
   <div class="group">
     <label class="lab" for="cut">Cut</label>
     <select id="cut" title="Show this storey and those below, clipped at elevation + height">
-      <option value="">off</option><option>UG</option><option>EG</option><option>OG</option><option>DG</option>
+      <option value="">off</option>
     </select>
     <span class="num"><input id="cutHeight" type="number" step="0.1" value="1.2" title="Cut height above storey floor (m)"><small>m</small></span>
   </div>
@@ -51,6 +51,7 @@
     <button id="measure" class="tg" title="Measure: click two points. Snaps to corners and edges (Alt: off), Shift locks an axis, Space+drag looks around (M)"><i></i>Measure<kbd>M</kbd></button>
     <button id="edges" class="tg on" title="Toggle edge lines"><i></i>Edges</button>
     <button id="spaces" class="tg" title="Toggle IfcSpace volumes"><i></i>Spaces</button>
+    <button id="plaques" class="tg" title="Floating titles of elements with Pset_Gallery"><i></i>Plaques</button>
     <button id="trueColour" class="tg" title="True colour: flat even light, no shadows, no bloom, no tone mapping. For judging finishes (T)"><i></i>True colour<kbd>T</kbd></button>
     <button id="home" class="tg plain" title="Reset the camera (H)">Home<kbd>H</kbd></button>
   </div>
@@ -72,6 +73,7 @@
   <div id="panelBody"></div>
 </aside>
 
+<div id="plaques" hidden></div>
 <div id="measureBox" hidden></div>
 <svg id="measureSvg" aria-hidden="true"></svg>
 <div id="measureLabel" class="mlab main" hidden></div>
@@ -91,9 +93,9 @@
   <form method="dialog"><h3 id="logTitle"></h3><pre id="logText"></pre><button>Close</button></form>
 </dialog>
 <dialog id="documentsDialog">
-  <form method="dialog"><h3>Model source plans</h3>
-    <p>Printed dates identify these references. Site measurements and signed product specifications can override specific details.</p>
-    <div id="documentsBody">Loading plans…</div>
+  <form method="dialog"><h3>Source documents</h3>
+    <p>The plans, datasheets and surveys this model was traced from, with their printed dates. Site measurements and signed product specifications can override specific details.</p>
+    <div id="documentsBody">Loading…</div>
     <button>Close</button>
   </form>
 </dialog>

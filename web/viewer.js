@@ -1,5 +1,9 @@
 import { esc, linkify } from './document_links.js';
-/* Haus Nord browser viewer (three.js, served by src/serve.py).
+/* Monarch browser viewer (three.js, served by src/serve.py).
+
+Storeys are data: generated/elements.json carries house.storeys (codes in order, bottom to
+top, with elevations) from data/house.json; the pseudo storey SITE (everything contained in
+the IfcSite) comes last. The examples below use the codes of the model home, GF and UF.
 
 URL hash state. All coordinates are IFC: x east, y north, z up, metres. Order does not
 matter, unknown keys are ignored, lists may use , ; or spaces, storeys are case-insensitive.
@@ -7,19 +11,21 @@ matter, unknown keys are ignored, lists may use , ; or spaces, storeys are case-
   cam=x,y,z          perspective camera position
   fov=45             vertical field of view preset: 30, 45 (default), 60 or 75 degrees
   target=x,y,z       orbit target (plan mode: x,y = centre of the plan)
-  storeys=UG,EG,...  visible storeys (default all: UG,EG,OG,DG,SITE; "none" allowed)
+  storeys=GF,UF      visible storeys (default all, SITE included; "none" allowed)
   hide=SITE          storeys to hide, applied after storeys=
-  cut=EG@1.2         show EG and everything below, clip everything above EG floor + 1.2 m
-                     (cut=EG means @1.2; cut=off disables)
-  plan=EG            top-down orthographic view, north up; implies cut=EG@1.2 unless cut= given
+  cut=GF@1.2         show GF and everything below, clip everything above GF floor + 1.2 m
+                     (cut=GF means @1.2; cut=off disables)
+  plan=GF            top-down orthographic view, north up; implies cut=GF@1.2 unless cut= given
   span=18            plan mode: metres visible vertically (default: fit the storey)
   sel=KEY            select an element (product panel + highlight)
   Keys while an element is selected: F frame, X remove it for this session (not saved; Z undo,
   Shift+Z restore all, reload restores everything).
   frame=KEY          frame an element from an oblique south-east angle, cutting storeys above
-                     (cut=<storey>@2.2 unless cut= given). KEY may be a prefix: frame=UG_GYM_
-                     frames every element whose key starts with UG_GYM_. Overrides cam/target.
+                     (cut=<storey>@2.2 unless cut= given). KEY may be a prefix: frame=GAL_
+                     frames every element whose key starts with GAL_. Overrides cam/target.
   edges=0            hide edge lines        spaces=1   show IfcSpace volumes
+  plaques=0          hide the floating title labels of elements with Pset_Gallery (default: shown
+                     when the model has any)
   look=true          true-colour lighting (flat, no shadows, no bloom); default look=cinema (T toggles)
 
 Snapshot mode (for AI verification, driven by src/snap_web.py):
@@ -31,9 +37,9 @@ Snapshot mode (for AI verification, driven by src/snap_web.py):
   window.__monarchSnapDone = true after all PNGs are posted (window.__monarchSnapError on failure).
 
 Examples:
-  #cam=-9,-16,12&target=7,4,1
-  #plan=EG
-  #frame=UG_GYM_&sel=UG_GYM_BENCH
+  #cam=-9,-12,9&target=4,3,2
+  #plan=GF
+  #frame=GAL_&sel=GAL_SHELF
 */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -44,13 +50,26 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const STOREYS = ['UG', 'EG', 'OG', 'DG', 'SITE'];
-const FLOORS = ['UG', 'EG', 'OG', 'DG'];
-const ELEV = { UG: -2.85, EG: 0.0, OG: 2.85, DG: 5.70 };
-const RANK = { SITE: -1, UG: 0, EG: 1, OG: 2, DG: 3 };
+// Storeys of the loaded model (setStoreys at load): FLOORS = building storey codes bottom to
+// top, STOREYS = FLOORS + the pseudo storey SITE, ELEV = floor elevation per code (IFC z),
+// RANK = index in FLOORS (SITE: -1). Empty until the first elements.json arrives.
+let STOREYS = ['SITE'], FLOORS = [], ELEV = {}, RANK = { SITE: -1 };
 const DEFAULT_CUT = 1.2, FRAME_CUT = 2.2, EDGE_ANGLE = 30, EDGE_MAX_TRIS = 25000;
 const FOV_PRESETS = [30, 45, 60, 75], DEFAULT_FOV = 45;
-const storeyOf = s => (s in ELEV ? s : 'SITE');          // "Property Site" etc. -> SITE
+const storeyOf = s => (s in ELEV ? s : 'SITE');          // anything not a building storey -> SITE
+function setStoreys(list) {
+  FLOORS = list.map(s => String(s.code));
+  STOREYS = [...FLOORS, 'SITE'];
+  ELEV = Object.fromEntries(list.map(s => [String(s.code), Number.isFinite(+s.elevation) ? +s.elevation : 0]));
+  RANK = { SITE: -1, ...Object.fromEntries(FLOORS.map((c, i) => [c, i])) };
+}
+/** Default storey for plan and cut: the one at elevation 0, else the lowest. */
+const groundStorey = () => FLOORS.find(c => ELEV[c] === 0) ?? FLOORS[0] ?? null;
+/** Storey code matching s case-insensitively, or null. */
+function storeyCode(s) {
+  const u = String(s).trim().toUpperCase();
+  return STOREYS.find(c => c.toUpperCase() === u) ?? null;
+}
 
 // IFC (x, y, z) <-> three.js (x, z, -y)
 const toThree = (x, y, z) => new THREE.Vector3(x, z, -y);
@@ -79,17 +98,17 @@ function parseStoreys(v) {
   const list = Array.isArray(v) ? v : String(v).split(/[\s,;+|]+/);
   const out = new Set();
   for (let s of list) {
-    s = String(s).trim().toUpperCase();
-    if (s === 'ALL') STOREYS.forEach(x => out.add(x));
-    else if (s === 'PROPERTY SITE' || s === 'PROPERTY_SITE') out.add('SITE');
-    else if (STOREYS.includes(s)) out.add(s);
+    const code = String(s).trim().toUpperCase() === 'ALL' ? 'ALL' : storeyCode(s);
+    if (code === 'ALL') STOREYS.forEach(x => out.add(x));
+    else if (code) out.add(code);
   }
   return out;
 }
 function parseCut(v) {
   if (v && typeof v === 'object') v = `${v.storey}@${v.height ?? DEFAULT_CUT}`;
-  const m = String(v ?? '').trim().toUpperCase().match(/^(UG|EG|OG|DG)\s*(?:[@:,\s]\s*([-+]?\d*\.?\d+))?/);
-  return m ? { storey: m[1], height: m[2] != null ? +m[2] : DEFAULT_CUT } : null;   // null = off
+  const m = String(v ?? '').trim().match(/^([^@:,\s]+)\s*(?:[@:,\s]\s*([-+]?\d*\.?\d+))?/);
+  const storey = m && storeyCode(m[1]);
+  return storey && FLOORS.includes(storey) ? { storey, height: m[2] != null ? +m[2] : DEFAULT_CUT } : null;   // null = off
 }
 const flag = v => !/^(0|false|off|no)$/i.test(String(v).trim());
 
@@ -114,6 +133,7 @@ function parseView(raw) {
   if (raw.frame != null && String(raw.frame).trim()) v.frame = String(raw.frame).trim();
   if (raw.edges != null) v.edges = flag(raw.edges);
   if (raw.spaces != null) v.spaces = flag(raw.spaces);
+  if (raw.plaques != null) v.plaques = flag(raw.plaques);
   if (raw.look != null) v.look = /^(true|tc|truecolou?r|1)$/i.test(String(raw.look).trim()) ? 'true' : 'cinema';
   return v;
 }
@@ -469,6 +489,7 @@ function patchMaterial(m, earth = false) {
 // ---------------------------------------------------------------- state
 const state = {
   storeys: new Set(STOREYS), cut: null, plan: null, sel: null, edges: true, spaces: false,
+  plaques: false,                  // floating Pset_Gallery titles (default on when the model has any)
   measure: false,
   removed: new Set(),              // keys hidden with X: play-around only, never saved, gone on reload
 };
@@ -476,6 +497,8 @@ const removedStack = [];           // removal order for Z (undo)
 let model = null;                  // THREE.Group of the loaded glb
 let elements = new Map();          // key -> element from elements.json
 let nodes = new Map();             // key -> glTF node (Object3D)
+let galleryKeys = [];              // elements with psets.Pset_Gallery, in elements.json order
+let houseName = 'Monarch';
 let pickables = [];                // meshes currently visible
 let loadedVersion = null, loadingVersion = null, wantedVersion = null;
 let modelRetry = null;
@@ -537,6 +560,12 @@ async function loadModel(version) {
   scene.add(model);
   nodes = newNodes;
   elements = new Map(data.elements.map(e => [e.key, e]));
+  applyHouse(data.house || await fetch('/api/house').then(r => (r.ok ? r.json() : null)).catch(() => null));
+  const hadGallery = galleryKeys.length > 0;
+  galleryKeys = data.elements.filter(e => e.psets?.Pset_Gallery).map(e => e.key);
+  if (!galleryKeys.length) state.plaques = false;
+  else if (!hadGallery && loadedVersion !== null) state.plaques = true;   // a reload brought the first exhibits
+  buildPlaques();
   loadedVersion = version;
   loadingVersion = null;
   applyVisibility();
@@ -545,6 +574,31 @@ async function loadModel(version) {
   queueEdges();
   invalidate();
   loadingEl.hidden = true;
+}
+
+/** Storeys, name and the storey widgets from the house summary (elements.json "house",
+ * else /api/house). Without a storey list the codes come from the elements themselves. */
+function applyHouse(house) {
+  houseName = house?.name || 'Monarch';
+  document.querySelector('#bar .brand strong').textContent = houseName;
+  document.title = houseName === 'Monarch' ? 'Monarch' : `${houseName} · Monarch`;
+  let list = Array.isArray(house?.storeys) ? house.storeys.filter(s => s && s.code != null && String(s.code).toUpperCase() !== 'SITE') : [];
+  if (!list.length) {
+    const seen = new Map();
+    for (const e of elements.values()) {
+      if (!e.storey || e.storey === 'SITE') continue;
+      seen.set(e.storey, Math.min(seen.get(e.storey) ?? Infinity, e.bbox?.[2] ?? 0));
+    }
+    list = [...seen].map(([code, elevation]) => ({ code, elevation })).sort((a, b) => a.elevation - b.elevation);
+  }
+  const before = new Set(STOREYS), first = loadedVersion === null;
+  setStoreys(list);
+  // Keep the user's storey choice across a reload; storeys new to the model start visible.
+  state.storeys = new Set(STOREYS.filter(s => first || !before.has(s) || state.storeys.has(s)));
+  if (state.cut && !FLOORS.includes(state.cut.storey)) state.cut = null;
+  if (state.plan && !FLOORS.includes(state.plan)) state.plan = groundStorey();
+  buildStoreyChips();
+  cutSel.innerHTML = '<option value="">off</option>' + FLOORS.map(c => `<option>${esc(c)}</option>`).join('');
 }
 
 function dispose(root) {
@@ -632,6 +686,7 @@ function applyVisibility() {
     POCHE.value = 0;
   }
   EDGE_MATERIAL.visible = state.edges;
+  plaqueBox.hidden = !state.plaques || !galleryKeys.length;
   placeGround();
   syncShadows();
   invalidateShadows();
@@ -787,6 +842,7 @@ function applyView(v) {
   (v.hide || []).forEach(s => state.storeys.delete(s));
   state.edges = v.edges ?? true;
   state.spaces = v.spaces ?? false;
+  state.plaques = v.plaques ?? galleryKeys.length > 0;
   if (v.look) setLook(v.look);
   state.cut = v.cut !== undefined ? v.cut : null;
   if (v.frame && frameView(v.frame, v.cut)) {
@@ -837,6 +893,7 @@ function currentHash() {
   if (state.sel) p.push(`sel=${encodeURIComponent(state.sel)}`);
   if (!state.edges) p.push('edges=0');
   if (state.spaces) p.push('spaces=1');
+  if (galleryKeys.length && !state.plaques) p.push('plaques=0');
   if (look === 'true') p.push('look=true');
   return '#' + p.join('&').replace(/, /g, ',');
 }
@@ -968,10 +1025,12 @@ document.getElementById('documents').onclick = async () => {
   dialog.showModal();
   try {
     const response = await fetch('/api/documents');
-    if (!response.ok) throw new Error(`Plans could not be loaded (${response.status})`);
+    if (!response.ok) throw new Error(`Source documents could not be loaded (${response.status})`);
     const data = await response.json();
-    body.innerHTML = (data.errors.length ? `<p class="warning">${data.errors.map(esc).join('<br>')}</p>` : '')
-      + data.documents.map(d => `<details><summary>${esc(d.title)} · ${esc(d.printed_date)}</summary>`
+    const errors = data.errors || [], docs = data.documents || [];
+    body.innerHTML = (errors.length ? `<p class="warning">${errors.map(esc).join('<br>')}</p>` : '')
+      + (docs.length ? '' : '<p class="empty">No source documents registered. Add data/plan_documents.json to pin the plans and datasheets this model was traced from.</p>')
+      + docs.map(d => `<details><summary>${esc(d.title)} · ${esc(d.printed_date)}</summary>`
         + `<p>${d.available ? `<a href="${esc(d.href)}" target="_blank" rel="noopener">Open PDF</a>` : 'Document unavailable'} · ${esc(d.status)}</p>`
         + `<p>${esc(d.scope)}</p><p>${esc(d.model_evidence)}</p></details>`).join('');
   } catch (error) { body.textContent = String(error); }
@@ -1220,6 +1279,74 @@ function drawMeasureOverlay() {
   }
 }
 
+// ---------------------------------------------------------------- plaques (Pset_Gallery titles)
+// One HTML pill per element with Pset_Gallery, anchored at the top centre of its bounding box
+// (at the section plane while cut) and re-projected after every redraw. Hidden with the
+// element (storey, cut, removal), behind the eye, or off screen. Clicking a pill selects it.
+const plaqueBox = document.getElementById('plaques');
+const plaques = new Map();                               // key -> {el, anchor: THREE.Vector3 (three coords)}
+function buildPlaques() {
+  plaqueBox.innerHTML = '';
+  plaques.clear();
+  for (const key of galleryKeys) {
+    const e = elements.get(key), title = String(e.psets.Pset_Gallery.Title ?? e.label ?? key);
+    const el = document.createElement('button');
+    el.className = 'plaque';
+    el.type = 'button';
+    el.dataset.key = key;
+    el.textContent = title;
+    el.title = `${title} · ${key}`;
+    el.hidden = true;
+    el.onclick = () => setSelection(key === state.sel ? null : key);
+    plaqueBox.append(el);
+    plaques.set(key, { el, title });
+  }
+}
+/** Screen position of an element's label anchor, or null when it should not show. */
+function plaqueAnchor(key) {
+  const node = nodes.get(key), b = elements.get(key)?.bbox;
+  if (!node || !b || !isShown(node)) return null;
+  const clipZ = state.cut ? clipPlane.constant : Infinity;
+  if (b[2] > clipZ) return null;                         // entirely above the section plane
+  const p = toScreen(toThree((b[0] + b[3]) / 2, (b[1] + b[4]) / 2, Math.min(b[5], clipZ)));
+  if (!p || p.x < canvasRect.left || p.x > canvasRect.right || p.y < canvasRect.top || p.y > canvasRect.bottom) return null;
+  return p;
+}
+function drawPlaques() {
+  if (plaqueBox.hidden) return;
+  camera.updateMatrixWorld();
+  canvasRect = canvas.getBoundingClientRect();
+  for (const [key, { el }] of plaques) {
+    const p = plaqueAnchor(key);
+    if (!p) { el.hidden = true; continue; }
+    el.style.transform = `translate(${p.x.toFixed(1)}px, ${p.y.toFixed(1)}px)`;
+    el.classList.toggle('sel', key === state.sel);
+    el.hidden = false;
+  }
+}
+/** Snapshot mode: the PNG comes from the WebGL canvas, so the pills are painted into a 2D copy. */
+function compositePlaques(target) {
+  const g = target.getContext('2d');
+  g.drawImage(canvas, 0, 0);
+  if (!state.plaques || !galleryKeys.length) return;
+  canvasRect = { left: 0, top: 0, right: target.width, bottom: target.height, width: target.width, height: target.height };
+  camera.updateMatrixWorld();
+  g.font = '500 13px "DM Mono", Menlo, monospace';
+  g.textBaseline = 'middle';
+  for (const [key, { title }] of plaques) {
+    const p = plaqueAnchor(key);
+    if (!p) continue;
+    const w = g.measureText(title).width + 22, h = 26, x = p.x - w / 2, y = p.y - 14 - h, r = 13;
+    g.strokeStyle = 'rgba(160, 190, 230, 0.45)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(p.x, y + h); g.lineTo(p.x, p.y); g.stroke();
+    g.beginPath(); g.arc(p.x, p.y, 2.5, 0, Math.PI * 2); g.fillStyle = '#e8edf5'; g.fill();
+    g.beginPath(); g.roundRect(x, y, w, h, r);
+    g.fillStyle = 'rgba(9, 13, 21, 0.86)'; g.fill();
+    g.stroke();
+    g.fillStyle = '#e8edf5'; g.fillText(title, x + 11, y + h / 2 + 0.5);
+  }
+}
+
 // Magnetic snap: corner > edge > face.
 const _plane = new THREE.Plane(), _vinv = new THREE.Matrix4(), _toC = new THREE.Vector3(), _wa = new THREE.Vector3(), _wb = new THREE.Vector3(),
   _va = new THREE.Vector3(), _vb = new THREE.Vector3();
@@ -1435,18 +1562,21 @@ resultsEl.addEventListener('mousedown', ev => {
 
 // ---------------------------------------------------------------- toolbar
 const storeyBar = document.getElementById('storeys');
-for (const s of STOREYS) {
-  const b = document.createElement('button');
-  b.textContent = s;
-  b.dataset.storey = s;
-  b.title = `Toggle ${s} (Alt-click: only ${s})`;
-  b.onclick = ev => {
-    if (ev.altKey) state.storeys = new Set([s]);
-    else if (state.storeys.has(s)) state.storeys.delete(s);
-    else state.storeys.add(s);
-    applyVisibility(); scheduleHash();
-  };
-  storeyBar.append(b);
+function buildStoreyChips() {
+  storeyBar.innerHTML = '';
+  for (const s of STOREYS) {
+    const b = document.createElement('button');
+    b.textContent = s;
+    b.dataset.storey = s;
+    b.title = `Toggle ${s} (Alt-click: only ${s})`;
+    b.onclick = ev => {
+      if (ev.altKey) state.storeys = new Set([s]);
+      else if (state.storeys.has(s)) state.storeys.delete(s);
+      else state.storeys.add(s);
+      applyVisibility(); scheduleHash();
+    };
+    storeyBar.append(b);
+  }
 }
 const cutSel = document.getElementById('cut'), cutHeight = document.getElementById('cutHeight');
 cutSel.onchange = () => {
@@ -1474,6 +1604,7 @@ btn('plan').onclick = togglePlan;
 btn('measure').onclick = ev => { ev.currentTarget.blur(); setMeasure(!state.measure); };
 btn('edges').onclick = () => { state.edges = !state.edges; applyVisibility(); scheduleHash(); };
 btn('spaces').onclick = () => { state.spaces = !state.spaces; applyVisibility(); scheduleHash(); };
+btn('plaques').onclick = () => { state.plaques = !state.plaques; applyVisibility(); scheduleHash(); };
 btn('home').onclick = () => { exitPlanIfAny(); homeView(); scheduleHash(); };
 btn('trueColour').onclick = toggleLook;
 // Segmented control: clicking "Look" always means look, "Orbit" always orbit (a plain toggle
@@ -1486,7 +1617,7 @@ function toggleLook() { setLook(look === 'true' ? 'cinema' : 'true'); syncToolba
 function exitPlanIfAny() { if (state.plan) exitPlan(); }
 function togglePlan() {
   if (state.plan) exitPlan();
-  else enterPlan(state.cut?.storey || 'EG');
+  else { const s = state.cut?.storey || groundStorey(); if (s) enterPlan(s); }
   scheduleHash();
 }
 function syncToolbar() {
@@ -1505,6 +1636,10 @@ function syncToolbar() {
   btn('measure').classList.toggle('on', state.measure);
   btn('edges').classList.toggle('on', state.edges);
   btn('spaces').classList.toggle('on', state.spaces);
+  btn('plaques').classList.toggle('on', state.plaques && galleryKeys.length > 0);
+  btn('plaques').disabled = !galleryKeys.length;
+  btn('plaques').title = galleryKeys.length ? `Floating titles of the ${galleryKeys.length} elements with Pset_Gallery`
+    : 'No elements with Pset_Gallery';
   btn('trueColour').classList.toggle('on', look === 'true');
   btn('navMode').dataset.mode = navMode;
   btn('hint').textContent = state.measure
@@ -1649,6 +1784,7 @@ function frame() {
   renderCount++;
   draw();
   drawMeasureOverlay();
+  drawPlaques();
 }
 
 // ---------------------------------------------------------------- snapshot mode
@@ -1714,7 +1850,10 @@ async function runSnaps() {
     draw();
     await nextFrame();
     draw();
-    const blob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+    const shot = document.createElement('canvas');
+    shot.width = canvas.width; shot.height = canvas.height;
+    compositePlaques(shot);
+    const blob = await new Promise(r => shot.toBlob(r, 'image/png'));
     const res = await fetch(`/api/snap?name=${encodeURIComponent(name)}`, { method: 'POST', body: blob });
     if (!res.ok) throw new Error(`POST /api/snap ${res.status}`);
     console.log(`snap ${name} posted (${blob.size} bytes)`);
@@ -1872,6 +2011,7 @@ async function boot() {
   window.__monarch = { state, orbit, get version() { return loadedVersion; }, get camera() { return camera; }, applyView, parseView,
     hash: currentHash, showStatus, setLook, bench, colourCheck, depthCheck, cameraObstructions, LOOKS, bloomPass, sun, hemi,
     get renderCount() { return renderCount; }, invalidate, scene, THREE, measure, snapAt, setMeasure, MEASURE_CLICK, toScreen: v => { canvasRect = canvas.getBoundingClientRect(); return toScreen(v); },
+    get storeys() { return { STOREYS, FLOORS, ELEV, RANK }; }, get house() { return houseName; }, get galleryKeys() { return galleryKeys; },
     reload: () => ensureVersion(`${loadedVersion}-r${Date.now()}`) };   // test the hot-reload path
   window.__monarchReady = true;
   connectEvents();

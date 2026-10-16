@@ -1,4 +1,4 @@
-/* Haus Nord viewer. Dark glass chrome (navy, 1px borders, Outfit + DM Mono), the model keeps
+/* Monarch viewer. Dark glass chrome (navy, 1px borders, Outfit + DM Mono), the model keeps
    its true colours: nothing here tints the canvas except the faint vignette, which the True
    colour look switches off. */
 :root {
@@ -236,8 +236,26 @@ dialog button { margin-top: 12px; padding: 8px 16px; border-radius: 9px; border:
 #documentsBody details { border-top: 1px solid var(--line); padding: 12px 0; }
 #documentsBody summary { cursor: pointer; font-weight: 500; }
 #documentsBody p { line-height: 1.5; color: var(--muted); }
-#documentsBody a { color: var(--accent); }
+#documentsBody a { color: var(--blue); }
 #documentsBody .warning { color: #ffac85; }
+#documentsBody .empty { color: var(--muted); padding: 10px 12px; border: 1px dashed var(--line2); border-radius: 10px; }
+
+/* ------------------------------------------------------------ plaques (Pset_Gallery titles) */
+#plaques { position: fixed; inset: 0; z-index: 3; pointer-events: none; overflow: hidden; }
+#plaques[hidden] { display: none; }
+.plaque {
+  position: fixed; left: 0; top: 0; pointer-events: auto; cursor: pointer; white-space: nowrap; will-change: transform;
+  margin: -40px 0 0 0; translate: -50% 0; padding: 5px 11px; border-radius: 999px;
+  font: 500 12px/1 var(--mono); letter-spacing: 0.02em; color: var(--text);
+  background: rgba(9, 13, 21, 0.86); border: 1px solid var(--line2); box-shadow: 0 6px 18px -6px rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); transition: border-color 0.2s, color 0.2s;
+}
+.plaque::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 14px; background: rgba(160, 190, 230, 0.45); }
+.plaque::before { content: ''; position: absolute; left: 50%; top: calc(100% + 14px); width: 5px; height: 5px; margin-left: -2.5px;
+  border-radius: 50%; background: var(--text); }
+.plaque:hover { border-color: rgba(62, 166, 255, 0.55); }
+.plaque.sel { border-color: rgba(62, 166, 255, 0.7); background: rgba(14, 30, 52, 0.9); color: #cfe6ff; }
+.plaque[hidden] { display: none; }
 
 @media (max-width: 1400px) {
   .tg kbd { display: none; }
@@ -254,6 +272,6 @@ dialog button { margin-top: 12px; padding: 8px 16px; border-radius: 9px; border:
 
 /* Snapshot mode: only the canvas matters. */
 body.snap #bar, body.snap #panel, body.snap #stats, body.snap #status, body.snap #hint, body.snap #loading, body.snap #measureBox,
-body.snap #measureSvg, body.snap .mlab,
+body.snap #measureSvg, body.snap .mlab, body.snap #plaques,
 body.snap .vignette { display: none !important; }
 body.snap #view { width: auto; height: auto; inset: auto; left: 0; top: 0; }

@@ -1,6 +1,6 @@
-// Evidence paths can contain spaces, decomposed umlauts and punctuation.
-// Escape text first, and allow only HTTP(S) and the server's document namespace.
-const ROOTS = '(?:plans|docs|assets|renders|data|floorplans_2026-03-05|(?:\\.\\./)?felsenhofstrasse)';
+// Source paths can contain spaces, decomposed umlauts and punctuation.
+// Escape text first, and allow only HTTP(S) and the server's document roots (plans/, docs/, assets/, data/).
+const ROOTS = '(?:plans|docs|assets|data)';
 const PATH_RE = new RegExp(`(?<![A-Za-z0-9_/])(${ROOTS}\\/[^\\n;|]*?\\.(?:pdf|png|jpe?g|webp|gif|svg|json|obj|mtl|glb|gltf|ifc|txt|md|dxf|dwg|csv|xlsx?|docx?|html?))(?=$|[\\s,;)\\]])`, 'gi');
 const URL_RE = /\bhttps?:\/\/[^\s<>"')\]]+/gi;
 export function fileHref(path) {

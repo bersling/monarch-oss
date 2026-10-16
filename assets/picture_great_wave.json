@@ -1,0 +1,20 @@
+{
+ "file": "assets/picture_great_wave.jpg",
+ "pixels": [
+  1200,
+  828
+ ],
+ "aspect": 1.4493,
+ "suggested_size_m": [
+  0.9,
+  0.621
+ ],
+ "props": {
+  "Product": "The Great Wave off Kanagawa (Kanagawa oki nami ura), woodblock print, c. 1831",
+  "Artist": "Katsushika Hokusai (1760-1849)",
+  "ImageSource": "Wikimedia Commons",
+  "ImageURL": "https://commons.wikimedia.org/wiki/File:The_Great_Wave_off_Kanagawa.jpg",
+  "ImageLicense": "Public domain (artist died more than 70 years ago; faithful reproduction of a 2D work)",
+  "Dimensions": "1200 x 828 px, aspect 1.449 (original print about 0.26 x 0.38 m; scale the frame as you like)"
+ }
+}

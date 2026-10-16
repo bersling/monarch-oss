@@ -1,0 +1,23 @@
+{
+ "file": "assets/bust_polyhaven_515.obj",
+ "size_m": [
+  0.272,
+  0.3,
+  0.515
+ ],
+ "origin": "center",
+ "rgb": [
+  0.9,
+  0.89,
+  0.86
+ ],
+ "props": {
+  "Product": "Marble Bust 01 (classical male portrait bust)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/marble_bust_01",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Rico Cilliers",
+  "Dimensions": "0.272 x 0.300 x 0.515 m (as converted)",
+  "MeshNote": "Face looks toward +Y. Gallery exhibit \"Imported from Poly Haven\"."
+ }
+}

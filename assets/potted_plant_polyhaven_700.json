@@ -1,0 +1,43 @@
+{
+ "file": "assets/potted_plant_polyhaven_700_pot.obj",
+ "size_m": [
+  0.701,
+  0.658,
+  0.842
+ ],
+ "origin": "center",
+ "rgb": [
+  0.3,
+  0.5,
+  0.25
+ ],
+ "props": {
+  "Product": "Potted Plant 02 (caladium in a terracotta pot)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/potted_plant_02",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Rico Cilliers",
+  "Dimensions": "0.701 x 0.658 x 0.842 m (as converted)",
+  "MeshNote": "Split by material: pot + leaves share one origin. Leaves are flat cards; fine from room distance."
+ },
+ "parts": [
+  {
+   "file": "assets/potted_plant_polyhaven_700_pot.obj",
+   "rgb": [
+    0.66,
+    0.4,
+    0.28
+   ],
+   "name": "pot and soil"
+  },
+  {
+   "file": "assets/potted_plant_polyhaven_700_leaves.obj",
+   "rgb": [
+    0.3,
+    0.52,
+    0.26
+   ],
+   "name": "leaves"
+  }
+ ]
+}

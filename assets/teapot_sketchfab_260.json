@@ -1,0 +1,25 @@
+{
+ "file": "assets/teapot_sketchfab_260.obj",
+ "size_m": [
+  0.26,
+  0.186,
+  0.316
+ ],
+ "origin": "center",
+ "rgb": [
+  0.92,
+  0.92,
+  0.9
+ ],
+ "props": {
+  "Product": "Old Soviet teapot (white enamel kettle with bail handle)",
+  "MeshSource": "Sketchfab",
+  "MeshURL": "https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da",
+  "MeshLicense": "CC BY 4.0",
+  "MeshLicenseURL": "http://creativecommons.org/licenses/by/4.0/",
+  "MeshAuthor": "Amagitsune (https://sketchfab.com/Amagitsune)",
+  "Attribution": "This work is based on \"Old Soviet teapot\" (https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da) by Amagitsune (https://sketchfab.com/Amagitsune) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+  "Dimensions": "0.260 x 0.186 x 0.316 m, handle up (scaled to a typical 3 l enamel kettle; the source has no real-world scale) (as converted)",
+  "MeshNote": "Spout points +X, handle stands up. All five source parts kept (body, lid, spout, handle, knob)."
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "file": "assets/dining_table_polyhaven_2400.obj",
+ "size_m": [
+  2.406,
+  1.137,
+  0.959
+ ],
+ "origin": "center",
+ "rgb": [
+  0.36,
+  0.44,
+  0.52
+ ],
+ "props": {
+  "Product": "Painted Wooden Table (blue-grey trestle dining table)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/painted_wooden_table",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Kirill Sannikov",
+  "Dimensions": "2.406 x 1.137 x 0.959 m (as converted)",
+  "MeshNote": "Symmetric; long side along X."
+ }
+}

@@ -1,0 +1,43 @@
+{
+ "file": "assets/armchair_polyhaven_820_legs.obj",
+ "size_m": [
+  0.82,
+  0.987,
+  1.023
+ ],
+ "origin": "wall",
+ "rgb": [
+  0.2,
+  0.18,
+  0.16
+ ],
+ "props": {
+  "Product": "Modern Arm Chair 01 (oak frame, black leather cushions)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/modern_arm_chair_01",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Vibrant Nordic",
+  "Dimensions": "0.820 x 0.987 x 1.023 m (as converted)",
+  "MeshNote": "Split by material: frame + cushions share one origin. Back at y=0, seat faces +Y."
+ },
+ "parts": [
+  {
+   "file": "assets/armchair_polyhaven_820_legs.obj",
+   "rgb": [
+    0.62,
+    0.47,
+    0.3
+   ],
+   "name": "frame"
+  },
+  {
+   "file": "assets/armchair_polyhaven_820_pillow.obj",
+   "rgb": [
+    0.14,
+    0.13,
+    0.12
+   ],
+   "name": "cushions"
+  }
+ ]
+}

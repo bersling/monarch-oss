@@ -1,0 +1,23 @@
+{
+ "file": "assets/bed_polyhaven_1500x2040.obj",
+ "size_m": [
+  1.494,
+  2.042,
+  1.535
+ ],
+ "origin": "wall",
+ "rgb": [
+  0.4,
+  0.27,
+  0.17
+ ],
+ "props": {
+  "Product": "Gothic Bed 01 (double bed with posts and bedding)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/GothicBed_01",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Kirill Sannikov",
+  "Dimensions": "1.494 x 2.042 x 1.535 m (posts) (as converted)",
+  "MeshNote": "Headboard at y=0, foot end at y=2.04. Single colour; bedding is part of the mesh."
+ }
+}

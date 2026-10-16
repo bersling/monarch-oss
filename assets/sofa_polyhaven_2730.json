@@ -1,0 +1,23 @@
+{
+ "file": "assets/sofa_polyhaven_2730.obj",
+ "size_m": [
+  2.731,
+  0.925,
+  1.118
+ ],
+ "origin": "wall",
+ "rgb": [
+  0.47,
+  0.36,
+  0.27
+ ],
+ "props": {
+  "Product": "Sofa 03 (three-seat, upholstered)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/sofa_03",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Fran Calvente",
+  "Dimensions": "2.731 x 0.925 x 1.118 m (as converted)",
+  "MeshNote": "Back at y=0, seat faces +Y."
+ }
+}

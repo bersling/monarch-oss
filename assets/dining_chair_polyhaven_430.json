@@ -1,0 +1,23 @@
+{
+ "file": "assets/dining_chair_polyhaven_430.obj",
+ "size_m": [
+  0.432,
+  0.54,
+  0.956
+ ],
+ "origin": "wall",
+ "rgb": [
+  0.9,
+  0.9,
+  0.87
+ ],
+ "props": {
+  "Product": "Painted Wooden Chair 01 (white kitchen chair)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/painted_wooden_chair_01",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Kuutti Siitonen",
+  "Dimensions": "0.432 x 0.540 x 0.956 m (as converted)",
+  "MeshNote": "Backrest at y=0, seat faces +Y. Use rotation_z to turn it toward a table."
+ }
+}

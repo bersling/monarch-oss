@@ -1,0 +1,23 @@
+{
+ "file": "assets/coffee_table_polyhaven_1300.obj",
+ "size_m": [
+  1.302,
+  1.302,
+  0.491
+ ],
+ "origin": "center",
+ "rgb": [
+  0.78,
+  0.78,
+  0.76
+ ],
+ "props": {
+  "Product": "Coffee Table Round 01 (marble top, steel legs)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/coffee_table_round_01",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Ulan Cabanilla",
+  "Dimensions": "1.302 x 1.302 x 0.491 m (as converted)",
+  "MeshNote": "Rotationally symmetric."
+ }
+}

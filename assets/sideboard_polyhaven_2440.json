@@ -1,0 +1,23 @@
+{
+ "file": "assets/sideboard_polyhaven_2440.obj",
+ "size_m": [
+  2.44,
+  0.52,
+  0.68
+ ],
+ "origin": "wall",
+ "rgb": [
+  0.38,
+  0.25,
+  0.16
+ ],
+ "props": {
+  "Product": "Modern Wooden Cabinet (walnut slatted sideboard)",
+  "MeshSource": "Poly Haven",
+  "MeshURL": "https://polyhaven.com/a/modern_wooden_cabinet",
+  "MeshLicense": "CC0 1.0",
+  "MeshAuthor": "Patrik Pangerl",
+  "Dimensions": "2.440 x 0.520 x 0.680 m (as converted)",
+  "MeshNote": "Back at y=0, doors face +Y."
+ }
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monarch IFC viewer</title>
+<meta name="description" content="Drop an IFC file and look at it in 3D. Parsed in your browser with web-ifc, nothing is uploaded.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": {
+    "three": "./vendor/three/build/three.module.js",
+    "three/addons/": "./vendor/three/examples/jsm/",
+    "web-ifc": "./vendor/web-ifc/web-ifc-api.js"
+} }
+</script>
+</head>
+<body>
+<canvas id="view"></canvas>
+<div class="vignette"></div>
+
+<header id="bar">
+  <div class="brand">
+    <div class="eyebrow"><i></i>Monarch · IFC</div>
+    <strong id="title">IFC viewer</strong>
+  </div>
+  <div class="group">
+    <label class="tg plain" for="file" title="Open an .ifc file from your device">Open .ifc…</label>
+    <input id="file" type="file" accept=".ifc,application/x-step,model/ifc" hidden>
+    <button id="example" class="tg plain accent" title="Fetch casa_monarch.ifc from this site">Load the example house</button>
+  </div>
+  <div class="sep"></div>
+  <div class="group" id="storeyGroup" hidden>
+    <span class="lab">Storeys</span>
+    <div class="chips" id="storeys" title="Click: toggle storey. Alt-click: show only this storey."></div>
+  </div>
+  <div class="sep"></div>
+  <div class="group">
+    <button id="navMode" class="seg" data-mode="orbit" title="Left-drag orbits the target or looks around in place (O)"><span class="orbit">Orbit</span><span class="look">Look</span><kbd>O</kbd></button>
+    <button id="plaques" class="tg on" title="Floating labels for elements with a Pset_Gallery.Title (L)"><i></i>Plaques<kbd>L</kbd></button>
+    <button id="spaces" class="tg" title="Show IfcSpace volumes"><i></i>Spaces</button>
+    <button id="home" class="tg plain" title="Reset the camera (H)">Home<kbd>H</kbd></button>
+  </div>
+  <div class="search">
+    <input id="search" type="search" placeholder="Search name, type, GlobalId" autocomplete="off" spellcheck="false" disabled>
+    <kbd>/</kbd>
+    <ul id="results" hidden></ul>
+  </div>
+</header>
+
+<section id="empty">
+  <div class="card">
+    <div class="eyebrow"><i></i>Drop zone</div>
+    <h1>Drop an <span>.ifc</span> anywhere</h1>
+    <p>The file is parsed in your browser with web-ifc and rendered with three.js. It never leaves your device: there is no server behind this page.</p>
+    <div class="actions">
+      <label class="btn" for="file">Choose a file</label>
+      <button class="btn accent" id="exampleHero">Load the example house</button>
+    </div>
+    <p class="fine">Orbit: drag · pan: right-drag · zoom: scroll · walk: W A S D, Q E · click an element for its properties</p>
+  </div>
+</section>
+
+<div id="drop" hidden><div class="inner"><div class="eyebrow"><i></i>Release to open</div><strong>Drop the .ifc here</strong></div></div>
+
+<div id="loading" hidden><i></i><span id="loadingText">Loading…</span></div>
+<div id="toast" hidden></div>
+
+<aside id="panel" hidden>
+  <button id="panelClose" class="close" title="Clear selection (Esc)">×</button>
+  <div id="panelBody"></div>
+</aside>
+
+<div id="labels" aria-hidden="true"></div>
+
+<footer id="stats">
+  <div class="ro"><div class="k">Elements</div><div class="v" id="stElements">—</div></div>
+  <div class="ro"><div class="k">Triangles</div><div class="v" id="stTriangles">—</div></div>
+  <div class="ro"><div class="k">Parse</div><div class="v" id="stParse">—</div></div>
+  <div class="ro wide"><div class="k">Selected</div><div class="v small" id="stSel">—</div></div>
+  <div class="ro link"><div class="k">Monarch</div><div class="v small"><a id="repo" href="https://github.com/bersling/monarch-oss" target="_blank" rel="noopener">GitHub ↗</a></div></div>
+</footer>
+
+<script type="module" src="./app.js"></script>
+</body>
+</html>

@@ -199,7 +199,8 @@ function buildStoreys(modelID) {
     const s = storeys.find(s => s.id === el.storey);
     if (s) s.count++;
   }
-  if ([...state.elements.values()].some(e => e.storey == null)) storeys.push({ id: null, name: 'Other', elevation: Infinity, count: 0 });
+  const orphans = [...state.elements.values()].filter(e => e.storey == null && !e.isSpace).length;
+  if (orphans) storeys.push({ id: null, name: 'Site', elevation: Infinity, count: orphans });
   state.storeys = storeys;
   for (const s of storeys) state.storeyVisible.set(s.id, true);
   const chips = $('storeys');
@@ -208,7 +209,7 @@ function buildStoreys(modelID) {
     b.textContent = s.name;
     b.className = 'on';
     b.dataset.storey = String(s.id);
-    b.title = s.id == null ? 'Elements without a storey' : `${s.name} · ${s.elevation.toFixed(2)} m · ${s.count} elements`;
+    b.title = s.id == null ? 'Elements outside every storey (site, terrain, garden)' : `${s.name} · ${s.elevation.toFixed(2)} m · ${s.count} elements`;
     b.onclick = ev => {
       if (ev.altKey) for (const o of storeys) state.storeyVisible.set(o.id, o === s);
       else state.storeyVisible.set(s.id, !state.storeyVisible.get(s.id));
@@ -362,7 +363,11 @@ function pick(x, y) {
 // ---------------------------------------------------------------- camera: orbit / look, WASD, fit
 const modelBox = new THREE.Box3();
 function homeView() {
-  modelBox.setFromObject(root);
+  // Frame the building (elements inside a storey), not the whole site, so a house with a
+  // large terrain still fills the view on first load. Fall back to everything.
+  modelBox.makeEmpty();
+  for (const el of state.elements.values()) if (el.storey != null && !el.isSpace) modelBox.union(el.bbox);
+  if (modelBox.isEmpty()) modelBox.setFromObject(root);
   if (modelBox.isEmpty()) return;
   const c = new THREE.Vector3(), s = new THREE.Vector3();
   modelBox.getCenter(c); modelBox.getSize(s);

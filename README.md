@@ -6,6 +6,8 @@
 
 <p align="center"><strong>Your house as JSON. Your AI agent as the draughtsman. A real IFC out.</strong></p>
 
+<p align="center"><a href="https://bersling.github.io/monarch-oss/">Open the example house in your browser</a> · <a href="#60-second-quickstart">Quickstart</a> · <a href="#the-house-is-the-tutorial">The gallery tutorial</a></p>
+
 <p align="center">
   <img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-blue">
   <img alt="Python 3.14" src="https://img.shields.io/badge/python-3.14-3776AB">
@@ -325,7 +327,7 @@ click-to-select with every property set, search, plaques, orbit and WASD flight.
 Pages workflow (`.github/workflows/pages.yml`) builds Casa Monarch on every push and
 publishes it next to the page, so a visitor can press "Load the example house".
 
-Once published, the page will live at `https://bersling.github.io/monarch-oss/`. Locally:
+**Try it now: <https://bersling.github.io/monarch-oss/>**. Drop your own IFC, or press "Load the example house". Locally:
 
 ```sh
 cp generated/casa_monarch.ifc site/ && python3 -m http.server 8080 -d site

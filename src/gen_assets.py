@@ -2,7 +2,7 @@
 cannot express. Helpers for lofts, caps, boxes and slanted bars; add one function per
 asset and register it in ASSETS_TO_BUILD.
 
-    uv run python src/gen_assets.py            writes every registered asset into assets/
+    uv run python src/gen_assets.py            writes every registered asset into assets/procedural/
 
 Assets are authored in metres with a documented origin (usually x/y centred, z_min = 0).
 Reference them from plan JSON with {"mesh": "assets/<name>.obj", "at": [x, y, z],
@@ -12,7 +12,7 @@ Reference them from plan JSON with {"mesh": "assets/<name>.obj", "at": [x, y, z]
 import math
 from pathlib import Path
 
-ASSETS = Path(__file__).resolve().parent.parent / "assets"
+ASSETS = Path(__file__).resolve().parent.parent / "assets" / "procedural"
 
 
 def superellipse(rx, ry, cx, cy, n=2.4, segs=32):
@@ -98,7 +98,7 @@ def write_obj(path, verts, faces, note=''):
     print(f"wrote {path} ({len(verts)} verts, {len(faces)} tris)")
 
 
-def bush(path=ASSETS / 'stub/bush.obj'):
+def bush(path=ASSETS / 'bush_1000.obj'):
     """Generic shrub: squashed ellipsoid, 1.00 m diameter, 1.20 m high, x/y centred,
     z_min = 0. Scale with the per-object "scale" key to the crown diameter."""
     segs, rings = 20, 9
@@ -114,7 +114,7 @@ def bush(path=ASSETS / 'stub/bush.obj'):
     write_obj(path, verts, faces, 'procedural shrub, 1.00 m diameter, 1.20 m high; origin x/y centre, z_min 0 (MIT, this repository)')
 
 
-def pendant_lamp(path=ASSETS / 'pendant_lamp.obj', shade_diameter=0.40, shade_height=0.22, drop=1.0):
+def pendant_lamp(path=ASSETS / 'pendant_lamp_400.obj', shade_diameter=0.40, shade_height=0.22, drop=0.80):
     """Pendant: canopy, thin cable, conical shade open underneath. Origin x/y centred,
     z_min = 0 at the shade's lower rim; the canopy top sits at drop + shade_height + 0.03."""
     V, F = [], []
@@ -135,7 +135,30 @@ def pendant_lamp(path=ASSETS / 'pendant_lamp.obj', shade_diameter=0.40, shade_he
     write_obj(path, V, F, f'pendant lamp, shade {shade_diameter*100:g} cm, drop {drop:g} m (MIT, this repository)')
 
 
-ASSETS_TO_BUILD = [bush, pendant_lamp]
+def twist_column(path=ASSETS / 'twist_column_300x1000.obj', size=0.30, height=1.00, turns=0.25):
+    """Gallery exhibit 3: a rounded-square column that twists a quarter turn over its height
+    and narrows to a waist. x/y centred, z_min = 0. Pure loft: no two rings are alike, which
+    is exactly what box primitives cannot do."""
+    segs, rings = 40, 41
+    prof = []
+    for i in range(rings):
+        t = i / (rings - 1)
+        z = height * t
+        waist = 1.0 - 0.35 * math.sin(math.pi * t) ** 2          # narrow in the middle
+        half = size / 2 * waist
+        angle = 2 * math.pi * turns * t
+        ring = []
+        for x, y in superellipse(half, half, 0.0, 0.0, n=4.0, segs=segs):
+            c, s = math.cos(angle), math.sin(angle)
+            ring.append((c * x - s * y, s * x + c * y))
+        prof.append((z, ring))
+    verts, faces = loft(prof)
+    cap(verts, faces, 0, segs, 0.0, flip=True)
+    cap(verts, faces, (rings - 1) * segs, segs, height)
+    write_obj(path, verts, faces, f'twisted column, {size*100:g} cm square, {height:g} m high, quarter turn (MIT, this repository)')
+
+
+ASSETS_TO_BUILD = [bush, pendant_lamp, twist_column]
 
 
 if __name__ == '__main__':

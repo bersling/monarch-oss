@@ -1,0 +1,107 @@
+{
+  "_doc": "The Gallery (GF.06) is the tutorial room: one exhibit per way of getting an object into the house. src/gen_plaques.py renders one PNG plaque per entry into assets/plaques/<key>.png, writes the plaque boards (furniture GAL_PLAQUE_<KEY>) into the storey JSON and copies title/provenance/license/howto/prompt as the `gallery` block (-> Pset_Gallery) onto the exhibit element. `element` is the exhibit's id in data/ground_floor.json, a variant file or a product; null puts the Pset_Gallery on the plaque itself. `plaque.at` is the centre of the board on the wall face (x, y), `plaque.normal` points into the room; boards are 0.30 x 0.20 m with their centre 1.5 m above the floor.",
+  "storey": "GF",
+  "room": "gallery",
+  "exhibits": [
+    {
+      "key": "welcome",
+      "element": null,
+      "title": "Welcome to the Gallery",
+      "provenance": "Casa Monarch, data/gallery.json",
+      "license": "MIT (project data)",
+      "howto": "This room is the tutorial. Every exhibit shows one way to get an object into your house. Click anything to read how it was made.",
+      "prompt": "Walk me through the gallery exhibits and what each one teaches",
+      "plaque": {"at": [3.35, 4.2], "normal": [0, 1]}
+    },
+    {
+      "key": "1-boxes",
+      "element": "GAL_SHELF",
+      "title": "1  Boxes in JSON",
+      "provenance": "Authored by hand in data/ground_floor.json (GAL_SHELF)",
+      "license": "MIT (project data)",
+      "howto": "A furniture entry with parts[].boxes: carcass and shelves as absolute metre boxes, one IFC element, two colours. The Dimensions prop is checked against the geometry on every build; data/rules/gallery.json pins the size.",
+      "prompt": "Add a 0.8 x 0.4 x 2.0 m bookshelf with five shelves on the north wall of the study",
+      "plaque": {"at": [0.3, 5.9], "normal": [1, 0]}
+    },
+    {
+      "key": "2-catalogue",
+      "element": "demo-bookshelf",
+      "title": "2  Catalogue product, placed with ./place",
+      "provenance": "data/products/demo-bookshelf.json, instance CAT_GALLERY_SHELF in data/placements.json",
+      "license": "MIT (project data)",
+      "howto": "Define the geometry once in data/products/ in its local frame, then ./place add demo-bookshelf CAT_ID --storey GF --at x,y,z --rotation 0. Instances survive variant reloads and room regeneration.",
+      "prompt": "Place a second demo-bookshelf in the living room with ./place",
+      "plaque": {"at": [1.4, 4.2], "normal": [0, 1]}
+    },
+    {
+      "key": "3-procedural",
+      "element": "GAL_PROCEDURAL",
+      "title": "3  Procedural mesh (Python)",
+      "provenance": "src/gen_assets.py twist_column() -> assets/procedural/twist_column_300x1000.obj",
+      "license": "MIT (project data)",
+      "howto": "Curved shapes the primitives cannot express are generated as OBJ by a Python function and referenced with {mesh, at, rotation_z, scale}. Regenerate with uv run python src/gen_assets.py.",
+      "prompt": "Generate a 0.5 m tall spiral vase with src/gen_assets.py and put it on the sideboard in the living room",
+      "plaque": {"at": [0.3, 7.35], "normal": [1, 0]}
+    },
+    {
+      "key": "4-polyhaven",
+      "element": "GAL_BUST",
+      "title": "4  Imported mesh, Poly Haven (CC0)",
+      "provenance": "Marble Bust 01 by Rico Cilliers, polyhaven.com/a/marble_bust_01",
+      "license": "CC0 1.0",
+      "howto": "Found with uv run python src/find_asset.py \"bust\", converted with src/convert_asset.py (headless Blender) to metres, Z up, origin centre. The licence travels in the IFC props: MeshSource, MeshLicense, MeshURL, MeshAuthor.",
+      "prompt": "Find a CC0 vase on Poly Haven and place it on the dining table",
+      "plaque": {"at": [2.05, 8.2], "normal": [0, -1]}
+    },
+    {
+      "key": "5-sketchfab",
+      "element": "GAL_TEAPOT",
+      "title": "5  Imported mesh, Sketchfab (CC-BY)",
+      "provenance": "This work is based on \"Old Soviet teapot\" (https://sketchfab.com/3d-models/old-soviet-teapot-9b087673052446299e6decda222a42da) by Amagitsune (https://sketchfab.com/Amagitsune) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "license": "CC BY 4.0",
+      "howto": "Same pipeline as the Poly Haven bust, plus the attribution the licence requires: on this plaque, in assets/README.md and in the Attribution prop of the element.",
+      "prompt": "Find a CC-BY teapot on Sketchfab, convert it with src/convert_asset.py and credit the author in the props",
+      "plaque": {"at": [4.3, 8.2], "normal": [0, -1]}
+    },
+    {
+      "key": "6-image",
+      "element": "GAL_PICTURE",
+      "title": "6  Image on a surface",
+      "provenance": "The Great Wave off Kanagawa, Katsushika Hokusai, c. 1831; Wikimedia Commons, public domain",
+      "license": "Public domain (image), MIT (frame data)",
+      "howto": "A part with texture {image, u_axis, v_axis} projects a JPEG or PNG under assets/ onto its box; the IFC stores real UV coordinates. The frame is one plain box behind it.",
+      "prompt": "Hang a 60 x 41 cm print of assets/picture_great_wave.jpg above the bed",
+      "plaque": {"at": [4.9, 6.7], "normal": [-1, 0]}
+    },
+    {
+      "key": "7-variants",
+      "element": ["GAL_CENTRE_BENCH", "GAL_CENTRE_SCULPTURE"],
+      "title": "7  Variants",
+      "provenance": "data/variants.json group gallery_centre; data/variants/gallery_centre/bench.json and sculpture.json",
+      "license": "MIT (project data)",
+      "howto": "A group owns the ids GAL_CENTRE_*. uv run python src/variant.py list shows the variants; load gallery_centre sculpture swaps the entries in the storey JSON and rebuilds; save captures hand edits back into the variant file.",
+      "prompt": "Switch the gallery centre to the sculpture variant",
+      "plaque": {"at": [2.45, 4.2], "normal": [0, 1]}
+    },
+    {
+      "key": "8-rules",
+      "element": null,
+      "title": "8  Rules on the built geometry",
+      "provenance": "data/rules/gallery.json, rule gallery-walkway-clear (kind: clear); the terracotta strip is FLOOR_GF_WALKWAY_MARK",
+      "license": "MIT (project data)",
+      "howto": "The strip marks a zone that must stay empty. Rules run on the built IFC after every build. Drag the empty plinth 20 cm south into the strip and ./build.sh fails, naming the element and the overlap.",
+      "prompt": "Add a clear rule that keeps 90 cm in front of the bedroom wardrobe free",
+      "plaque": {"at": [4.9, 4.55], "normal": [-1, 0]}
+    },
+    {
+      "key": "9-your-turn",
+      "element": "GAL_PLINTH_EMPTY",
+      "title": "9  Your turn",
+      "provenance": "An empty plinth, GAL_PLINTH_EMPTY, 0.5 x 0.5 x 0.9 m",
+      "license": "MIT (project data)",
+      "howto": "Pick any technique from this room. The find-asset skill fetches and converts a licensed mesh; the model-change skill measures, edits, builds and renders.",
+      "prompt": "Find a CC0 plant on Poly Haven and put it on the empty plinth in the gallery",
+      "plaque": {"at": [4.9, 7.95], "normal": [-1, 0]}
+    }
+  ]
+}

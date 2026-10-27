@@ -28,6 +28,9 @@ example button locally, copy a built IFC next to the page: `cp generated/casa_mo
   and `IfcRelAggregates` so parts of assemblies and furniture inside spaces land in their storey.
   Click toggles, Alt-click solos.
 - Search by name, type, GlobalId or express id; Enter focuses the hit.
+- Image textures (`IfcImageTexture` with an `IfcIndexedTriangleTextureMap`, planar maps) for the
+  example house: the files are resolved next to the IFC URL (`textures/…`). A dropped file has no
+  folder to resolve them from, so its textured faces keep the style colour.
 - Look mode by default: left-drag turns the camera in place, move with `W A S D`, the arrow keys or
   the mouse wheel (towards the cursor), `Q E` down/up, `Shift` faster. A one-card tutorial says so
   after the first load (remembered in `localStorage`). `O` switches to Orbit (left-drag orbits,

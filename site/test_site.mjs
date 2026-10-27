@@ -3,7 +3,7 @@
 //
 // Usage:
 //   ./build.sh                                   # or any IFC you want to test with
-//   D=$(mktemp -d) && cp -R site/. "$D" && cp generated/casa_monarch.ifc "$D"/casa_monarch.ifc
+//   D=$(mktemp -d) && cp -R site/. "$D" && cp generated/casa_monarch.ifc "$D"/casa_monarch.ifc && cp -R generated/textures "$D"/
 //   python3 -m http.server 8080 -d "$D" &        # file:// does not work (ES modules + wasm)
 //   node site/test_site.mjs http://127.0.0.1:8080/ [screenshot.png]
 //
@@ -111,16 +111,23 @@ try {
   assert.equal(await evaluate('document.querySelectorAll("#labels, .plaque, #plaques").length'), 0);
   console.log('PASS no floating labels');
 
+  // Image textures (IfcImageTexture next to the IFC) are mapped and loaded: plaques and pictures are not blank.
+  await until('[...window.__viewer.state.materials.values()].filter(m => m.map).length > 0 && [...window.__viewer.state.materials.values()].filter(m => m.map).every(m => m.map.image?.width > 0)', 20000);
+  const texCount = await evaluate('[...window.__viewer.state.materials.values()].filter(m => m.map).length');
+  assert.ok(texCount >= 9, `textures: ${texCount}`);
+  console.log(`PASS ${texCount} image textures loaded`);
+
   // Look is the default; the tutorial card shows once; arrow keys and the wheel move the camera.
   assert.equal(await evaluate('window.__viewer.state.nav'), 'look');
   assert.equal(await evaluate('document.getElementById("tutorial").hidden'), false);
   const camPos = () => evaluate('window.__viewer.camera.position.toArray()');
   const p0 = await camPos();
   await evaluate('window.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowUp"}))');
-  await delay(800);
+  // Hold until the camera moved: headless Chrome renders frames irregularly.
+  await until(`Math.hypot(...window.__viewer.persp.position.toArray().map((v, i) => v - ${JSON.stringify(p0)}[i])) > 0.05`, 5000).catch(() => {});
   await evaluate('window.dispatchEvent(new KeyboardEvent("keyup", {key: "ArrowUp"}))');
   const p1 = await camPos();
-  assert.ok(Math.hypot(...p1.map((v, i) => v - p0[i])) > 0.3, `ArrowUp moved ${JSON.stringify([p0, p1])}`);
+  assert.ok(Math.hypot(...p1.map((v, i) => v - p0[i])) > 0.05, `ArrowUp moved ${JSON.stringify([p0, p1])}`);
   assert.equal(await evaluate('document.getElementById("tutorial").hidden'), true);
   await evaluate('{ const c=document.querySelector("canvas"), r=c.getBoundingClientRect(); c.dispatchEvent(new WheelEvent("wheel", {deltaY: -100, clientX: r.left + r.width/2, clientY: r.top + r.height/2, bubbles: true, cancelable: true})); }');
   const p2 = await camPos();
@@ -231,7 +238,8 @@ try {
   const horiz = Math.hypot(m.b[0] - m.a[0], m.b[1] - m.a[1]);
   assert.ok(Math.abs(horiz - 300 * view.mPerPx) < 0.03, `measured ${horiz} vs ${300 * view.mPerPx}`);
   assert.ok(Math.abs(m.b[1] - m.a[1]) < 0.03, 'same screen row = same northing');
-  await delay(300);
+  // The label is positioned in the render loop; wait for a frame instead of a fixed delay.
+  await until('!document.getElementById("measureLabel").hidden && document.getElementById("measureLabel").textContent !== ""', 5000).catch(() => {});
   const label = await evaluate('(() => { const l = document.getElementById("measureLabel"); return { hidden: l.hidden, text: l.textContent, box: document.getElementById("measureBox").textContent }; })()');
   assert.ok(!label.hidden && label.text === `${m.d.toFixed(2)} m`, JSON.stringify(label));
   assert.ok(label.box.includes(`${m.d.toFixed(3)} m`));

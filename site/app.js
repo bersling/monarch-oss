@@ -96,6 +96,57 @@ function materialFor(materials, c) {
   return m;
 }
 const SPACE_COLOUR = { x: 0.3, y: 0.6, z: 1, w: 0.18 };
+// Image textures (IfcImageTexture) are files referenced relative to the IFC, so they only resolve
+// when the IFC came from a URL (the example house); a dropped file keeps the style colour.
+const texLoader = new THREE.TextureLoader();
+function textureMaterial(materials, url) {
+  const key = `tex:${url}`;
+  let m = materials.get(key);
+  if (!m) {
+    m = new THREE.MeshLambertMaterial({ side: THREE.DoubleSide });
+    m.map = texLoader.load(url, t => { t.colorSpace = THREE.SRGBColorSpace; m.needsUpdate = true; }, undefined, () => console.warn(`texture missing: ${url}`));
+    m.map.colorSpace = THREE.SRGBColorSpace;
+    materials.set(key, patchMaterial(m));
+  }
+  return m;
+}
+// IfcIndexedTriangleTextureMap -> {uri, coeff}: a planar UV map fitted by least squares from the
+// face set's coordinates to its texture coordinates (same as src/image_textures.py). web-ifc hands
+// the item's vertices back translated, so they are re-anchored on the bounding-box centre.
+function textureMaps(modelID) {
+  const out = new Map(), ids = api.GetLineIDsWithType(modelID, WebIFC.IFCINDEXEDTRIANGLETEXTUREMAP);
+  for (let i = 0; i < ids.size(); i++) {
+    try {
+      const tm = api.GetLine(modelID, ids.get(i));
+      const tex = api.GetLine(modelID, val(tm.Maps?.[0]));
+      const uri = val(tex?.URLReference);
+      const fs = api.GetLine(modelID, val(tm.MappedTo));
+      const xyz = api.GetLine(modelID, val(fs.Coordinates)).CoordList.map(p => p.map(val));
+      const uv = api.GetLine(modelID, val(tm.TexCoords)).TexCoordsList.map(p => p.map(val));
+      const ata = Array.from({ length: 4 }, () => [0, 0, 0, 0]), atb = Array.from({ length: 4 }, () => [0, 0]);
+      fs.CoordIndex.forEach((tri, t) => tri.forEach((v, k) => {
+        const a = [...xyz[val(v) - 1], 1], b = uv[val(tm.TexCoordIndex[t][k]) - 1];
+        for (let r = 0; r < 4; r++) { for (let c = 0; c < 4; c++) ata[r][c] += a[r] * a[c]; atb[r][0] += a[r] * b[0]; atb[r][1] += a[r] * b[1]; }
+      }));
+      for (let r = 0; r < 4; r++) ata[r][r] += 1e-9;
+      const coeff = solve4(ata, atb);
+      const centre = [0, 1, 2].map(k => (Math.min(...xyz.map(p => p[k])) + Math.max(...xyz.map(p => p[k]))) / 2);
+      if (uri && coeff) out.set(val(tm.MappedTo), { uri, coeff, centre });
+    } catch (e) { console.warn('texture map skipped', e); }
+  }
+  return out;
+}
+function solve4(A, B) {             // Gauss-Jordan for a 4x4 system with two right-hand sides
+  const m = A.map((row, r) => [...row, ...B[r]]);
+  for (let c = 0; c < 4; c++) {
+    let p = c;
+    for (let r = c + 1; r < 4; r++) if (Math.abs(m[r][c]) > Math.abs(m[p][c])) p = r;
+    if (Math.abs(m[p][c]) < 1e-12) return null;
+    [m[c], m[p]] = [m[p], m[c]];
+    for (let r = 0; r < 4; r++) if (r !== c) { const f = m[r][c] / m[c][c]; for (let k = c; k < 6; k++) m[r][k] -= f * m[c][k]; }
+  }
+  return m.map((row, r) => [row[4] / row[r], row[5] / row[r]]);
+}
 const val = v => (v && typeof v === 'object' && 'value' in v) ? v.value : v;
 
 function disposeGroup(g) {
@@ -106,7 +157,7 @@ function clearModel() {
   if (state.modelID !== null) { try { api.CloseModel(state.modelID); } catch { /* already gone */ } }
   for (const g of [...root.children]) if (g !== spacesGroup) disposeGroup(g);
   for (const g of [...spacesGroup.children]) disposeGroup(g);
-  for (const m of state.materials?.values() || []) m.dispose();
+  for (const m of state.materials?.values() || []) { m.map?.dispose(); m.dispose(); }
   Object.assign(state, { modelID: null, elements: new Map(), materials: new Map(), storeys: [], storeyVisible: new Map(), sel: null, tris: 0, cut: null });
   state.removed.clear(); removedStack.length = 0;
   if (state.plan != null) exitPlan(false);
@@ -122,7 +173,7 @@ function clearModel() {
 // ---------------------------------------------------------------- loading
 // Parse into a fresh model first; the current model is only replaced once the new one succeeded,
 // so a broken drop leaves the view as it was.
-async function loadBuffer(bytes, name) {
+async function loadBuffer(bytes, name, baseUrl = null) {
   await apiReady;
   const head = new TextDecoder().decode(bytes.subarray(0, 256));
   if (!/ISO-10303-21/i.test(head)) throw new Error('not an IFC file (no ISO-10303-21 STEP header).');
@@ -131,6 +182,7 @@ async function loadBuffer(bytes, name) {
   try { modelID = api.OpenModel(bytes, { COORDINATE_TO_ORIGIN: false }); } catch (e) { throw new Error(`web-ifc could not parse it: ${e.message || e}`); }
   const model = { modelID, elements: new Map(), materials: new Map(), root: new THREE.Group(), spaces: new THREE.Group(), tris: 0 };
   const mat = new THREE.Matrix4();
+  const texMaps = baseUrl ? textureMaps(modelID) : new Map();
   const addMesh = (flat, target, isSpace) => {
     const id = flat.expressID;
     const byColour = new Map();
@@ -150,21 +202,31 @@ async function loadBuffer(bytes, name) {
       geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
       geom.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
       geom.setIndex(new THREE.BufferAttribute(new Uint32Array(idx), 1));
+      const tm = !isSpace && texMaps.get(pg.geometryExpressID);
+      if (tm) {
+        const uv = new Float32Array(pos.length / 3 * 2), C = tm.coeff, lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9];
+        for (let v = 0; v < pos.length; v++) { lo[v % 3] = Math.min(lo[v % 3], pos[v]); hi[v % 3] = Math.max(hi[v % 3], pos[v]); }
+        const d = [0, 1, 2].map(k => tm.centre[k] - (lo[k] + hi[k]) / 2);
+        for (let v = 0, o = 0; v < pos.length; v += 3, o += 2) {
+          for (let k = 0; k < 2; k++) uv[o + k] = (pos[v] + d[0]) * C[0][k] + (pos[v + 1] + d[1]) * C[1][k] + (pos[v + 2] + d[2]) * C[2][k] + C[3][k];
+        }
+        geom.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+      }
       mat.fromArray(pg.flatTransformation);
       geom.applyMatrix4(mat);
       const c = isSpace ? SPACE_COLOUR : pg.color;
-      const key = `${c.x.toFixed(3)},${c.y.toFixed(3)},${c.z.toFixed(3)},${c.w.toFixed(3)}`;
-      if (!byColour.has(key)) byColour.set(key, { colour: c, list: [] });
+      const key = tm ? `tex:${tm.uri}` : `${c.x.toFixed(3)},${c.y.toFixed(3)},${c.z.toFixed(3)},${c.w.toFixed(3)}`;
+      if (!byColour.has(key)) byColour.set(key, { colour: c, tex: tm && new URL(tm.uri, baseUrl).href, list: [] });
       byColour.get(key).list.push(geom);
       model.tris += idx.length / 3;
     }
     if (!byColour.size) return;
     const group = new THREE.Group();
     group.userData.expressID = id;
-    for (const { colour, list } of byColour.values()) {
+    for (const { colour, tex, list } of byColour.values()) {
       const merged = list.length === 1 ? list[0] : mergeGeometries(list, false);
       if (list.length > 1) list.forEach(g => g.dispose());
-      const mesh = new THREE.Mesh(merged, materialFor(model.materials, colour));
+      const mesh = new THREE.Mesh(merged, tex ? textureMaterial(model.materials, tex) : materialFor(model.materials, colour));
       mesh.userData.expressID = id;
       group.add(mesh);
     }
@@ -177,7 +239,7 @@ async function loadBuffer(bytes, name) {
   };
   const abandon = e => {
     disposeGroup(model.root); disposeGroup(model.spaces);
-    for (const m of model.materials.values()) m.dispose();
+    for (const m of model.materials.values()) { m.map?.dispose(); m.dispose(); }
     try { api.CloseModel(modelID); } catch { /* ignore */ }
     throw e;
   };
@@ -1058,7 +1120,7 @@ async function loadExample() {
     const bytes = new Uint8Array(await r.arrayBuffer());
     busy(`Parsing casa_monarch.ifc (${(bytes.length / 1048576).toFixed(1)} MB)…`);
     await new Promise(r => setTimeout(r, 30));
-    await loadBuffer(bytes, 'casa_monarch.ifc');
+    await loadBuffer(bytes, 'casa_monarch.ifc', new URL(EXAMPLE_URL, location.href).href);
   } catch (e) {
     console.warn(e);
     toast(`Could not load the example house: ${e.message || e}`);

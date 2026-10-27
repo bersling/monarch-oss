@@ -49,6 +49,8 @@ jobs:
           fi
           if [ -n "${IFC:-}" ] && [ -f "$IFC" ]; then
             cp "$IFC" _site/casa_monarch.ifc
+            # image textures the IFC references relative to itself (IfcImageTexture URLReference)
+            if [ -d "$(dirname "$IFC")/textures" ]; then cp -R "$(dirname "$IFC")/textures" _site/textures; fi
             echo "example house: $IFC ($(wc -c < "$IFC") bytes)"
           else
             echo "::warning::no IFC was built; the site deploys without the example house"

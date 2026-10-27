@@ -110,6 +110,25 @@ input:focus-visible, button:focus-visible { outline: 1px solid rgba(62, 166, 255
 .btn:hover { border-color: rgba(160, 190, 230, 0.4); }
 .btn.accent { border-color: rgba(62, 166, 255, 0.55); background: var(--blue-soft); }
 .btn.accent:hover { border-color: var(--blue); box-shadow: 0 0 24px -6px var(--blue); }
+#tutorial { position: fixed; inset: 0; z-index: 4; display: grid; place-items: center; padding: var(--gut); pointer-events: none; }
+#tutorial[hidden] { display: none; }
+#tutorial .card { pointer-events: auto; max-width: 440px; width: 100%; padding: 24px 26px 22px; border-radius: 22px; text-align: center;
+  background: linear-gradient(180deg, rgba(16, 21, 33, 0.9), rgba(10, 14, 23, 0.86)); border: 1px solid var(--line2);
+  backdrop-filter: blur(18px) saturate(1.2); -webkit-backdrop-filter: blur(18px) saturate(1.2); box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.8); }
+#tutorial .eyebrow { justify-content: center; }
+#tutorial .keys { display: flex; align-items: center; justify-content: center; gap: 14px; margin: 18px 0 16px; }
+#tutorial .pad { display: grid; grid-template-columns: repeat(3, 30px); grid-template-rows: 30px 30px; gap: 4px; }
+#tutorial .pad kbd { display: grid; place-items: center; border-radius: 7px; border: 1px solid var(--line2); border-bottom-width: 2px;
+  background: rgba(255, 255, 255, 0.05); font: 500 12px/1 var(--mono); color: var(--text); }
+#tutorial .pad .w { grid-column: 2; grid-row: 1; } #tutorial .pad .a { grid-column: 1; grid-row: 2; }
+#tutorial .pad .s { grid-column: 2; grid-row: 2; } #tutorial .pad .d { grid-column: 3; grid-row: 2; }
+#tutorial .or { font: 400 10.5px/1 var(--mono); color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+#tutorial .wheel { width: 34px; height: 52px; border-radius: 17px; border: 1.5px solid var(--line2); display: flex; justify-content: center; padding-top: 9px; }
+#tutorial .wheel i { width: 4px; height: 11px; border-radius: 2px; background: var(--blue); animation: wheel 1.4s ease-in-out infinite; }
+@keyframes wheel { 50% { transform: translateY(8px); opacity: 0.4; } }
+#tutorial p { color: var(--muted); font-weight: 300; margin: 0 0 16px; line-height: 1.5; font-size: 13.5px; }
+#tutorial p b { color: var(--text); font-weight: 500; }
+@media (max-width: 420px) { #tutorial .pad { grid-template-columns: repeat(3, 24px); grid-template-rows: 24px 24px; } #tutorial .keys { gap: 8px; } }
 #drop { position: fixed; inset: 0; z-index: 9; display: grid; place-items: center; background: rgba(7, 10, 17, 0.72); backdrop-filter: blur(6px); pointer-events: none; }
 #drop[hidden] { display: none; }
 #drop .inner { padding: 40px 56px; border: 2px dashed rgba(62, 166, 255, 0.7); border-radius: 26px; display: flex; flex-direction: column; gap: 12px; align-items: center;

@@ -52,7 +52,7 @@ apiReady.catch(e => toast(`web-ifc failed to initialise: ${e.message || e}`));
 // ---------------------------------------------------------------- state
 const state = {
   modelID: null, fileName: '', elements: new Map(), storeys: [], storeyVisible: new Map(), sel: null,
-  nav: 'orbit', spaces: false, tris: 0, parseMs: 0, materials: new Map(),
+  nav: 'look', spaces: false, tris: 0, parseMs: 0, materials: new Map(),
 };
 function materialFor(materials, c) {
   const key = `${c.x.toFixed(3)},${c.y.toFixed(3)},${c.z.toFixed(3)},${c.w.toFixed(3)}`;
@@ -166,6 +166,7 @@ async function loadBuffer(bytes, name) {
   homeView();
   updateStats();
   setSelection(null);
+  showTutorial();
 }
 
 // Storey of an element: direct containment (IfcRelContainedInSpatialStructure), else walk up
@@ -342,6 +343,8 @@ function setNav(mode) {
   state.nav = mode;
   $('navMode').dataset.mode = mode;
   orbit.mouseButtons = { LEFT: mode === 'look' ? -1 : THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.ROTATE, RIGHT: THREE.MOUSE.PAN };
+  // Look mode walks with the wheel (below); orbit mode keeps the dolly towards the target.
+  orbit.enableZoom = mode !== 'look';
 }
 let pointer = null;
 const LOOK_RAD = THREE.MathUtils.degToRad(0.25), MAX_PITCH = THREE.MathUtils.degToRad(85);
@@ -373,8 +376,23 @@ canvas.addEventListener('pointerup', ev => {
   pointer = null;
 });
 canvas.addEventListener('pointercancel', () => { pointer = null; });
+// Look mode: the wheel moves camera and target together along the ray under the cursor at a
+// constant speed (about 1 m per notch), so it never stalls against the orbit target.
+canvas.addEventListener('wheel', ev => {
+  if (state.nav !== 'look') return;
+  ev.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  raycaster.setFromCamera(new THREE.Vector2(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), camera);
+  const step = THREE.MathUtils.clamp(-ev.deltaY * (ev.deltaMode === 1 ? 0.33 : 0.01), -3, 3) * (ev.shiftKey ? 3 : 1);
+  _m.copy(raycaster.ray.direction).multiplyScalar(step);
+  camera.position.add(_m); orbit.target.add(_m);
+  hideTutorial();
+}, { passive: false });
 
-const held = new Set(), MOVE = { w: [1, 0, 0], s: [-1, 0, 0], a: [0, -1, 0], d: [0, 1, 0], q: [0, 0, -1], e: [0, 0, 1] };
+const held = new Set(), MOVE = {
+  w: [1, 0, 0], s: [-1, 0, 0], a: [0, -1, 0], d: [0, 1, 0], q: [0, 0, -1], e: [0, 0, 1],
+  arrowup: [1, 0, 0], arrowdown: [-1, 0, 0], arrowleft: [0, -1, 0], arrowright: [0, 1, 0],
+};
 let fast = false;
 const UP = new THREE.Vector3(0, 1, 0), _f = new THREE.Vector3(), _r = new THREE.Vector3(), _m = new THREE.Vector3();
 function moveStep(dt) {
@@ -395,8 +413,8 @@ window.addEventListener('keydown', ev => {
   if (ev.target.matches?.('input, select, textarea') || ev.metaKey || ev.ctrlKey || ev.altKey) return;
   const k = ev.key.toLowerCase();
   fast = ev.shiftKey;
-  if (k in MOVE) { held.add(k); ev.preventDefault(); return; }
-  if (ev.key === 'Escape') setSelection(null);
+  if (k in MOVE) { held.add(k); hideTutorial(); ev.preventDefault(); return; }
+  if (ev.key === 'Escape') { hideTutorial(); setSelection(null); }
   else if (ev.key === '/') { $('search').focus(); ev.preventDefault(); }
   else if (k === 'f' && state.sel != null) focusOn(state.elements.get(state.sel));
   else if (k === 'o') setNav(state.nav === 'look' ? 'orbit' : 'look');
@@ -413,7 +431,22 @@ $('navMode').onclick = ev => {
   setNav(seg ? (seg.classList.contains('look') ? 'look' : 'orbit') : (state.nav === 'look' ? 'orbit' : 'look'));
 };
 $('panelClose').onclick = () => setSelection(null);
-setNav('orbit');
+setNav('look');
+
+// ---------------------------------------------------------------- tutorial
+// One card after the first model load, until the visitor moves or presses "Got it"; remembered
+// per browser (storage may be unavailable, then it simply shows again next visit).
+const TUTORIAL_KEY = 'monarch.tutorialSeen';
+function showTutorial() {
+  try { if (localStorage.getItem(TUTORIAL_KEY)) return; } catch { /* no storage */ }
+  $('tutorial').hidden = false;
+}
+function hideTutorial() {
+  if ($('tutorial').hidden) return;
+  $('tutorial').hidden = true;
+  try { localStorage.setItem(TUTORIAL_KEY, '1'); } catch { /* no storage */ }
+}
+$('tutorialOk').onclick = () => hideTutorial();
 
 // ---------------------------------------------------------------- search
 const searchEl = $('search'), resultsEl = $('results');
@@ -527,7 +560,7 @@ renderer.setAnimationLoop(now => {
 
 // Test hooks (tests drive the page over the DevTools protocol).
 window.__viewer = {
-  api, scene, root, camera, orbit, state, loadBuffer, setSelection, focusOn, homeView, setNav,
+  api, scene, root, camera, orbit, state, loadBuffer, setSelection, focusOn, homeView, setNav, showTutorial, hideTutorial,
   get drawCalls() { return renderer.info.render.calls; }, get frames() { return frames; },
 };
 apiReady.then(() => { window.__viewerReady = true; });

@@ -323,7 +323,7 @@ CC-BY). Nothing from 3D Warehouse or of unknown origin ships in this repository.
 [`site/`](site/) is a static page that opens any `.ifc` in the browser: drop a file, it is
 parsed client-side with [web-ifc](https://github.com/ThatOpen/engine_web-ifc) 0.0.78
 (WebAssembly) and drawn with three.js. Nothing is uploaded; there is no server. Storey chips,
-click-to-select with every property set, search, orbit and WASD flight. A GitHub
+click-to-select with every property set, search, Look navigation (W A S D, arrows, mouse wheel) and orbit. A GitHub
 Pages workflow (`.github/workflows/pages.yml`) builds Casa Monarch on every push and
 publishes it next to the page, so a visitor can press "Load the example house".
 

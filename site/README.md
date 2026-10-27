@@ -28,8 +28,10 @@ example button locally, copy a built IFC next to the page: `cp generated/casa_mo
   and `IfcRelAggregates` so parts of assemblies and furniture inside spaces land in their storey.
   Click toggles, Alt-click solos.
 - Search by name, type, GlobalId or express id; Enter focuses the hit.
-- Orbit (left-drag), pan (right-drag), zoom (scroll), fly with `W A S D` + `Q E` (`Shift` faster).
-  `O` switches Look mode (left-drag turns the camera in place). `H` home, `F` focus, `Esc` clear.
+- Look mode by default: left-drag turns the camera in place, move with `W A S D`, the arrow keys or
+  the mouse wheel (towards the cursor), `Q E` down/up, `Shift` faster. A one-card tutorial says so
+  after the first load (remembered in `localStorage`). `O` switches to Orbit (left-drag orbits,
+  right-drag pans, scroll zooms). `H` home, `F` focus, `Esc` clear.
 - Stats line: elements, triangles, parse time. Works at phone width.
 
 ## Deploy

@@ -38,7 +38,7 @@
   </div>
   <div class="sep"></div>
   <div class="group">
-    <button id="navMode" class="seg" data-mode="orbit" title="Left-drag orbits the target or looks around in place (O)"><span class="orbit">Orbit</span><span class="look">Look</span><kbd>O</kbd></button>
+    <button id="navMode" class="seg" data-mode="look" title="Left-drag orbits the target or looks around in place (O)"><span class="orbit">Orbit</span><span class="look">Look</span><kbd>O</kbd></button>
     <button id="spaces" class="tg" title="Show IfcSpace volumes"><i></i>Spaces</button>
     <button id="home" class="tg plain" title="Reset the camera (H)">Home<kbd>H</kbd></button>
   </div>
@@ -58,7 +58,22 @@
       <label class="btn" for="file">Choose a file</label>
       <button class="btn accent" id="exampleHero">Load the example house</button>
     </div>
-    <p class="fine">Orbit: drag · pan: right-drag · zoom: scroll · walk: W A S D, Q E · click an element for its properties</p>
+    <p class="fine">Move: W A S D, arrows or mouse wheel · look around: drag · up/down: Q E · click an element for its properties</p>
+  </div>
+</section>
+
+<section id="tutorial" hidden>
+  <div class="card">
+    <div class="eyebrow"><i></i>How to move</div>
+    <div class="keys">
+      <div class="pad"><kbd class="w">W</kbd><kbd class="a">A</kbd><kbd class="s">S</kbd><kbd class="d">D</kbd></div>
+      <span class="or">or</span>
+      <div class="pad"><kbd class="w">↑</kbd><kbd class="a">←</kbd><kbd class="s">↓</kbd><kbd class="d">→</kbd></div>
+      <span class="or">or</span>
+      <div class="wheel"><i></i></div>
+    </div>
+    <p>Move with <b>W A S D</b>, the <b>arrow keys</b> or the <b>mouse wheel</b>. Drag to look around, click anything for its properties.</p>
+    <button class="btn accent" id="tutorialOk">Got it</button>
   </div>
 </section>
 

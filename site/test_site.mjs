@@ -8,7 +8,7 @@
 //   node site/test_site.mjs http://127.0.0.1:8080/ [screenshot.png]
 //
 // Asserts: the example loads, > 100 elements, storey chips name every IfcBuildingStorey, no floating
-// labels, selecting a gallery exhibit shows Pset_Gallery in the panel, a
+// labels, Look navigation by default with a tutorial card (arrows + wheel move), selecting a gallery exhibit shows Pset_Gallery in the panel, a
 // storey toggle hides its elements, and no JavaScript errors were logged. Prints the parse time.
 // MONARCH_CHROME overrides the Chrome binary.
 import assert from 'node:assert/strict';
@@ -108,6 +108,22 @@ try {
 
   assert.equal(await evaluate('document.querySelectorAll("#labels, .plaque, #plaques").length'), 0);
   console.log('PASS no floating labels');
+
+  // Look is the default; the tutorial card shows once; arrow keys and the wheel move the camera.
+  assert.equal(await evaluate('window.__viewer.state.nav'), 'look');
+  assert.equal(await evaluate('document.getElementById("tutorial").hidden'), false);
+  const camPos = () => evaluate('window.__viewer.camera.position.toArray()');
+  const p0 = await camPos();
+  await evaluate('window.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowUp"}))');
+  await delay(400);
+  await evaluate('window.dispatchEvent(new KeyboardEvent("keyup", {key: "ArrowUp"}))');
+  const p1 = await camPos();
+  assert.ok(Math.hypot(...p1.map((v, i) => v - p0[i])) > 0.3, `ArrowUp moved ${JSON.stringify([p0, p1])}`);
+  assert.equal(await evaluate('document.getElementById("tutorial").hidden'), true);
+  await evaluate('{ const c=document.querySelector("canvas"), r=c.getBoundingClientRect(); c.dispatchEvent(new WheelEvent("wheel", {deltaY: -100, clientX: r.left + r.width/2, clientY: r.top + r.height/2, bubbles: true, cancelable: true})); }');
+  const p2 = await camPos();
+  assert.ok(Math.abs(Math.hypot(...p2.map((v, i) => v - p1[i])) - 1) < 0.05, `wheel moved ${JSON.stringify([p1, p2])}`);
+  console.log('PASS look by default, tutorial card, arrow keys and wheel move the camera');
 
   // Select a gallery exhibit programmatically: the panel must list Pset_Gallery with its prompt.
   const shelf = await evaluate('[...window.__viewer.state.elements.values()].find(e => e.name === "GAL_SHELF")?.id');

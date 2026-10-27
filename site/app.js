@@ -942,6 +942,7 @@ canvas.addEventListener('wheel', ev => {
   hideTutorial();
 }, { passive: false });
 
+const WALK_SPEED = 5;                  // m/s, Shift x3 (same as web/viewer.js)
 const held = new Set(), MOVE = {
   w: [1, 0, 0], s: [-1, 0, 0], a: [0, -1, 0], d: [0, 1, 0], q: [0, 0, -1], e: [0, 0, 1],
   arrowup: [1, 0, 0], arrowdown: [-1, 0, 0], arrowleft: [0, -1, 0], arrowright: [0, 1, 0],
@@ -964,7 +965,7 @@ function moveStep(dt) {
   }
   _m.set(0, 0, 0).addScaledVector(_f, f).addScaledVector(_r, r).addScaledVector(UP, u);
   if (_m.lengthSq() === 0) return;
-  _m.normalize().multiplyScalar((fast ? 3 : 1) * (plan ? currentSpan() * 0.5 : 3) * dt);
+  _m.normalize().multiplyScalar((fast ? 3 : 1) * (plan ? currentSpan() * 0.5 : WALK_SPEED) * dt);
   camera.position.add(_m); controls.target.add(_m);
 }
 window.addEventListener('keydown', ev => {

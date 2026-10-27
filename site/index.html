@@ -36,9 +36,22 @@
     <span class="lab">Storeys</span>
     <div class="chips" id="storeys" title="Click: toggle storey. Alt-click: show only this storey."></div>
   </div>
+  <div class="group" id="cutGroup" hidden>
+    <label class="lab" for="cut">Cut</label>
+    <select id="cut" title="Show this storey and those below, clipped at floor + height">
+      <option value="">off</option>
+    </select>
+    <span class="num"><input id="cutHeight" type="number" step="0.1" value="1.2" title="Cut height above the storey floor (m)"><small>m</small></span>
+  </div>
   <div class="sep"></div>
-  <div class="group">
+  <div class="group tools">
     <button id="navMode" class="seg" data-mode="look" title="Left-drag orbits the target or looks around in place (O)"><span class="orbit">Orbit</span><span class="look">Look</span><kbd>O</kbd></button>
+    <select id="fov" aria-label="Field of view" title="Vertical field of view: wider angles show more of the room">
+      <option value="30">Narrow 30°</option><option value="45" selected>Normal 45°</option>
+      <option value="60">Wide 60°</option><option value="75">Extra wide 75°</option>
+    </select>
+    <button id="plan" class="tg" title="Top-down plan of the cut storey, north up (P)"><i></i>Plan<kbd>P</kbd></button>
+    <button id="measure" class="tg" title="Measure: click two points. Snaps to corners and edges (Alt: off), Shift locks an axis, Space+drag looks around (M)"><i></i>Measure<kbd>M</kbd></button>
     <button id="spaces" class="tg" title="Show IfcSpace volumes"><i></i>Spaces</button>
     <button id="home" class="tg plain" title="Reset the camera (H)">Home<kbd>H</kbd></button>
   </div>
@@ -58,7 +71,7 @@
       <label class="btn" for="file">Choose a file</label>
       <button class="btn accent" id="exampleHero">Load the example house</button>
     </div>
-    <p class="fine">Move: W A S D, arrows or mouse wheel · look around: drag · up/down: Q E · click an element for its properties</p>
+    <p class="fine">Move: W A S D, arrows or mouse wheel · look around: drag · up/down: Q E · click an element for its properties · M measure · P plan · X remove, Z undo</p>
   </div>
 </section>
 
@@ -76,6 +89,12 @@
     <button class="btn accent" id="tutorialOk">Got it</button>
   </div>
 </section>
+
+<div id="hint"></div>
+<div id="measureBox" hidden></div>
+<svg id="measureSvg" aria-hidden="true"></svg>
+<div id="measureLabel" class="mlab main" hidden></div>
+<div class="mlab axis x" hidden></div><div class="mlab axis y" hidden></div><div class="mlab axis z" hidden></div>
 
 <div id="drop" hidden><div class="inner"><div class="eyebrow"><i></i>Release to open</div><strong>Drop the .ifc here</strong></div></div>
 

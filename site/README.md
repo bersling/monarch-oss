@@ -31,8 +31,27 @@ example button locally, copy a built IFC next to the page: `cp generated/casa_mo
 - Look mode by default: left-drag turns the camera in place, move with `W A S D`, the arrow keys or
   the mouse wheel (towards the cursor), `Q E` down/up, `Shift` faster. A one-card tutorial says so
   after the first load (remembered in `localStorage`). `O` switches to Orbit (left-drag orbits,
-  right-drag pans, scroll zooms). `H` home, `F` focus, `Esc` clear.
-- Stats line: elements, triangles, parse time. Works at phone width.
+  right-drag pans, scroll zooms). `H` home, `F` focus, `Esc` clear. Keys match the local viewer
+  (`docs/viewer.md`).
+- Cut: a storey and everything below it, clipped at floor + height (default 1.20 m), cut walls
+  in a slate section fill (opaque back faces while cutting). Storey floors are
+  `IfcBuildingStorey.Elevation` (times the `IfcSIUnit` length prefix), measured in the same frame
+  as the geometry; a storey placed with an extra offset would cut at the wrong height.
+- Plan (`P` or the button): top-down orthographic view of the cut storey (Ground floor, i.e.
+  elevation 0, else the lowest, when no cut is set), implying a cut at floor + 1.20 m. North up:
+  IFC +y is taken as north, `IfcGeometricRepresentationContext.TrueNorth` is ignored. Drag pans,
+  scroll zooms, `W A S D` pan the map, the Cut menu switches the storey, `P` goes back to 3D
+  (the cut stays until Cut is set to off).
+- Measure (`M`): click two points. In Measure mode a left-click only places points; hold
+  `Space` and drag to look around. The cursor snaps to corners (square), else edges (diamond),
+  else the face (ring); `Alt` turns snapping off, `Shift` locks the dominant axis. The result is a
+  line with a distance label in the view, dashed x / y / z legs and a box with Δx / Δy / Δz in
+  IFC axes to the millimetre. `Esc` clears, a second `Esc` leaves Measure.
+- Field of view: Narrow 30°, Normal 45° (default), Wide 60°, Extra wide 75°; disabled in Plan.
+- Remove (`X` or the panel button) hides the selected element for this session only (nothing is
+  saved; a reload restores it). `Z` undoes the last removal, `Shift+Z` restores all; the hint line
+  and the Elements stat show how many are removed.
+- Stats line: elements, triangles, parse time. Works at phone width (the toolbar wraps).
 
 ## Deploy
 
@@ -57,8 +76,11 @@ The import map in `index.html` maps `three`, `three/addons/` and `web-ifc` to th
 
 ## Testing
 
-Headless only: serve `site/` (with a test IFC placed as `casa_monarch.ifc`), launch Chrome with
-`--headless=new --remote-debugging-port=0` and drive it over the DevTools protocol from a Node
-script (see `tests/browser_viewer.mjs` for the pattern). The page exposes `window.__viewerReady`
-and `window.__viewer` (`state`, `loadBuffer`, `setSelection`, `focusOn`, `orbit`, `drawCalls`) for
-such scripts.
+Headless only: serve `site/` (with a test IFC placed as `casa_monarch.ifc`) and run
+`node site/test_site.mjs http://127.0.0.1:PORT/ [shot.png]` (usage at the top of the file). It
+drives headless Chrome over the DevTools protocol and covers loading, storeys, selection, search,
+remove / undo, FOV, Plan, Measure and the 390 px layout; with a screenshot path it also writes
+`shot-plan-gf.png`, `shot-measure.png`, `shot-cut-3d.png` and `shot-phone-390(-plan).png`. The page
+exposes `window.__viewerReady` and `window.__viewer` (`state`, `camera`, `loadBuffer`,
+`setSelection`, `removeSelected`, `undoRemove`, `setFov`, `setCut`, `enterPlan`, `exitPlan`,
+`setMeasure`, `measureClick`, `snapAt`, `drawCalls`, ...) for such scripts.

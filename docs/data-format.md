@@ -187,6 +187,14 @@ One physical thing = one entry = one IFC element, styled by parts:
 - `access`: the floor you stand on to use it; other furniture there is a warning.
 - `surface: true`: rugs and paint, blocks nothing.
 - `gallery`: written as `Pset_Gallery`; the viewers label such elements.
+- `light`: the photometry of a lamp, written as `Pset_Light` and used by the viewers' Night look
+  (`N`). Give lamps `"ifc_class": "IfcLightFixture"` (`predefined_type` `POINTSOURCE` or
+  `DIRECTIONSOURCE`):
+  `{"lumen": 800, "kelvin": 2700, "kind": "point"|"spot", "angle_deg": 110 (spot: full beam),
+  "direction": [0, 0, -1], "at": [x, y, z] (light source, same frame as the entry),
+  "emissive": [[r, g, b]] (part colours that glow), "source": "E27 LED 800 lm, 2700 K",
+  "switch": "a" (optional wall-switch group)}`. Values edited in the local viewer land in
+  `data/lamp_overrides.json` and win over the block. Use warm white (2700-3000 K) inside.
 - `props.Dimensions` must read `W x D x H cm` and match the geometry (whole bbox or one part)
   within 2 cm, or the build fails (`DIMS`). `Product`, `Dimensions` and `SourceURL`/`Plan` are
   required (`META` warning otherwise).

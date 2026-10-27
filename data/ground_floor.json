@@ -1602,6 +1602,229 @@
       "_comment": "\"surface\": true tells the checks it blocks nothing."
     },
     {
+      "id": "LIV_FLOOR_LAMP",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "base",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "cylinders": [
+            [
+              0.8,
+              3.65,
+              0.0,
+              0.15,
+              0.02
+            ]
+          ]
+        },
+        {
+          "name": "stem",
+          "rgb": [
+            0.18,
+            0.18,
+            0.19
+          ],
+          "cylinders": [
+            [
+              0.8,
+              3.65,
+              0.02,
+              0.012,
+              0.3
+            ]
+          ]
+        },
+        {
+          "name": "shade",
+          "rgb": [
+            0.95,
+            0.9,
+            0.8
+          ],
+          "cylinders": [
+            [
+              0.8,
+              3.65,
+              0.3,
+              0.11,
+              1.38
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 800,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          0.8,
+          3.65,
+          0.95
+        ],
+        "emissive": [
+          [
+            0.95,
+            0.9,
+            0.8
+          ]
+        ],
+        "source": "E27 LED 800 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Floor lamp, tall white linen cylinder",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 22 x 138 cm (base Ø 30)",
+        "LightSource": "E27 LED 800 lm, 2700 K"
+      },
+      "_comment": "Reading corner between the sofa's west end and the west wall."
+    },
+    {
+      "id": "LIV_TABLE_LAMP",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "base",
+          "rgb": [
+            0.75,
+            0.62,
+            0.45
+          ],
+          "cylinders": [
+            [
+              2.45,
+              0.58,
+              0.68,
+              0.06,
+              0.72
+            ]
+          ]
+        },
+        {
+          "name": "globe",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "spheres": [
+            [
+              2.45,
+              0.58,
+              0.845,
+              0.125
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 450,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          2.45,
+          0.58,
+          0.845
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "E27 LED 450 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Table lamp, opal glass globe on a brass base",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 25 x 29 cm",
+        "LightSource": "E27 LED 450 lm, 2700 K"
+      },
+      "_comment": "On the sideboard top (0.68 m), in front of the south window."
+    },
+    {
+      "id": "LIV_CEILING",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "canopy",
+          "rgb": [
+            0.95,
+            0.95,
+            0.94
+          ],
+          "cylinders": [
+            [
+              2.7,
+              2.1,
+              2.62,
+              0.27,
+              2.65
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              2.7,
+              2.1,
+              2.57,
+              0.3,
+              2.62
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 2000,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          2.7,
+          2.1,
+          2.4499999999999997
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 2000 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Ceiling light, opal acrylic disc Ø 60",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 60 x 8 cm",
+        "LightSource": "LED module 2000 lm, 2700 K"
+      },
+      "_comment": "Flush ceiling light; light source 20 cm below the ceiling so the ceiling itself catches some light."
+    },
+    {
       "id": "DIN_TABLE",
       "_comment": "Long side along y so the walk between the dining and the kitchen island stays 0.9 m.",
       "mesh": "assets/dining_table_polyhaven_2400.obj",
@@ -1885,9 +2108,54 @@
         "Status": "Proposed",
         "MeshSource": "src/gen_assets.py pendant_lamp()",
         "MeshLicense": "MIT",
-        "SurfaceShading": "smooth"
+        "SurfaceShading": "smooth",
+        "LightSource": "E27 LED 800 lm, 2700 K"
       },
-      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim."
+      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim.",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "parts": [
+        {
+          "name": "bulb",
+          "rgb": [
+            1.0,
+            0.93,
+            0.78
+          ],
+          "spheres": [
+            [
+              6.2,
+              1.9,
+              1.6900000000000002,
+              0.05
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 800,
+        "kelvin": 2700,
+        "kind": "spot",
+        "angle_deg": 110,
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          6.2,
+          1.9,
+          1.6600000000000001
+        ],
+        "emissive": [
+          [
+            1.0,
+            0.93,
+            0.78
+          ]
+        ],
+        "source": "E27 LED 800 lm, 2700 K"
+      }
     },
     {
       "id": "DIN_PENDANT_2",
@@ -1920,9 +2188,54 @@
         "Status": "Proposed",
         "MeshSource": "src/gen_assets.py pendant_lamp()",
         "MeshLicense": "MIT",
-        "SurfaceShading": "smooth"
+        "SurfaceShading": "smooth",
+        "LightSource": "E27 LED 800 lm, 2700 K"
       },
-      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim."
+      "_comment": "Shade rim at 1.6 m, canopy on the 2.65 m ceiling: z_min of the mesh is the shade rim.",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "parts": [
+        {
+          "name": "bulb",
+          "rgb": [
+            1.0,
+            0.93,
+            0.78
+          ],
+          "spheres": [
+            [
+              6.2,
+              2.9,
+              1.6900000000000002,
+              0.05
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 800,
+        "kelvin": 2700,
+        "kind": "spot",
+        "angle_deg": 110,
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          6.2,
+          2.9,
+          1.6600000000000001
+        ],
+        "emissive": [
+          [
+            1.0,
+            0.93,
+            0.78
+          ]
+        ],
+        "source": "E27 LED 800 lm, 2700 K"
+      }
     },
     {
       "id": "KIT_RUN",
@@ -2190,7 +2503,52 @@
         "Status": "Proposed",
         "MeshSource": "src/gen_assets.py pendant_lamp()",
         "MeshLicense": "MIT",
-        "SurfaceShading": "smooth"
+        "SurfaceShading": "smooth",
+        "LightSource": "E27 LED 800 lm, 3000 K"
+      },
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "parts": [
+        {
+          "name": "bulb",
+          "rgb": [
+            1.0,
+            0.93,
+            0.78
+          ],
+          "spheres": [
+            [
+              8.58,
+              3.2,
+              1.6900000000000002,
+              0.05
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 800,
+        "kelvin": 3000,
+        "kind": "spot",
+        "angle_deg": 100,
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          8.58,
+          3.2,
+          1.6600000000000001
+        ],
+        "emissive": [
+          [
+            1.0,
+            0.93,
+            0.78
+          ]
+        ],
+        "source": "E27 LED 800 lm, 3000 K"
       }
     },
     {
@@ -2224,7 +2582,52 @@
         "Status": "Proposed",
         "MeshSource": "src/gen_assets.py pendant_lamp()",
         "MeshLicense": "MIT",
-        "SurfaceShading": "smooth"
+        "SurfaceShading": "smooth",
+        "LightSource": "E27 LED 800 lm, 3000 K"
+      },
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "parts": [
+        {
+          "name": "bulb",
+          "rgb": [
+            1.0,
+            0.93,
+            0.78
+          ],
+          "spheres": [
+            [
+              8.58,
+              4.4,
+              1.6900000000000002,
+              0.05
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 800,
+        "kelvin": 3000,
+        "kind": "spot",
+        "angle_deg": 100,
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          8.58,
+          4.4,
+          1.6600000000000001
+        ],
+        "emissive": [
+          [
+            1.0,
+            0.93,
+            0.78
+          ]
+        ],
+        "source": "E27 LED 800 lm, 3000 K"
       }
     },
     {
@@ -2416,6 +2819,444 @@
         "License": "MIT (project data)",
         "Status": "Proposed"
       }
+    },
+    {
+      "id": "HALL_CEILING",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "canopy",
+          "rgb": [
+            0.95,
+            0.95,
+            0.94
+          ],
+          "cylinders": [
+            [
+              6.95,
+              6.3,
+              2.62,
+              0.05,
+              2.645
+            ]
+          ]
+        },
+        {
+          "name": "cable",
+          "rgb": [
+            0.9,
+            0.9,
+            0.88
+          ],
+          "cylinders": [
+            [
+              6.95,
+              6.3,
+              2.6100000000000003,
+              0.004,
+              2.62
+            ]
+          ]
+        },
+        {
+          "name": "shade",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "spheres": [
+            [
+              6.95,
+              6.3,
+              2.47,
+              0.15
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 1000,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          6.95,
+          6.3,
+          2.47
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "E27 LED 1000 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Ceiling globe, opal glass Ø 30 on a short stem",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 30 cm, drop 0.33 m",
+        "LightSource": "E27 LED 1000 lm, 2700 K"
+      }
+    },
+    {
+      "id": "OUT_ENTRY_WALL",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "plate",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "boxes": [
+            [
+              6.15,
+              8.5,
+              1.83,
+              6.25,
+              8.52,
+              2.07
+            ]
+          ]
+        },
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.2,
+              8.57,
+              1.8499999999999999,
+              0.05,
+              2.05
+            ]
+          ]
+        },
+        {
+          "name": "lens",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              6.2,
+              8.57,
+              1.8199999999999998,
+              0.045,
+              1.8499999999999999
+            ],
+            [
+              6.2,
+              8.57,
+              2.05,
+              0.045,
+              2.08
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 500,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          6.2,
+          8.620000000000001,
+          1.95
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "2 x GU10 LED 250 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Outdoor wall light up/down, anthracite cylinder",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 10 x 26 cm, 12 cm projection",
+        "LightSource": "2 x GU10 LED 250 lm, 3000 K",
+        "IPRating": "IP54"
+      },
+      "_comment": "On the outer face of the wall; up/down beams modelled as one all-round source just in front of it."
+    },
+    {
+      "id": "OUT_GARDEN_WALL_W",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "plate",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "boxes": [
+            [
+              3.0500000000000003,
+              -0.02,
+              1.83,
+              3.15,
+              0.0,
+              2.07
+            ]
+          ]
+        },
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              3.1,
+              -0.07,
+              1.8499999999999999,
+              0.05,
+              2.05
+            ]
+          ]
+        },
+        {
+          "name": "lens",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              3.1,
+              -0.07,
+              1.8199999999999998,
+              0.045,
+              1.8499999999999999
+            ],
+            [
+              3.1,
+              -0.07,
+              2.05,
+              0.045,
+              2.08
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 500,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          3.1,
+          -0.12000000000000001,
+          1.95
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "2 x GU10 LED 250 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Outdoor wall light up/down, anthracite cylinder",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 10 x 26 cm, 12 cm projection",
+        "LightSource": "2 x GU10 LED 250 lm, 3000 K",
+        "IPRating": "IP54"
+      },
+      "_comment": "On the outer face of the wall; up/down beams modelled as one all-round source just in front of it."
+    },
+    {
+      "id": "OUT_GARDEN_WALL_E",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "plate",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "boxes": [
+            [
+              5.05,
+              -0.02,
+              1.83,
+              5.1499999999999995,
+              0.0,
+              2.07
+            ]
+          ]
+        },
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              5.1,
+              -0.07,
+              1.8499999999999999,
+              0.05,
+              2.05
+            ]
+          ]
+        },
+        {
+          "name": "lens",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              5.1,
+              -0.07,
+              1.8199999999999998,
+              0.045,
+              1.8499999999999999
+            ],
+            [
+              5.1,
+              -0.07,
+              2.05,
+              0.045,
+              2.08
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 500,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          5.1,
+          -0.12000000000000001,
+          1.95
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "2 x GU10 LED 250 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Outdoor wall light up/down, anthracite cylinder",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 10 x 26 cm, 12 cm projection",
+        "LightSource": "2 x GU10 LED 250 lm, 3000 K",
+        "IPRating": "IP54"
+      },
+      "_comment": "On the outer face of the wall; up/down beams modelled as one all-round source just in front of it."
+    },
+    {
+      "id": "GAL_CEILING",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "canopy",
+          "rgb": [
+            0.95,
+            0.95,
+            0.94
+          ],
+          "cylinders": [
+            [
+              2.6,
+              6.2,
+              2.62,
+              0.27,
+              2.65
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              2.6,
+              6.2,
+              2.57,
+              0.3,
+              2.62
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 1800,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          2.6,
+          6.2,
+          2.4499999999999997
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 1800 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Ceiling light, opal acrylic disc Ø 60",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 60 x 8 cm",
+        "LightSource": "LED module 1800 lm, 3000 K"
+      },
+      "_comment": "Flush ceiling light; light source 20 cm below the ceiling so the ceiling itself catches some light."
     },
     {
       "id": "GAL_SHELF",

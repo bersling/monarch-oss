@@ -54,6 +54,18 @@ example button locally, copy a built IFC next to the page: `cp generated/casa_mo
 - Remove (`X` or the panel button) hides the selected element for this session only (nothing is
   saved; a reload restores it). `Z` undoes the last removal, `Shift+Z` restores all; the hint line
   and the Elements stat show how many are removed.
+- Night (`N` or the button): the sun and the day fill go out, a faint cool sky keeps unlit rooms
+  readable, and the lamps light the house. Every element with a `Pset_Light` (the example writes it on
+  its `IfcLightFixture`s: `LuminousFlux_lm`, `ColourTemperature_K`, `Distribution` point/spot,
+  `BeamAngle_deg`, `Direction`, `SourceX/Y/Z`, `EmissiveRGB`) becomes a three.js point or spot
+  light, as in the local viewer: candela = lumen / solid angle, colour from Kelvin, 100 lux shown
+  as full brightness, plus a soft fill (Bounce, default 35 % of the lumen, ending at 5 m) standing
+  in for wall bounce. Parts in the `EmissiveRGB` colours glow. Budget: the lights exist only at
+  night, the first 6 spots cast shadows (shadow maps redrawn only on changes), points never do.
+  A lamp list (bottom left, foldable) switches each lamp; a selected lamp's panel has Light on/off
+  (`L`) and a Light section (lumen, Kelvin, beam) that previews live. The hosted page has no
+  server, so these edits last for the session; the local viewer's editor saves them
+  (`data/lamp_overrides.json`). Plans always use day light.
 - Stats line: elements, triangles, parse time. Works at phone width (the toolbar wraps).
 
 ## Deploy

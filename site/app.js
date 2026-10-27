@@ -16,7 +16,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.toneMapping = THREE.NoToneMapping;
 const scene = new THREE.Scene();
-scene.add(new THREE.HemisphereLight(0xffffff, 0x9a9282, 2.0));
+const hemi = new THREE.HemisphereLight(0xffffff, 0x9a9282, 2.0);
+scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffffff, 1.4);
 sun.position.set(0.55, 0.75, 0.7);
 scene.add(sun);
@@ -82,6 +83,9 @@ const state = {
   nav: 'look', spaces: false, tris: 0, parseMs: 0, materials: new Map(),
   cut: null, plan: null, measure: false,
   removed: new Set(),              // ids hidden with X: play-around only, never saved, gone on reload
+  night: false,                    // Night look (N): the lamps light the house
+  lamps: new Map(),                // expressID -> {id, pset (Pset_Light), edit, on, glow}
+  unit: 1,                         // project length unit in metres (Pset_Light coordinates)
 };
 const removedStack = [];           // removal order for Z (undo)
 function materialFor(materials, c) {
@@ -158,7 +162,9 @@ function clearModel() {
   for (const g of [...root.children]) if (g !== spacesGroup) disposeGroup(g);
   for (const g of [...spacesGroup.children]) disposeGroup(g);
   for (const m of state.materials?.values() || []) { m.map?.dispose(); m.dispose(); }
-  Object.assign(state, { modelID: null, elements: new Map(), materials: new Map(), storeys: [], storeyVisible: new Map(), sel: null, tris: 0, cut: null });
+  Object.assign(state, { modelID: null, elements: new Map(), materials: new Map(), storeys: [], storeyVisible: new Map(), sel: null, tris: 0, cut: null, lamps: new Map() });
+  for (const o of [...LAMPS.children]) LAMPS.remove(o);
+  for (const m of lampMaterials.splice(0)) m.dispose();
   state.removed.clear(); removedStack.length = 0;
   if (state.plan != null) exitPlan(false);
   measure.points = []; measure.preview = null; measure.hover = null;
@@ -228,6 +234,8 @@ async function loadBuffer(bytes, name, baseUrl = null) {
       if (list.length > 1) list.forEach(g => g.dispose());
       const mesh = new THREE.Mesh(merged, tex ? textureMaterial(model.materials, tex) : materialFor(model.materials, colour));
       mesh.userData.expressID = id;
+      mesh.castShadow = !mesh.material.transparent;          // only lamp spots at night cast shadows
+      mesh.receiveShadow = true;
       group.add(mesh);
     }
     target.add(group);
@@ -253,6 +261,8 @@ async function loadBuffer(bytes, name, baseUrl = null) {
   root.add(model.root);
   spacesGroup.add(model.spaces);
   buildStoreys(modelID);
+  buildLamps(modelID);
+  applyLook();
   state.parseMs = performance.now() - t0;
   let projectName = '';
   try { const p = api.GetLineIDsWithType(modelID, WebIFC.IFCPROJECT); if (p.size()) projectName = val(api.GetLine(modelID, p.get(0)).Name) || ''; } catch { /* optional */ }
@@ -287,6 +297,7 @@ function buildStoreys(modelID) {
     const u = api.GetLine(modelID, units.get(i));
     if (val(u?.UnitType) === 'LENGTHUNIT') unit = { MILLI: 0.001, CENTI: 0.01, DECI: 0.1 }[val(u?.Prefix)] ?? 1;
   }
+  state.unit = unit;
   const storeyIds = api.GetLineIDsWithType(modelID, WebIFC.IFCBUILDINGSTOREY);
   const storeys = [];
   for (let i = 0; i < storeyIds.size(); i++) {
@@ -360,6 +371,7 @@ function applyVisibility() {
     POCHE.value = 0;
   }
   if (state.sel != null && !state.elements.get(state.sel)?.group.visible) setSelection(null);
+  applyLook();
   syncTools();
 }
 // Play-around removal: X hides the selected element for this session only (nothing is written
@@ -384,6 +396,276 @@ function setCut(storey, height = state.cut?.height ?? DEFAULT_CUT) {
   if (state.plan != null) { if (state.cut) enterPlan(state.cut.storey, true); else exitPlan(); }
   applyVisibility();
 }
+
+// ---------------------------------------------------------------- lamps (Night look)
+// Night (N) turns the sun and the day fill off, keeps a faint cool sky so unlit rooms stay
+// legible, and lights the house with its lamps: every element with a Pset_Light (the IfcLightFixtures
+// written by src/build_model.py from a "light" block) becomes a three.js point or spot light from its
+// photometry, as in web/viewer.js: candela = lumen / solid angle (4 pi sr, a spot its cone), colour
+// from Kelvin white-balanced against a 3400 K adapted eye, NIGHT.lux lux shown as full brightness.
+// Each lamp also gets a soft decay-1 fill carrying NIGHT.bounce of its lumen, a stand-in for the
+// light the walls bounce back (no global illumination here). Diffuser parts (colours listed in
+// EmissiveRGB) glow. The fill ends smoothly at NIGHT.bounceRange metres (a room), so twenty lamps do
+// not light the whole garden through the walls.
+// Budget: lights exist only at night (LAMPS.visible), so the day look pays nothing for them; the
+// first NIGHT.maxShadowSpots spots cast shadows, points never do; the shadow maps are redrawn only
+// when something changes. Switching a lamp only changes intensities and never recompiles shaders.
+const NIGHT = { lux: 100, whiteBalance: 3400, bounce: 0.35, bounceRange: 5, maxShadowSpots: 6, sky: 0x0b1424 };
+const LAMPS = new THREE.Group();
+LAMPS.visible = false;
+scene.add(LAMPS);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
+renderer.shadowMap.autoUpdate = false;
+const invalidateShadows = () => { renderer.shadowMap.needsUpdate = true; };
+/** Blackbody-ish colour of a Kelvin value (Tanner Helland's fit), as a linear THREE.Color. */
+function kelvinColour(k) {
+  const t = THREE.MathUtils.clamp(k, 1000, 12000) / 100;
+  const r = t <= 66 ? 255 : 329.698727446 * Math.pow(t - 60, -0.1332047592);
+  const g = t <= 66 ? 99.4708025861 * Math.log(t) - 161.1195681661 : 288.1221695283 * Math.pow(t - 60, -0.0755148492);
+  const b = t >= 66 ? 255 : t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
+  const c = [r, g, b].map(v => THREE.MathUtils.clamp(v, 0, 255) / 255);
+  return new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
+}
+/** Pset_Light of every element that has one: expressID -> {Name: value}. */
+function readLightPsets(modelID) {
+  const out = new Map(), rels = api.GetLineIDsWithType(modelID, WebIFC.IFCRELDEFINESBYPROPERTIES);
+  for (let i = 0; i < rels.size(); i++) {
+    try {
+      const rel = api.GetLine(modelID, rels.get(i));
+      const ps = api.GetLine(modelID, val(rel.RelatingPropertyDefinition));
+      if (val(ps?.Name) !== 'Pset_Light') continue;
+      const P = {};
+      for (const h of ps.HasProperties || []) { const p = api.GetLine(modelID, val(h)); P[val(p?.Name)] = val(p?.NominalValue); }
+      for (const o of rel.RelatedObjects || []) out.set(val(o), P);
+    } catch (e) { console.warn('Pset_Light skipped', e); }
+  }
+  return out;
+}
+/** The current photometry of a lamp: the IFC values, overridden by in-session edits. */
+function lampSpec(L) {
+  const P = L.pset, o = L.edit;
+  return { lumen: o.lumen ?? +P.LuminousFlux_lm, kelvin: o.kelvin ?? (+P.ColourTemperature_K || 2700),
+    kind: o.kind ?? (P.Distribution === 'spot' ? 'spot' : 'point'), angle: o.angle ?? (+P.BeamAngle_deg || 360) };
+}
+const _lampRay = new THREE.Raycaster();
+let shadowSpots = 0;
+/** The lights of one lamp: the lamp itself plus its bounce fill. userData.id ties them to the element. */
+function makeLamp(L, castShadow) {
+  const P = L.pset, S = lampSpec(L), u = state.unit;
+  const colour = kelvinColour(S.kelvin), wb = kelvinColour(NIGHT.whiteBalance);
+  colour.setRGB(Math.min(colour.r / wb.r, 1.25), Math.min(colour.g / wb.g, 1.25), Math.min(colour.b / wb.b, 1.25));
+  const pos = new THREE.Vector3(+P.SourceX * u, +P.SourceZ * u, -P.SourceY * u);   // IFC -> three, as web-ifc does
+  const spot = S.kind === 'spot', beam = THREE.MathUtils.degToRad(Math.min(S.angle, 179));
+  const sr = spot ? 2 * Math.PI * (1 - Math.cos(beam / 2)) : 4 * Math.PI;
+  const light = spot ? new THREE.SpotLight(colour, 0, 0, beam / 2, 0.6, 2) : new THREE.PointLight(colour, 0, 0, 2);
+  light.position.copy(pos);
+  light.userData = { id: L.id, candela: S.lumen / sr };
+  const out = [light];
+  let fillPos = pos;
+  if (spot) {
+    const d = String(P.Direction || '0,0,-1').split(',').map(Number);
+    const dir = new THREE.Vector3(d[0], d[2], -d[1]).normalize();
+    light.target.position.copy(pos).add(dir);
+    light.target.userData = { id: L.id };
+    out.push(light.target);
+    if (castShadow) {
+      light.castShadow = true;
+      light.shadow.mapSize.set(1024, 1024);
+      light.shadow.bias = -0.0005; light.shadow.normalBias = 0.02;
+      light.shadow.camera.near = 0.05; light.shadow.camera.far = 12;
+    }
+    // A spot's bounce comes from the surface it lights (the table under a pendant), not the shade.
+    _lampRay.set(pos, dir); _lampRay.far = 6;
+    const hit = _lampRay.intersectObject(root, true).find(h => h.object.isMesh && h.object.userData.expressID !== L.id
+      && !state.elements.get(h.object.userData.expressID)?.isSpace);
+    if (hit) fillPos = hit.point.clone().addScaledVector(dir, -0.15);
+  }
+  const fillLight = new THREE.PointLight(colour, 0, NIGHT.bounceRange, 1);   // ends smoothly at bounceRange: a room, not the garden
+  fillLight.position.copy(fillPos);
+  fillLight.userData = { id: L.id, candela: S.lumen / (4 * Math.PI), bounce: true };
+  out.push(fillLight);
+  return out;
+}
+const lampMaterials = [];                                   // per-mesh clones that glow (materials are shared by colour)
+function buildLamps(modelID) {
+  for (const o of [...LAMPS.children]) LAMPS.remove(o);
+  for (const m of lampMaterials.splice(0)) m.dispose();
+  state.lamps = new Map();
+  shadowSpots = 0;
+  for (const [id, pset] of readLightPsets(modelID)) {
+    const el = state.elements.get(id);
+    if (!el || !(+pset.LuminousFlux_lm > 0)) continue;
+    const L = { id, pset, edit: {}, on: true, glow: [] };
+    state.lamps.set(id, L);
+    const shadow = lampSpec(L).kind === 'spot' && shadowSpots < NIGHT.maxShadowSpots;
+    if (shadow) shadowSpots++;
+    for (const o of makeLamp(L, shadow)) LAMPS.add(o);
+    const glow = String(pset.EmissiveRGB || '').split(';').filter(Boolean)
+      .map(t => { const c = t.split(',').map(Number); return new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace); });
+    el.group.traverse(o => {
+      if (!o.isMesh || !o.material.emissive || o.material.map) return;
+      const c = o.material.color, match = glow.find(g => Math.abs(g.r - c.r) + Math.abs(g.g - c.g) + Math.abs(g.b - c.b) < 0.03);
+      if (!match) return;
+      o.material = patchMaterial(o.material.clone());
+      lampMaterials.push(o.material);
+      L.glow.push({ mesh: o, colour: match });
+    });
+  }
+  syncLamps();
+}
+/** Replace one lamp's lights after an edit (shadow flag kept). */
+function rebuildLamp(id) {
+  const L = state.lamps.get(id);
+  if (!L) return;
+  let shadow = false;
+  for (const o of [...LAMPS.children]) if (o.userData?.id === id) { if (o.castShadow) shadow = true; LAMPS.remove(o); o.dispose?.(); }
+  if (!shadow && lampSpec(L).kind === 'spot' && shadowSpots < NIGHT.maxShadowSpots) { shadow = true; shadowSpots++; }
+  for (const o of makeLamp(L, shadow)) LAMPS.add(o);
+  syncLamps();
+}
+const nightOn = () => state.night && state.plan == null;
+/** Look, visibility and switches -> light intensities and glowing parts. */
+function syncLamps() {
+  const on = nightOn();
+  LAMPS.visible = on && state.lamps.size > 0;
+  for (const l of LAMPS.children) {
+    if (!l.isLight) continue;
+    const L = state.lamps.get(l.userData.id), lit = on && L?.on && state.elements.get(l.userData.id)?.group.visible;
+    l.intensity = lit ? l.userData.candela * (l.userData.bounce ? NIGHT.bounce : 1) * Math.PI / NIGHT.lux : 0;
+  }
+  for (const L of state.lamps.values()) {
+    for (const { mesh, colour } of L.glow) {
+      const m = mesh.userData.orig || mesh.material;            // the selection clone carries the highlight
+      if (on && L.on) { m.emissive.copy(colour); m.emissiveIntensity = 1.6; } else { m.emissive.setRGB(0, 0, 0); m.emissiveIntensity = 1; }
+    }
+  }
+  invalidateShadows();
+  renderLampList();
+}
+const DAY = { hemi: hemi.intensity, sun: sun.intensity, fill: fill.intensity, sky: hemi.color.getHex(), ground: hemi.groundColor.getHex() };
+/** Day or night lighting; plans always use day light (a plan is a diagram). */
+function applyLook() {
+  const n = nightOn();
+  hemi.intensity = n ? 0.06 : DAY.hemi;
+  hemi.color.set(n ? 0x8fa3c8 : DAY.sky); hemi.groundColor.set(n ? 0x1a1d24 : DAY.ground);
+  sun.intensity = n ? 0 : DAY.sun; fill.intensity = n ? 0 : DAY.fill;
+  renderer.toneMapping = n ? THREE.NeutralToneMapping : THREE.NoToneMapping;
+  renderer.setClearColor(n ? NIGHT.sky : 0x000000);                   // a deep navy night sky
+  document.body.classList.toggle('night', n);
+  syncLamps();
+}
+function setNight(on) {
+  state.night = !!on;
+  applyLook();
+  syncTools();
+  if (state.sel != null && state.lamps.has(state.sel)) renderLampPanel();
+}
+function setLamps(ids, on) {
+  for (const id of ids) { const L = state.lamps.get(id); if (L) L.on = on; }
+  syncLamps();
+  if (ids.includes(state.sel)) renderLampPanel();
+  syncTools();
+}
+function toggleLamp(id) { const L = state.lamps.get(id); if (L) setLamps([id], !L.on); }
+const lampName = L => state.elements.get(L.id)?.name || `#${L.id}`;
+// Lamp list (Night look only): every lamp on a shown storey with its own switch, grouped by storey.
+// A switch-group letter (Pset_Light.SwitchGroup) shared by several lamps flips them together.
+const lampsEl = $('lamps');
+const lampGroup = L => { const g = String(L.pset.SwitchGroup || ''); return g.length <= 3 ? g : ''; };
+function renderLampList() {
+  const list = nightOn() ? [...state.lamps.values()].filter(L => state.elements.get(L.id)?.group.visible) : [];
+  lampsEl.hidden = !list.length;
+  if (!list.length) return;
+  const onCount = list.filter(L => L.on).length, head = `Lamps · ${onCount} of ${list.length} on`;
+  const sig = list.map(L => L.id).join('|');
+  if (lampsEl.dataset.sig === sig) {                        // same lamps: flip classes so the knobs slide
+    for (const row of lampsEl.querySelectorAll('.lamp')) {
+      const L = state.lamps.get(Number(row.dataset.id)), sw = row.querySelector('.sw');
+      row.classList.toggle('on', L.on); sw.setAttribute('aria-pressed', L.on); sw.title = L.on ? 'Switch off' : 'Switch on';
+      row.querySelector('.spec').textContent = `${Math.round(lampSpec(L).lumen)} lm · ${Math.round(lampSpec(L).kelvin)} K`;
+    }
+    lampsEl.querySelector('.eyebrow').lastChild.textContent = head;
+    return;
+  }
+  lampsEl.dataset.sig = sig;
+  const byStorey = new Map();
+  for (const L of list) { const s = state.elements.get(L.id).storey; if (!byStorey.has(s)) byStorey.set(s, []); byStorey.get(s).push(L); }
+  let html = `<button class="eyebrow fold" data-fold title="Fold or unfold the lamp list"><i></i>${head}</button>`
+    + `<label class="bounce" title="Share of each lamp's light spread as soft fill, standing in for the light the walls would bounce back">`
+    + `<span>Bounce <b>${Math.round(NIGHT.bounce * 100)}%</b></span><input type="range" data-bounce min="0" max="1" step="0.05" value="${NIGHT.bounce}"></label>`;
+  for (const s of state.storeys.filter(s => byStorey.has(s.id))) {
+    html += `<div class="storey">${esc(s.name)}</div>`;
+    const lamps = byStorey.get(s.id), groups = new Map();
+    for (const L of lamps) { const g = lampGroup(L); if (g) groups.set(g, (groups.get(g) || 0) + 1); }
+    for (const L of lamps) {
+      const g = lampGroup(L), multi = g && groups.get(g) > 1, S = lampSpec(L);
+      html += `<div class="lamp ${L.on ? 'on' : ''}" data-id="${L.id}">`
+        + `<button class="sw" data-sw="${L.id}" title="${L.on ? 'Switch off' : 'Switch on'}" aria-pressed="${L.on}"><i></i></button>`
+        + `<span class="name" data-sel="${L.id}" title="${esc(lampName(L))}">${esc(lampName(L))}</span>`
+        + `<span class="spec">${Math.round(S.lumen)} lm · ${Math.round(S.kelvin)} K</span>`
+        + (g ? `<button class="grp ${multi ? 'multi' : ''}" data-grp="${s.id}|${esc(g)}" title="Switch group ${esc(g)}">${esc(g)}</button>` : '')
+        + '</div>';
+    }
+  }
+  lampsEl.innerHTML = html;
+}
+lampsEl.addEventListener('input', ev => {
+  if (!ev.target.matches('[data-bounce]')) return;
+  NIGHT.bounce = Number(ev.target.value);
+  lampsEl.querySelector('.bounce b').textContent = `${Math.round(NIGHT.bounce * 100)}%`;
+  syncLamps();
+});
+lampsEl.addEventListener('click', ev => {
+  if (ev.target.closest('[data-fold]')) { lampsEl.classList.toggle('folded'); return; }
+  const sw = ev.target.closest('[data-sw]'), sel = ev.target.closest('[data-sel]'), grp = ev.target.closest('[data-grp]');
+  if (sw) toggleLamp(Number(sw.dataset.sw));
+  else if (grp) {
+    const [s, g] = grp.dataset.grp.split('|');
+    const ids = [...state.lamps.values()].filter(L => String(state.elements.get(L.id).storey) === s && lampGroup(L) === g).map(L => L.id);
+    setLamps(ids, ids.some(id => !state.lamps.get(id).on));     // any off -> all on, else all off
+  } else if (sel) setSelection(Number(sel.dataset.sel));
+});
+// Selected lamp: a Light on/off button (L) and a Light section with lumen, Kelvin and beam that
+// previews live. The hosted viewer has no server, so edits last for this session only.
+function lampPanelHtml(L) {
+  const S = lampSpec(L), P = L.pset, spot = S.kind === 'spot', edited = Object.keys(L.edit).length > 0;
+  const num = (k, v, min, max, step, unit) => `<input type="range" data-lp="${k}" min="${min}" max="${max}" step="${step}" value="${v}">`
+    + `<span class="val"><input type="number" data-lp="${k}" min="${min}" max="${max}" step="${step}" value="${v}">${unit}</span>`;
+  return `<div class="actions"><button data-act="lamp" class="lamp ${L.on ? 'on' : ''}">${L.on ? 'Light off' : 'Light on'}<kbd>L</kbd></button>`
+    + `${state.night ? '' : '<button data-act="night">Night look<kbd>N</kbd></button>'}</div>`
+    + `<details open class="lampEd"><summary>Light · ${edited ? 'edited (this session)' : 'as modelled'}</summary>
+    <div class="row"><label>Lumen</label>${num('lumen', Math.round(S.lumen), 10, 5000, 10, 'lm')}</div>
+    <div class="row"><label>Kelvin</label>${num('kelvin', Math.round(S.kelvin), 1800, 6500, 50, 'K')}<i class="kswatch" style="background:#${kelvinColour(S.kelvin).getHexString(THREE.SRGBColorSpace)}"></i></div>
+    <div class="row"><label>Beam</label><select data-lp="kind"><option value="point" ${spot ? '' : 'selected'}>all round</option><option value="spot" ${spot ? 'selected' : ''}>spot</option></select>
+      <span class="angle" ${spot ? '' : 'hidden'}>${num('angle', Math.round(S.angle), 10, 180, 5, '°')}</span></div>
+    <div class="row meta">source ${xyz([+P.SourceX, +P.SourceY, +P.SourceZ], 2)} m${P.LightSource ? ` · ${esc(P.LightSource)}` : ''}</div>
+    <div class="actions"><button data-act="lampReset" ${edited ? '' : 'disabled'}>Reset</button><span class="status">Preview only: the hosted viewer cannot save. Edit the "light" block in data/*.json, or use the local viewer's editor.</span></div>
+  </details>`;
+}
+function renderLampPanel() {
+  const box = $('lampBox'), L = state.lamps.get(state.sel);
+  if (box && L) box.innerHTML = lampPanelHtml(L);
+}
+$('panelBody').addEventListener('input', ev => {
+  const t = ev.target, k = t.dataset?.lp, L = state.lamps.get(state.sel);
+  if (!k || !L) return;
+  if (t.matches('input')) for (const other of $('panelBody').querySelectorAll(`[data-lp="${k}"]`)) if (other !== t) other.value = t.value;
+  const g = n => Number($('panelBody').querySelector(`input[type=range][data-lp="${n}"]`)?.value);
+  L.edit = { lumen: g('lumen'), kelvin: g('kelvin'), kind: $('panelBody').querySelector('select[data-lp="kind"]').value, angle: g('angle') };
+  if (k === 'kind') $('panelBody').querySelector('.lampEd .angle').hidden = L.edit.kind !== 'spot';
+  if (k === 'kelvin') $('panelBody').querySelector('.kswatch').style.background = '#' + kelvinColour(L.edit.kelvin).getHexString(THREE.SRGBColorSpace);
+  $('panelBody').querySelector('.lampEd summary').textContent = 'Light · edited (this session)';
+  $('panelBody').querySelector('[data-act="lampReset"]').disabled = false;
+  rebuildLamp(L.id);
+});
+$('panelBody').addEventListener('click', ev => {
+  const act = ev.target.closest('[data-act]')?.dataset.act, L = state.lamps.get(state.sel);
+  if (!L) return;
+  if (act === 'lamp') toggleLamp(L.id);
+  else if (act === 'night') setNight(true);
+  else if (act === 'lampReset') { L.edit = {}; rebuildLamp(L.id); renderLampPanel(); }
+});
 
 // ---------------------------------------------------------------- selection + property panel
 const HIGHLIGHT = new THREE.Color(0x3ea6ff);
@@ -413,12 +695,14 @@ function setSelection(id) {
     <h2>${esc(el.name || '(unnamed)')}</h2>
     <div class="key">#${el.id} · ${esc(el.gid)}</div>
     <div class="actions"><button id="focusBtn">Focus <kbd>F</kbd></button><button id="removeBtn">Remove <kbd>X</kbd></button></div>
+    ${state.lamps.has(el.id) ? '<div id="lampBox"></div>' : ''}
     <div class="hint">Deselect: Esc, ×, or click the object again · Remove hides it for this session only (Z undo, Shift+Z restore all)</div>
     <table><tr><th>Storey</th><td>${esc(storey?.name ?? '—')}</td></tr>
     <tr><th>Size (x · y · z)</th><td class="mono">${size.x.toFixed(2)} · ${size.z.toFixed(2)} · ${size.y.toFixed(2)} m</td></tr></table>
     <p class="empty" id="psetWait">Loading property sets…</p>`;
   $('focusBtn').onclick = () => focusOn(el);
   $('removeBtn').onclick = () => removeSelected();
+  renderLampPanel();
   const token = ++panelToken;
   // includeTypeProperties=true returns nothing for elements without a type in web-ifc 0.0.78,
   // so the type's psets are fetched separately and appended.
@@ -985,6 +1269,8 @@ window.addEventListener('keydown', ev => {
   else if (k === 'm' && state.modelID !== null) setMeasure(!state.measure);
   else if (k === 'p' && state.modelID !== null) togglePlan();
   else if (k === 'o') setNav(state.nav === 'look' ? 'orbit' : 'look');
+  else if (k === 'n' && state.modelID !== null) setNight(!state.night);
+  else if (k === 'l' && state.sel != null) toggleLamp(state.sel);
   else if (k === 'h') homeView();
 });
 window.addEventListener('keyup', ev => { held.delete(ev.key.toLowerCase()); fast = ev.shiftKey; });
@@ -1006,6 +1292,7 @@ for (const type of ['keydown', 'keyup']) window.addEventListener(type, ev => {
 // ---------------------------------------------------------------- toolbar
 $('spaces').onclick = () => { state.spaces = !state.spaces; spacesGroup.visible = state.spaces; $('spaces').classList.toggle('on', state.spaces); applyVisibility(); };
 $('home').onclick = () => homeView();
+$('night').onclick = ev => { ev.currentTarget.blur(); if (state.modelID !== null) setNight(!state.night); };
 $('navMode').onclick = ev => {
   const seg = ev.target.closest('span');
   setNav(seg ? (seg.classList.contains('look') ? 'look' : 'orbit') : (state.nav === 'look' ? 'orbit' : 'look'));
@@ -1028,10 +1315,18 @@ function syncTools() {
   $('fov').title = state.plan != null ? 'Field of view applies to 3D views; leave Plan to change it' : 'Vertical field of view: wider angles show more of the room';
   $('plan').classList.toggle('on', state.plan != null);
   $('measure').classList.toggle('on', state.measure);
+  $('night').classList.toggle('on', state.night);
+  $('night').title = state.lamps.size || state.modelID === null
+    ? 'Night: sun off, the lamps (IfcLightFixture + Pset_Light) light the house with their lumen and Kelvin values (N)'
+    : 'Night: this model has no lamps with a Pset_Light, so it only goes dark (N)';
   const removed = state.removed.size;
   let hint = state.measure
     ? `Click two points · Space+drag ${state.plan != null ? 'pan' : state.nav} · right-drag pan · scroll ${state.plan != null ? 'zoom' : 'fly'} · Shift axis · Alt no snap · Esc clear`
     : state.plan != null ? `Plan ${storeyOf(state.plan)?.name ?? ''} · north up · drag to pan · scroll to zoom · WASD to pan · P back to 3D` : '';
+  if (state.night && !state.measure && state.plan == null) {
+    const on = [...state.lamps.values()].filter(L => L.on).length;
+    hint += `${hint ? ' · ' : ''}Night · ${on} of ${state.lamps.size} lamps on · L switches the selected lamp · N day`;
+  }
   if (removed && !state.measure) hint += `${hint ? ' · ' : ''}${removed} removed for play (X): Z undo · Shift+Z restore all`;
   $('hint').textContent = hint;
   updateStats();
@@ -1169,7 +1464,7 @@ renderer.setAnimationLoop(now => {
 // Test hooks (tests drive the page over the DevTools protocol).
 window.__viewer = {
   api, scene, root, persp, ortho, orbit, planControls, clipPlane, renderer, state, measure, MEASURE_CLICK, loadBuffer, setSelection, focusOn, homeView, setNav,
-  showTutorial, hideTutorial, removeSelected, undoRemove, setFov, setCut, enterPlan, exitPlan, togglePlan, setMeasure, measureClick, snapAt, pickHit, toIfc,
+  showTutorial, hideTutorial, setNight, toggleLamp, setLamps, LAMPS, NIGHT, lampSpec, removeSelected, undoRemove, setFov, setCut, enterPlan, exitPlan, togglePlan, setMeasure, measureClick, snapAt, pickHit, toIfc,
   get camera() { return camera; }, get controls() { return controls; },
   get drawCalls() { return renderer.info.render.calls; }, get frames() { return frames; },
 };

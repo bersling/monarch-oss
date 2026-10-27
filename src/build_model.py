@@ -36,6 +36,10 @@ source_errors = documents.verify(ROOT)
 if source_errors:
     raise RuntimeError('\n'.join(source_errors))
 
+# Lamp photometry edited in the viewer's lamp editor (data/lamp_overrides.json, written by
+# src/serve.py POST /api/lamp) wins over the light block in the storey JSON.
+_LAMP_OVERRIDES = DATA / "lamp_overrides.json"
+LAMP_OVERRIDES = json.loads(_LAMP_OVERRIDES.read_text()).get("lamps", {}) if _LAMP_OVERRIDES.is_file() else {}
 SOURCES = json.loads((DATA / "sources.json").read_text()) if (DATA / "sources.json").is_file() else {"rules": []}
 OUTPUT = HOUSE.ifc_path
 
@@ -262,6 +266,8 @@ def furnishing(container, fu, elevation):
     if fu.get("object_type"):                # required with PredefinedType USERDEFINED
         piece.ObjectType = fu["object_type"]
     product_props(piece, fu, {'TechnicalID': fu['id']} if fu.get('props') else None)
+    if fu.get("light"):
+        light_pset(piece, fu, elevation)
     for pit, rgb, pname, transparency in part_styled:
         pstyle = shading_style(f"{fu['id']}_{pname}_style", rgb, transparency)
         for it in pit:                       # style the individual solids, not the product
@@ -273,6 +279,25 @@ def furnishing(container, fu, elevation):
             if not it.StyledByItem:
                 model.createIfcStyledItem(it, [fstyle], None)
     return piece
+
+
+def light_pset(piece, fu, elevation):
+    """The photometric side of a luminaire ("light" block) -> Pset_Light, read by the Night look
+    of both viewers (web/viewer.js, site/app.js). at = light source in the entry's own frame
+    (storey-local, or above the terrain for site objects); kind point (all round) or spot
+    (direction + angle_deg = full beam); emissive = authored rgb colours of the parts that glow
+    (diffuser, bulb), matched by colour. Viewer edits (data/lamp_overrides.json) win."""
+    over = LAMP_OVERRIDES.get(fu["id"], {})
+    L = {**fu["light"], **{k: v for k, v in over.items() if k in ("lumen", "kelvin", "kind", "angle_deg")}}
+    sx, sy, sz = L["at"]
+    add_pset(piece, "Pset_Light", {
+        "LuminousFlux_lm": float(L["lumen"]), "ColourTemperature_K": float(L["kelvin"]),
+        "Distribution": L.get("kind", "point"), "BeamAngle_deg": float(L.get("angle_deg", 360)),
+        "Direction": ",".join(f"{float(c):g}" for c in L.get("direction", (0, 0, -1))),
+        "SourceX": round(float(sx), 4), "SourceY": round(float(sy), 4), "SourceZ": round(float(sz) + elevation, 4),
+        "EmissiveRGB": ";".join(",".join(f"{float(c):g}" for c in rgb) for rgb in L.get("emissive", [])),
+        "SwitchGroup": L.get("switch", ""), "LightSource": L.get("source", ""),
+        "Edited": f"viewer {over.get('edited', '')}" if over else ""})
 
 
 # ---------------------------------------------------------------- storeys

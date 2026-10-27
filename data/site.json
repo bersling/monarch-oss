@@ -365,6 +365,350 @@
         "License": "CC0 1.0",
         "Status": "Proposed"
       }
+    },
+    {
+      "id": "SITE_BOLLARD_PATH_1",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.05,
+              11.0,
+              0.0,
+              0.08,
+              0.55
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              6.05,
+              11.0,
+              0.55,
+              0.075,
+              0.68
+            ]
+          ]
+        },
+        {
+          "name": "cap",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.05,
+              11.0,
+              0.68,
+              0.09,
+              0.72
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 300,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          6.05,
+          11.0,
+          0.6
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 300 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Garden bollard, anthracite aluminium, opal ring diffuser",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 18 x 72 cm",
+        "LightSource": "LED module 300 lm, 3000 K",
+        "IPRating": "IP65"
+      }
+    },
+    {
+      "id": "SITE_BOLLARD_PATH_2",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.05,
+              14.0,
+              0.0,
+              0.08,
+              0.55
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              6.05,
+              14.0,
+              0.55,
+              0.075,
+              0.68
+            ]
+          ]
+        },
+        {
+          "name": "cap",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.05,
+              14.0,
+              0.68,
+              0.09,
+              0.72
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 300,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          6.05,
+          14.0,
+          0.6
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 300 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Garden bollard, anthracite aluminium, opal ring diffuser",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 18 x 72 cm",
+        "LightSource": "LED module 300 lm, 3000 K",
+        "IPRating": "IP65"
+      }
+    },
+    {
+      "id": "SITE_BOLLARD_TERRACE_W",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              0.15,
+              -3.35,
+              0.0,
+              0.08,
+              0.55
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              0.15,
+              -3.35,
+              0.55,
+              0.075,
+              0.68
+            ]
+          ]
+        },
+        {
+          "name": "cap",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              0.15,
+              -3.35,
+              0.68,
+              0.09,
+              0.72
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 300,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          0.15,
+          -3.35,
+          0.6
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 300 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Garden bollard, anthracite aluminium, opal ring diffuser",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 18 x 72 cm",
+        "LightSource": "LED module 300 lm, 3000 K",
+        "IPRating": "IP65"
+      }
+    },
+    {
+      "id": "SITE_BOLLARD_TERRACE_E",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.25,
+              -3.35,
+              0.0,
+              0.08,
+              0.55
+            ]
+          ]
+        },
+        {
+          "name": "diffuser",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              6.25,
+              -3.35,
+              0.55,
+              0.075,
+              0.68
+            ]
+          ]
+        },
+        {
+          "name": "cap",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              6.25,
+              -3.35,
+              0.68,
+              0.09,
+              0.72
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 300,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          6.25,
+          -3.35,
+          0.6
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "LED module 300 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Garden bollard, anthracite aluminium, opal ring diffuser",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 18 x 72 cm",
+        "LightSource": "LED module 300 lm, 3000 K",
+        "IPRating": "IP65"
+      }
     }
   ]
 }

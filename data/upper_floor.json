@@ -2066,6 +2066,271 @@
       }
     },
     {
+      "id": "BED_LAMP_W",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "base",
+          "rgb": [
+            0.42,
+            0.33,
+            0.24
+          ],
+          "cylinders": [
+            [
+              1.475,
+              3.85,
+              0.5,
+              0.07,
+              0.53
+            ]
+          ]
+        },
+        {
+          "name": "stem",
+          "rgb": [
+            0.42,
+            0.33,
+            0.24
+          ],
+          "cylinders": [
+            [
+              1.475,
+              3.85,
+              0.53,
+              0.012,
+              0.76
+            ]
+          ]
+        },
+        {
+          "name": "shade",
+          "rgb": [
+            0.95,
+            0.9,
+            0.8
+          ],
+          "cylinders": [
+            [
+              1.475,
+              3.85,
+              0.74,
+              0.13,
+              0.94
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 400,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          1.475,
+          3.85,
+          0.8300000000000001
+        ],
+        "emissive": [
+          [
+            0.95,
+            0.9,
+            0.8
+          ]
+        ],
+        "source": "E14 LED 400 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Bedside lamp, linen drum shade on an oak stem",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 26 x 44 cm",
+        "LightSource": "E14 LED 400 lm, 2700 K"
+      }
+    },
+    {
+      "id": "BED_LAMP_E",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "base",
+          "rgb": [
+            0.42,
+            0.33,
+            0.24
+          ],
+          "cylinders": [
+            [
+              3.525,
+              3.85,
+              0.5,
+              0.07,
+              0.53
+            ]
+          ]
+        },
+        {
+          "name": "stem",
+          "rgb": [
+            0.42,
+            0.33,
+            0.24
+          ],
+          "cylinders": [
+            [
+              3.525,
+              3.85,
+              0.53,
+              0.012,
+              0.76
+            ]
+          ]
+        },
+        {
+          "name": "shade",
+          "rgb": [
+            0.95,
+            0.9,
+            0.8
+          ],
+          "cylinders": [
+            [
+              3.525,
+              3.85,
+              0.74,
+              0.13,
+              0.94
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 400,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          3.525,
+          3.85,
+          0.8300000000000001
+        ],
+        "emissive": [
+          [
+            0.95,
+            0.9,
+            0.8
+          ]
+        ],
+        "source": "E14 LED 400 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Bedside lamp, linen drum shade on an oak stem",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 26 x 44 cm",
+        "LightSource": "E14 LED 400 lm, 2700 K"
+      }
+    },
+    {
+      "id": "OUT_BALCONY_WALL",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "plate",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "boxes": [
+            [
+              4.4,
+              -0.02,
+              1.83,
+              4.5,
+              0.0,
+              2.07
+            ]
+          ]
+        },
+        {
+          "name": "body",
+          "rgb": [
+            0.22,
+            0.23,
+            0.24
+          ],
+          "cylinders": [
+            [
+              4.45,
+              -0.07,
+              1.8499999999999999,
+              0.05,
+              2.05
+            ]
+          ]
+        },
+        {
+          "name": "lens",
+          "rgb": [
+            0.98,
+            0.96,
+            0.9
+          ],
+          "cylinders": [
+            [
+              4.45,
+              -0.07,
+              1.8199999999999998,
+              0.045,
+              1.8499999999999999
+            ],
+            [
+              4.45,
+              -0.07,
+              2.05,
+              0.045,
+              2.08
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 400,
+        "kelvin": 3000,
+        "kind": "point",
+        "at": [
+          4.45,
+          -0.12000000000000001,
+          1.95
+        ],
+        "emissive": [
+          [
+            0.98,
+            0.96,
+            0.9
+          ]
+        ],
+        "source": "2 x GU10 LED 200 lm, 3000 K"
+      },
+      "props": {
+        "Product": "Outdoor wall light up/down, anthracite cylinder",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 10 x 26 cm, 12 cm projection",
+        "LightSource": "2 x GU10 LED 200 lm, 3000 K",
+        "IPRating": "IP54"
+      },
+      "_comment": "On the outer face of the wall; up/down beams modelled as one all-round source just in front of it."
+    },
+    {
       "id": "GUEST_BED",
       "parts": [
         {
@@ -2286,6 +2551,90 @@
       }
     },
     {
+      "id": "GUEST_PENDANT",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "POINTSOURCE",
+      "parts": [
+        {
+          "name": "canopy",
+          "rgb": [
+            0.95,
+            0.95,
+            0.94
+          ],
+          "cylinders": [
+            [
+              2.6,
+              6.2,
+              3.6700000000000004,
+              0.05,
+              3.6950000000000003
+            ]
+          ]
+        },
+        {
+          "name": "cable",
+          "rgb": [
+            0.9,
+            0.9,
+            0.88
+          ],
+          "cylinders": [
+            [
+              2.6,
+              6.2,
+              2.4150000000000005,
+              0.004,
+              3.6700000000000004
+            ]
+          ]
+        },
+        {
+          "name": "shade",
+          "rgb": [
+            0.95,
+            0.9,
+            0.8
+          ],
+          "spheres": [
+            [
+              2.6,
+              6.2,
+              2.2,
+              0.225
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 1000,
+        "kelvin": 2700,
+        "kind": "point",
+        "at": [
+          2.6,
+          6.2,
+          2.2
+        ],
+        "emissive": [
+          [
+            0.95,
+            0.9,
+            0.8
+          ]
+        ],
+        "source": "E27 LED 1000 lm, 2700 K"
+      },
+      "props": {
+        "Product": "Pendant, paper lantern globe Ø 45",
+        "Supplier": "fictional (Casa Monarch is a model home)",
+        "SourceURL": "https://example.com/lighting",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "Dimensions": "Ø 45 cm, drop 1.73 m",
+        "LightSource": "E27 LED 1000 lm, 2700 K"
+      }
+    },
+    {
       "id": "STUDY_DESK",
       "access": {
         "dir": "+y",
@@ -2357,7 +2706,7 @@
     },
     {
       "id": "STUDY_LAMP",
-      "_comment": "Clamp lamp sunk 9 cm below the desk top as the sidecar suggests; arm along x.",
+      "_comment": "Clamp lamp sunk 9 cm below the desk top as the sidecar suggests; arm along x. Light: the head at x 6.06, 1.36 m above the floor, aimed down at the desk.",
       "mesh": "assets/desk_lamp_polyhaven_890.obj",
       "at": [
         5.85,
@@ -2389,7 +2738,27 @@
         "Supplier": "Poly Haven",
         "SourceURL": "https://polyhaven.com/a/desk_lamp_arm_01",
         "License": "CC0 1.0",
-        "Status": "Proposed"
+        "Status": "Proposed",
+        "LightSource": "E27 LED 450 lm, 3000 K"
+      },
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "light": {
+        "lumen": 450,
+        "kelvin": 3000,
+        "kind": "spot",
+        "angle_deg": 70,
+        "direction": [
+          -0.35,
+          0.15,
+          -1
+        ],
+        "at": [
+          6.06,
+          0.75,
+          1.36
+        ],
+        "source": "E27 LED 450 lm, 3000 K"
       }
     },
     {
@@ -2648,6 +3017,95 @@
         "SourceURL": "https://polyhaven.com/a/potted_plant_02",
         "License": "CC0 1.0",
         "Status": "Proposed"
+      }
+    },
+    {
+      "id": "STUDY_PENDANT",
+      "mesh": "assets/procedural/pendant_lamp_400.obj",
+      "at": [
+        7.9,
+        2.2,
+        1.9
+      ],
+      "rotation_z": 0,
+      "rgb": [
+        0.18,
+        0.18,
+        0.19
+      ],
+      "props": {
+        "Product": "Pendant lamp, 40 cm metal shade, black (procedural mesh)",
+        "Supplier": "none (generated)",
+        "SourceURL": "src/gen_assets.py",
+        "Dimensions": "40 x 40 x 176 cm (shade Ø 40, cable up to the sloped roof lining)",
+        "License": "MIT (project data)",
+        "Status": "Proposed",
+        "MeshSource": "src/gen_assets.py pendant_lamp()",
+        "MeshLicense": "MIT",
+        "SurfaceShading": "smooth",
+        "LightSource": "E27 LED 900 lm, 3000 K"
+      },
+      "_comment": "Shade rim at 1.9 m in the middle of the study; extra cable up to the roof lining (3.68 m above the floor here).",
+      "ifc_class": "IfcLightFixture",
+      "predefined_type": "DIRECTIONSOURCE",
+      "parts": [
+        {
+          "name": "bulb",
+          "rgb": [
+            1.0,
+            0.93,
+            0.78
+          ],
+          "spheres": [
+            [
+              7.9,
+              2.2,
+              1.99,
+              0.05
+            ]
+          ]
+        },
+        {
+          "name": "cable",
+          "rgb": [
+            0.1,
+            0.1,
+            0.1
+          ],
+          "cylinders": [
+            [
+              7.9,
+              2.2,
+              2.95,
+              0.003,
+              3.66
+            ]
+          ]
+        }
+      ],
+      "light": {
+        "lumen": 900,
+        "kelvin": 3000,
+        "kind": "spot",
+        "angle_deg": 100,
+        "direction": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          7.9,
+          2.2,
+          1.96
+        ],
+        "emissive": [
+          [
+            1.0,
+            0.93,
+            0.78
+          ]
+        ],
+        "source": "E27 LED 900 lm, 3000 K"
       }
     },
     {

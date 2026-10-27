@@ -15,6 +15,8 @@ HTTP API (all JSON, consumed by web/viewer.js and src/snap_web.py):
   GET  /api/house             data/house.json summary: name and storeys
   GET  /events                Server-Sent Events: a status object on connect and on every change
   GET  /api/status            the same status object + "viewers" (open tabs) and "root"
+  POST /api/lamp              body: {key, lumen, kelvin, kind, angle_deg} or {key, reset: true}
+                              -> data/lamp_overrides.json (the watcher then rebuilds the model)
   POST /api/rebuild           force a rebuild
   POST /api/refresh           make current, reusing a valid build/check result
   POST /api/log               viewer diagnostics -> <state_dir>/web-client.log
@@ -429,6 +431,33 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             STATE.request_build(force=url.path == '/api/rebuild',
                                 checks=urllib.parse.parse_qs(url.query).get('checks') == ['1'])
             return self.send_json({'ok': True})
+        if url.path == '/api/lamp':            # lamp editor (web/viewer.js) -> data/lamp_overrides.json
+            try:
+                data = json.loads(body.decode('utf-8') or '{}')
+            except ValueError:
+                return self.send_json({'ok': False, 'error': 'invalid JSON'}, 400)
+            key = str(data.get('key') or '')
+            if not key or not all(c.isalnum() or c in '_-.' for c in key):
+                return self.send_json({'ok': False, 'error': 'bad key'}, 400)
+            path = ROOT / 'data/lamp_overrides.json'
+            doc = json.loads(path.read_text()) if path.exists() else {
+                '_doc': 'Lamp photometry edited in the viewer (src/serve.py /api/lamp); build_model.py merges it over the light block',
+                'lamps': {}}
+            if data.get('reset'):
+                doc['lamps'].pop(key, None)
+            else:
+                entry = {}
+                for k, lo, hi in (('lumen', 1, 50000), ('kelvin', 1000, 12000), ('angle_deg', 1, 360)):
+                    if data.get(k) is not None:
+                        entry[k] = round(min(max(float(data[k]), lo), hi), 1)
+                if data.get('kind') in ('point', 'spot'):
+                    entry['kind'] = data['kind']
+                entry['edited'] = time.strftime('%Y-%m-%d')
+                doc['lamps'][key] = entry
+            tmp = path.with_suffix('.json.tmp')
+            tmp.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + '\n')
+            os.replace(tmp, path)
+            return self.send_json({'ok': True, 'lamps': len(doc['lamps'])})
         if url.path == '/api/snap':
             name = urllib.parse.parse_qs(url.query).get('name', ['snap'])[0]
             name = ''.join(c for c in name if c.isalnum() or c in '-_.') or 'snap'

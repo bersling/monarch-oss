@@ -325,7 +325,8 @@ parsed client-side with [web-ifc](https://github.com/ThatOpen/engine_web-ifc) 0.
 (WebAssembly) and drawn with three.js. Nothing is uploaded; there is no server. Storey chips,
 click-to-select with every property set, search, Look navigation (W A S D, arrows, mouse wheel) and orbit,
 a storey cut with section fill, a north-up Plan view (P), Measure with corner/edge snapping (M),
-field-of-view presets and play-around removal (X, Z undo), the same keys as the local viewer. A GitHub
+field-of-view presets, play-around removal (X, Z undo) and a Night look (N) lit by the model's lamps
+(`IfcLightFixture` + `Pset_Light` photometry, per-lamp switches), the same keys as the local viewer. A GitHub
 Pages workflow (`.github/workflows/pages.yml`) builds Casa Monarch on every push and
 publishes it next to the page, so a visitor can press "Load the example house".
 

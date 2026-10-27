@@ -36,6 +36,25 @@ use the same discovery and wait for current geometry before capture.
   switches to flat, even light with no shadows or tone mapping, for judging finishes; the
   panel lists each element's authored colours as swatches. `look=true` in the hash starts
   in True colour.
+- **Night:** `N` turns the sun off and lights the house with the modelled lamps: every element
+  with a `Pset_Light` (a `light` block on the furniture item, see `docs/data-format.md`) becomes a
+  point or spot light with its candela derived from the lumen value, its colour from the Kelvin
+  value (white-balanced to 3400 K). Exposure: `lux=100` in the hash is the illuminance shown as
+  full brightness, so a 400 lm bedside lamp reads bright at 1 m and faint at 2 m. Parts in the
+  lamp's `emissive` colours glow. Spots cast shadows (the first 8), points do not. Rooms without
+  lamps stay dark; `look=night` in the hash starts at night.
+  **Switching lamps:** at night a lamp list (bottom left) shows every lamp on the shown storeys
+  with a switch; a switch-group letter (`light.switch`) shared by several lamps flips them together.
+  The selected lamp's panel has a Light on/off button (`L`). Off lamps go into the hash as
+  `off=KEY,KEY`.
+  **Editing a lamp:** the selected lamp's panel has a Light section with lumen, Kelvin and beam
+  (all round or spot + angle) that previews live. *Save to model* posts the values to the server,
+  which writes `data/lamp_overrides.json`; the watcher rebuilds and the IFC `Pset_Light` carries
+  the new values (`Edited: viewer <date>`). *Reset* drops the override. **Bounce:** the lamp list
+  has a Bounce slider (`bounce=0.35` in the hash): each lamp also spreads that share of its lumen
+  as a soft fill that ends at 5 m, standing in for the light the walls bounce back (the viewer has
+  no global illumination). The hosted viewer (`site/`) has the same Night look, switches and a
+  session-only editor.
 - **Storeys:** one button per storey from `data/house.json` plus SITE; click toggles,
   Alt-click shows only that storey. Cut shows a storey and everything below it, with a
   horizontal section at the height you set (default floor + 1.20 m). `P` or Plan gives a
@@ -64,7 +83,7 @@ use the same discovery and wait for current geometry before capture.
 ## URL hash (IFC coordinates: x east, y north, z up, metres)
 
 ```
-#cam=x,y,z&target=x,y,z&storeys=GF,UF&hide=SITE&cut=GF@1.2&plan=GF&span=18&sel=KEY&frame=KEY_or_prefix&edges=0&spaces=1&plaques=0&look=true&fov=60
+#cam=x,y,z&target=x,y,z&storeys=GF,UF&hide=SITE&cut=GF@1.2&plan=GF&span=18&sel=KEY&frame=KEY_or_prefix&edges=0&spaces=1&plaques=0&look=true&fov=60&lux=100&bounce=0.35&off=KEY
 ```
 
 `frame=GAL_` frames every element whose key starts with that prefix. Parsing is lenient;

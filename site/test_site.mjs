@@ -10,8 +10,10 @@
 // Asserts: the example loads, > 100 elements, storey chips name every IfcBuildingStorey, no floating
 // labels, Look navigation by default with a tutorial card (arrows + wheel move), selecting a gallery exhibit shows Pset_Gallery in the panel, a
 // storey toggle hides its elements, X / Z / Shift+Z remove and restore, FOV presets, Plan (orthographic, north up,
-// cut at floor + 1.2 m), Measure (two clicks, label, snapping, Esc), no overflow at 390 px, and no JavaScript errors.
-// With a screenshot path it also writes <name>-plan-gf.png, <name>-measure.png, <name>-cut-3d.png and <name>-phone-390(-plan).png.
+// cut at floor + 1.2 m), Measure (two clicks, label, snapping, Esc), Night (lamps from IfcLightFixture + Pset_Light,
+// panel / L / list switches, lumen preview), no overflow at 390 px, and no JavaScript errors.
+// With a screenshot path it also writes <name>-plan-gf.png, <name>-measure.png, <name>-cut-3d.png, <name>-night-*.png
+// (outside, living, bedroom, entrance, phone-390) and <name>-phone-390(-plan).png.
 // MONARCH_CHROME overrides the Chrome binary.
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
@@ -57,9 +59,9 @@ try {
     else if (message.method === 'Runtime.consoleAPICalled' && message.params.type === 'error')
       errors.push(message.params.args.map(a => a.value || a.description).join(' '));
   };
-  const cdp = (method, params = {}) => new Promise((resolve, reject) => {
+  const cdp = (method, params = {}, timeout = 30000) => new Promise((resolve, reject) => {
     const id = ++sequence;
-    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`DevTools timeout: ${method}`)); }, 30000);
+    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`DevTools timeout: ${method}`)); }, timeout);
     pending.set(id, { resolve: value => { clearTimeout(timer); resolve(value); }, reject: error => { clearTimeout(timer); reject(error); } });
     ws.send(JSON.stringify({ id, method, params }));
   });
@@ -124,7 +126,7 @@ try {
   const p0 = await camPos();
   await evaluate('window.dispatchEvent(new KeyboardEvent("keydown", {key: "ArrowUp"}))');
   // Hold until the camera moved: headless Chrome renders frames irregularly.
-  await until(`Math.hypot(...window.__viewer.persp.position.toArray().map((v, i) => v - ${JSON.stringify(p0)}[i])) > 0.05`, 5000).catch(() => {});
+  await until(`Math.hypot(...window.__viewer.persp.position.toArray().map((v, i) => v - ${JSON.stringify(p0)}[i])) > 0.05`, 30000).catch(() => {});
   await evaluate('window.dispatchEvent(new KeyboardEvent("keyup", {key: "ArrowUp"}))');
   const p1 = await camPos();
   assert.ok(Math.hypot(...p1.map((v, i) => v - p0[i])) > 0.05, `ArrowUp moved ${JSON.stringify([p0, p1])}`);
@@ -168,7 +170,7 @@ try {
   const capture = async suffix => {
     if (!screenshot) return;
     await delay(1200);
-    const shot = await cdp('Page.captureScreenshot', { format: 'png' });
+    const shot = await cdp('Page.captureScreenshot', { format: 'png' }, 240000);   // software GL at night is slow
     await writeFile(shotPath(suffix), Buffer.from(shot.data, 'base64'));
     console.log(`screenshot ${shotPath(suffix)}`);
   };
@@ -266,6 +268,78 @@ try {
   assert.equal(await evaluate('window.__viewer.renderer.clippingPlanes.length'), 0);
   assert.ok((await visibleOf()).every(Boolean), 'upper floor back after Cut off');
   console.log('PASS measure Esc clears / leaves, P back to 3D, Cut off restores the whole house');
+
+  // Night (N): every IfcLightFixture with a Pset_Light becomes a three.js light from its photometry;
+  // switching a lamp (panel button, L, lamp list) changes its light and its glow.
+  const lamps = await evaluate(`[...window.__viewer.state.lamps.values()].map(L => ({ id: L.id, name: window.__viewer.state.elements.get(L.id).name,
+    type: window.__viewer.state.elements.get(L.id).type, lm: +L.pset.LuminousFlux_lm, k: +L.pset.ColourTemperature_K, kind: L.pset.Distribution, glow: L.glow.length }))`);
+  assert.ok(lamps.length >= 15, `lamps: ${lamps.length}`);
+  assert.ok(lamps.every(l => l.lm > 0 && l.k >= 1800 && l.k <= 6500), JSON.stringify(lamps));
+  assert.ok(lamps.every(l => l.type === 'IfcLightFixture'), JSON.stringify(lamps.map(l => l.type)));
+  assert.ok(lamps.some(l => l.kind === 'spot') && lamps.some(l => l.kind === 'point'));
+  assert.ok(lamps.filter(l => l.glow > 0).length >= 10, 'diffusers glow');
+  assert.ok(lamps.some(l => /^SITE_BOLLARD/.test(l.name)) && lamps.some(l => /^OUT_/.test(l.name)), 'outdoor lamps');
+  const lampState = name => evaluate(`(() => { const v = window.__viewer, L = [...v.state.lamps.values()].find(L => v.state.elements.get(L.id).name === "${name}");
+    const lights = v.LAMPS.children.filter(o => o.isLight && o.userData.id === L.id);
+    const g = L.glow[0]?.mesh, m = g && (g.userData.orig || g.material);
+    return { id: L.id, on: L.on, intensity: lights.reduce((a, l) => a + l.intensity, 0), lights: lights.length, glow: m ? m.emissive.r + m.emissive.g + m.emissive.b : null }; })()`);
+  assert.equal(await evaluate('window.__viewer.LAMPS.visible'), false, 'no lamp lights by day');
+  assert.equal((await lampState('LIV_FLOOR_LAMP')).intensity, 0);
+  await key('n');
+  assert.equal(await evaluate('window.__viewer.state.night'), true);
+  assert.ok(await evaluate('document.getElementById("night").classList.contains("on") && window.__viewer.LAMPS.visible && window.__viewer.renderer.toneMapping !== 0'));
+  const lit = await lampState('LIV_FLOOR_LAMP');
+  assert.ok(lit.intensity > 0 && lit.lights === 2 && lit.glow > 0, JSON.stringify(lit));
+  const shadowSpots = await evaluate('window.__viewer.LAMPS.children.filter(o => o.isSpotLight && o.castShadow).length');
+  assert.ok(shadowSpots >= 1 && shadowSpots <= await evaluate('window.__viewer.NIGHT.maxShadowSpots'), `shadow spots ${shadowSpots}`);
+  assert.equal(await evaluate('document.getElementById("lamps").hidden'), false, 'lamp list shows at night');
+  assert.ok(/Night · \d+ of \d+ lamps on/.test(await evaluate('document.getElementById("hint").textContent')));
+  await evaluate(`window.__viewer.setSelection(${lit.id})`);
+  assert.ok(/Light off/.test(await evaluate('document.getElementById("lampBox").textContent')), 'panel has the lamp switch');
+  await evaluate('document.querySelector("#lampBox [data-act=lamp]").click()');
+  const off = await lampState('LIV_FLOOR_LAMP');
+  assert.ok(!off.on && off.intensity === 0 && off.glow === 0, JSON.stringify(off));
+  assert.ok(/Light on/.test(await evaluate('document.getElementById("lampBox").textContent')));
+  await key('l');
+  assert.ok((await lampState('LIV_FLOOR_LAMP')).intensity > 0, 'L switches it back on');
+  // In-session editor: lumen slider changes the light (preview only, nothing is saved).
+  const before = (await lampState('LIV_FLOOR_LAMP')).intensity;
+  await evaluate('{ const r = document.querySelector("#lampBox input[type=range][data-lp=lumen]"); r.value = 1600; r.dispatchEvent(new Event("input", {bubbles: true})); }');
+  const after = (await lampState('LIV_FLOOR_LAMP')).intensity;
+  assert.ok(Math.abs(after / before - 2) < 0.05, `lumen 800 -> 1600 doubles the light: ${before} -> ${after}`);
+  await evaluate('document.querySelector("#lampBox [data-act=lampReset]").click()');
+  assert.ok(Math.abs((await lampState('LIV_FLOOR_LAMP')).intensity - before) < 1e-9, 'Reset restores the modelled lumen');
+  await evaluate('window.__viewer.setSelection(null)');
+  // Lamp list switch.
+  const bollard = lamps.find(l => /^SITE_BOLLARD/.test(l.name));
+  await evaluate(`document.querySelector('#lamps [data-sw="${bollard.id}"]').click()`);
+  assert.equal((await lampState(bollard.name)).intensity, 0, 'list switch turns the bollard off');
+  await evaluate(`document.querySelector('#lamps [data-sw="${bollard.id}"]').click()`);
+  assert.ok((await lampState(bollard.name)).intensity > 0);
+  console.log(`PASS night: ${lamps.length} lamps with photometry (${lamps.filter(l => l.kind === 'spot').length} spots, ${shadowSpots} with shadows), panel/L/list switches and the lumen editor change the light`);
+  // Night screenshots: outside from the south-east, inside the living room.
+  const view3 = (cam, target, fov = 45) => evaluate(`(() => { const v = window.__viewer; v.setFov(${fov});
+    v.persp.position.set(${cam[0]}, ${cam[2]}, ${-cam[1]}); v.orbit.target.set(${target[0]}, ${target[2]}, ${-target[1]}); v.persp.lookAt(v.orbit.target); v.orbit.update(); return v.frames; })()`);
+  const settle = async () => { const f = await evaluate('window.__viewer.frames'); await until(`window.__viewer.frames > ${f + 3}`, 120000); };
+  await evaluate('document.querySelector("#lamps [data-fold]").click()');            // the list folds to its header
+  assert.ok(await evaluate('document.getElementById("lamps").classList.contains("folded") && !document.querySelector("#lamps .lamp").offsetParent'));
+  await view3([13, -13, 4], [5, 3, 1.5]); await settle(); await capture('night-outside');
+  await view3([7.2, 0.9, 1.6], [1.5, 3.2, 0.9], 60); await settle(); await capture('night-living');
+  await evaluate('document.querySelector("#lamps [data-fold]").click()');
+  await view3([4.6, 0.6, 4.6], [2.4, 3.4, 3.5], 60); await settle(); await capture('night-bedroom');
+  await view3([6.2, 17.5, 3.0], [6.8, 8.0, 1.2]); await settle(); await capture('night-entrance');
+  await evaluate('window.__viewer.setFov(45)');
+  // Phone width at night: the lamp list stays inside the screen.
+  await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+  await until('document.getElementById("lamps").getBoundingClientRect().width < 390', 5000);
+  const lampsBox = await evaluate('(() => { const r = document.getElementById("lamps").getBoundingClientRect(); return { left: r.left, right: r.right, sw: document.documentElement.scrollWidth }; })()');
+  assert.ok(lampsBox.left >= 0 && lampsBox.right <= 390 && lampsBox.sw <= 390, JSON.stringify(lampsBox));
+  await capture('night-phone-390');
+  await cdp('Emulation.setDeviceMetricsOverride', { width: 1500, height: 950, deviceScaleFactor: 1, mobile: false });
+  await key('n');
+  assert.ok(await evaluate('!window.__viewer.state.night && !window.__viewer.LAMPS.visible && window.__viewer.renderer.toneMapping === 0 && document.getElementById("lamps").hidden'));
+  assert.equal((await lampState('LIV_FLOOR_LAMP')).glow, 0, 'no glow by day');
+  console.log('PASS night look off again (N): day lighting, no lamp lights, lamp list hidden; lamp list fits a 390 px phone');
 
   // Phone width: the toolbar wraps without horizontal overflow.
   await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });

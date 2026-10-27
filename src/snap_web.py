@@ -33,7 +33,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / 'src'))
 
 CHROME = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-OPTIONS = {'storeys', 'hide', 'cut', 'plan', 'sel', 'room', 'frame', 'span', 'target', 'cam', 'edges', 'spaces', 'look', 'fov', 'plaques'}
+OPTIONS = {'storeys', 'hide', 'cut', 'plan', 'sel', 'room', 'frame', 'span', 'target', 'cam', 'edges', 'spaces', 'look', 'fov', 'plaques', 'lux', 'bounce', 'off'}
 FATAL = r'snap failed|viewer boot failed|Uncaught'
 NUMS = re.compile(r'^[-+\d.,\s]+$')
 

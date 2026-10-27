@@ -27,6 +27,10 @@ matter, unknown keys are ignored, lists may use , ; or spaces, storeys are case-
   plaques=0          hide the floating title labels of elements with Pset_Gallery (default: shown
                      when the model has any)
   look=true          true-colour lighting (flat, no shadows, no bloom); default look=cinema (T toggles)
+  look=night         night: sun off, the modelled lamps (Pset_Light) light the house (N toggles)
+  lux=100            night exposure: the illuminance shown as full brightness (default 100 lux)
+  off=KEY,KEY        lamps switched off (Night look); L toggles the selected lamp
+  bounce=0.35        night: share of each lamp's lumen spread as soft fill (crude bounce light)
 
 Snapshot mode (for AI verification, driven by src/snap_web.py):
   snap=NAME&w=1600&h=1000   render the hash view at w x h, POST the PNG to /api/snap?name=NAME
@@ -134,7 +138,10 @@ function parseView(raw) {
   if (raw.edges != null) v.edges = flag(raw.edges);
   if (raw.spaces != null) v.spaces = flag(raw.spaces);
   if (raw.plaques != null) v.plaques = flag(raw.plaques);
-  if (raw.look != null) v.look = /^(true|tc|truecolou?r|1)$/i.test(String(raw.look).trim()) ? 'true' : 'cinema';
+  if (raw.look != null) v.look = /^(true|tc|truecolou?r|1)$/i.test(String(raw.look).trim()) ? 'true' : /^(night|n)$/i.test(String(raw.look).trim()) ? 'night' : 'cinema';
+  if (raw.lux != null && Number(raw.lux) > 0) v.lux = Number(raw.lux);
+  if (raw.bounce != null && Number(raw.bounce) >= 0) v.bounce = Math.min(Number(raw.bounce), 1);
+  if (raw.off != null) v.off = (Array.isArray(raw.off) ? raw.off : String(raw.off).split(/[,;\s]+/)).map(k => String(k).trim()).filter(Boolean);
   return v;
 }
 
@@ -149,7 +156,7 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.shadowMap.autoUpdate = false;                  // the sun and the house are static: redraw the
-const invalidateShadows = () => { if (sun.shadow.intensity > 0) renderer.shadowMap.needsUpdate = true; };   // shadow map only on scene changes
+const invalidateShadows = () => { if (sun.shadow.intensity > 0 || LOOKS[look]?.lamps) renderer.shadowMap.needsUpdate = true; };   // shadow map only on scene changes
 const scene = new THREE.Scene();
 
 // Two looks. Both keep lit surfaces close to their authored sRGB colour (see LOOKS notes and
@@ -168,7 +175,17 @@ const LOOKS = {
     env: 0.3, shadows: true, bloom: false },   // bloom off: stray NaN/inf pixels bloomed into a white haze
   true: { toneMapping: THREE.NoToneMapping, exposure: 1.0, hemi: 2.5, hemiGround: 0xffffff, sun: 0.8, fill: 0.0,
     env: 0, shadows: false, bloom: false },
+  // Night: the sun is off, a faint cool sky keeps unlit rooms legible, and every element that
+  // carries a Pset_Light (data "light" block, see build_model.py) becomes a point or spot light
+  // with its lumen and Kelvin values; its diffuser parts glow. Exposure: NIGHT.lux lux = full
+  // brightness, so a 400 lm bedside lamp lights the bed 1 m away at ~1/3 and the floor at 2 m faintly.
+  night: { toneMapping: THREE.NeutralToneMapping, exposure: 1.0, hemi: 0.06, hemiGround: 0x1a1d24, hemiSky: 0x8fa3c8, sun: 0.0, fill: 0.0,
+    env: 0.0, shadows: false, bloom: false, lamps: true },
 };
+// Colours relative to a 3400 K adapted eye; bounce = lumen share as soft fill reaching bounceRange metres
+// (without a range 20 lamps' fills light the whole garden through the walls); maxShadowSpots = the
+// shadow budget (each shadow-casting spot adds a shadow map pass and a sampler to every material).
+const NIGHT = { lux: 100, whiteBalance: 3400, bounce: 0.35, bounceRange: 5, maxShadowSpots: 8 };
 const hemi = new THREE.HemisphereLight(0xffffff, 0x9a9282, 2.2);
 scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xffffff, 1.6);
@@ -262,13 +279,15 @@ function setLook(name) {
   const L = LOOKS[look];
   renderer.toneMapping = L.toneMapping;
   renderer.toneMappingExposure = L.exposure;
-  hemi.intensity = L.hemi; hemi.groundColor.set(L.hemiGround);
+  hemi.intensity = L.hemi; hemi.groundColor.set(L.hemiGround); hemi.color.set(L.hemiSky ?? 0xffffff);
   sun.intensity = L.sun; fill.intensity = L.fill; fill.visible = L.fill > 0;
   syncShadows();
   scene.environment = ENV_MAP;
   scene.environmentIntensity = L.env;
   bloomPass.enabled = L.bloom;
   document.body.classList.toggle('truecolour', look === 'true');
+  document.body.classList.toggle('night', look === 'night');
+  syncLamps();
   invalidateShadows();
   needsRender = true;
 }
@@ -279,6 +298,193 @@ function syncShadows() {
   const on = LOOKS[look].shadows && !state.plan;
   sun.shadow.intensity = on ? 1 : 0;
 }
+
+// ---------------------------------------------------------------- lamps (Night look)
+// One three.js light per element with a Pset_Light (+ its bounce fill). The lights only take part
+// at night (LAMPS.visible): a house with twenty lamps would otherwise make every day-look shader
+// loop over forty lights. Entering Night compiles the night programs once; switching lamps, the
+// look's other settings and storeys only change intensities and never recompile.
+const LAMPS = new THREE.Group();
+scene.add(LAMPS);
+const lampMeshes = [];                                     // { mesh, colour } whose material glows at night
+/** Blackbody-ish colour of a Kelvin value (Tanner Helland's fit), as a linear THREE.Color. */
+function kelvinColour(k) {
+  const t = THREE.MathUtils.clamp(k, 1000, 12000) / 100;
+  const r = t <= 66 ? 255 : 329.698727446 * Math.pow(t - 60, -0.1332047592);
+  const g = t <= 66 ? 99.4708025861 * Math.log(t) - 161.1195681661 : 288.1221695283 * Math.pow(t - 60, -0.0755148492);
+  const b = t >= 66 ? 255 : t <= 19 ? 0 : 138.5177312231 * Math.log(t - 10) - 305.0447927307;
+  const c = [r, g, b].map(v => THREE.MathUtils.clamp(v, 0, 255) / 255);
+  return new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace);
+}
+// Live photometry edits from the panel's lamp editor (key -> {lumen, kelvin, kind, angle}); they
+// preview at once and are cleared on model reload, when the saved values arrive in Pset_Light.
+const lampParams = new Map();
+const _lampRay = new THREE.Raycaster();
+function lampSpec(e) {
+  const P = e.psets?.Pset_Light || {}, o = lampParams.get(e.key) || {};
+  return { lumen: o.lumen ?? P.LuminousFlux_lm, kelvin: o.kelvin ?? (P.ColourTemperature_K || 2700),
+    kind: o.kind ?? P.Distribution, angle: o.angle ?? (P.BeamAngle_deg || 360), edited: !!o.lumen || !!P.Edited };
+}
+/** The lights of one lamp: the lamp itself, plus a soft decay-1 fill carrying NIGHT.bounce of its lumen
+ *  as a stand-in for the light the walls would bounce back (the viewer has no global illumination).
+ *  Every object carries userData.key so rebuildLamp() can replace them. */
+function makeLamp(e) {
+  const P = e.psets.Pset_Light, S = lampSpec(e);
+  const colour = kelvinColour(S.kelvin), wb = kelvinColour(NIGHT.whiteBalance);
+  colour.setRGB(Math.min(colour.r / wb.r, 1.25), Math.min(colour.g / wb.g, 1.25), Math.min(colour.b / wb.b, 1.25));
+  const pos = toThree(P.SourceX, P.SourceY, P.SourceZ);
+  const spot = S.kind === 'spot';
+  const beam = THREE.MathUtils.degToRad(Math.min(S.angle, 179));
+  // Candela from lumen: omni over 4 pi sr, a spot over its cone (2 pi (1 - cos(beam/2)) sr).
+  const sr = spot ? 2 * Math.PI * (1 - Math.cos(beam / 2)) : 4 * Math.PI;
+  const light = spot ? new THREE.SpotLight(colour, 0, 0, beam / 2, 0.6, 2) : new THREE.PointLight(colour, 0, 0, 2);
+  light.position.copy(pos);
+  light.userData = { key: e.key, candela: S.lumen / sr };
+  const out = [light];
+  let fillPos = pos;
+  if (spot) {
+    const d = String(P.Direction || '0,0,-1').split(',').map(Number);
+    const dir = new THREE.Vector3(d[0], d[2], -d[1]).normalize();
+    light.target.position.copy(pos).add(dir);
+    light.target.userData = { key: e.key };
+    // Shadow budget: every shadow-casting spot costs a shadow map and a texture unit in every
+    // material, so only the first MAX_SHADOW_SPOTS spots (model order) cast shadows.
+    light.castShadow = shadowSpots++ < NIGHT.maxShadowSpots;
+    light.shadow.mapSize.set(1024, 1024);
+    light.shadow.bias = -0.0005; light.shadow.normalBias = 0.02;
+    light.shadow.camera.near = 0.05; light.shadow.camera.far = 12;
+    out.push(light.target);
+    // A spot's bounce comes from the lit surface (the desk under a task lamp), not from the shade:
+    // put the fill 15 cm above the first surface the beam axis hits, skipping the lamp's own parts.
+    if (model) {
+      _lampRay.set(pos, dir); _lampRay.far = 6;
+      const hit = _lampRay.intersectObject(model, true).find(h => h.object.isMesh && !h.object.userData.isEdge && keyOf(h.object) !== e.key);
+      if (hit) fillPos = hit.point.clone().addScaledVector(dir, -0.15);
+    }
+  }
+  if (NIGHT.bounce > 0) {
+    const fill = new THREE.PointLight(colour, 0, NIGHT.bounceRange, 1);   // ends smoothly at bounceRange: a room, not the garden
+    fill.position.copy(fillPos);
+    fill.userData = { key: e.key, candela: S.lumen * NIGHT.bounce / (4 * Math.PI), bounce: true };
+    out.push(fill);
+  }
+  return out;
+}
+let shadowSpots = 0;
+function buildLamps() {
+  LAMPS.clear();
+  shadowSpots = 0;
+  lampMeshes.length = 0;
+  for (const e of elements.values()) {
+    const P = e.psets?.Pset_Light;
+    if (!P || !(P.LuminousFlux_lm > 0)) continue;
+    for (const o of makeLamp(e)) LAMPS.add(o);
+    // Glowing parts: meshes of this element whose authored colour matches an EmissiveRGB entry.
+    const glow = String(P.EmissiveRGB || '').split(';').filter(Boolean)
+      .map(t => { const c = t.split(',').map(Number); return new THREE.Color().setRGB(c[0], c[1], c[2], THREE.SRGBColorSpace); });
+    nodes.get(e.key)?.traverse(o => {
+      if (!o.isMesh || o.userData.isEdge || !o.material?.emissive) return;
+      const match = glow.find(c => Math.abs(c.r - o.material.color.r) + Math.abs(c.g - o.material.color.g) + Math.abs(c.b - o.material.color.b) < 0.03);
+      if (match) lampMeshes.push({ mesh: o, colour: match });
+    });
+  }
+  syncLamps();
+}
+/** Apply the look (and visibility) to the lamp lights and the glowing parts. */
+function syncLamps() {
+  const on = !!LOOKS[look]?.lamps && !state.plan;
+  LAMPS.visible = on;
+  for (const l of LAMPS.children) {
+    if (!l.isLight) continue;
+    const node = nodes.get(l.userData.key);
+    const lit = on && !!node?.visible && !state.lampsOff.has(l.userData.key);
+    l.intensity = lit ? l.userData.candela * Math.PI / NIGHT.lux : 0;
+  }
+  for (const { mesh, colour } of lampMeshes) {
+    const m = mesh.userData.origMaterial || mesh.material;      // the selection clone carries the highlight
+    if (on && !state.lampsOff.has(keyOf(mesh))) { m.emissive.copy(colour); m.emissiveIntensity = 1.6; }
+    else if (!mesh.userData.origMaterial) { m.emissive.setRGB(0, 0, 0); m.emissiveIntensity = 1; }
+  }
+  renderer.shadowMap.needsUpdate = true;
+  renderLampList();
+}
+/** Rebuild one lamp's lights after an edit (meshes and glow entries stay). */
+function rebuildLamp(key) {
+  const e = elements.get(key);
+  if (!e?.psets?.Pset_Light) return;
+  for (const o of [...LAMPS.children]) if (o.userData?.key === key) { LAMPS.remove(o); if (o.isSpotLight && o.castShadow) shadowSpots--; }
+  for (const o of makeLamp(e)) LAMPS.add(o);
+  syncLamps();
+  invalidate();
+}
+const lampKeys = () => [...elements.values()].filter(e => e.psets?.Pset_Light?.LuminousFlux_lm > 0).map(e => e.key);
+// Wall-switch letters only ('m', 'k'); a long text like 'Steckdose (Schalter am Kabel)' is a plug lamp with its own switch.
+const lampGroup = key => { const g = String(elements.get(key)?.psets?.Pset_Light?.SwitchGroup || ''); return g.length <= 3 ? g : ''; };
+/** Switch one lamp, or (keys = a switch group's lamps) the whole group like its wall switch. */
+function setLamps(keys, on) {
+  for (const k of keys) { if (on) state.lampsOff.delete(k); else state.lampsOff.add(k); }
+  syncLamps();
+  if (state.sel && keys.includes(state.sel)) renderPanel();
+  invalidate();
+  scheduleHash();
+}
+function toggleLamp(key) { if (key && elements.get(key)?.psets?.Pset_Light) setLamps([key], state.lampsOff.has(key)); }
+// Lamp list (Night look only): every lamp on a shown storey with its own switch, grouped by
+// storey; a switch-group letter (the Elektroplan's wall switch) flips all lamps of that group.
+const lampsEl = document.getElementById('lamps');
+function renderLampList() {
+  const night = !!LOOKS[look]?.lamps && !state.plan && !SNAP;
+  const keys = night ? lampKeys().filter(k => nodes.get(k)?.visible) : [];
+  lampsEl.hidden = !keys.length;
+  if (!keys.length) return;
+  // Same lamps as last time: flip classes in place so the switch knobs slide (a rebuild would skip the transition).
+  const sig = keys.join('|');
+  if (lampsEl.dataset.sig === sig) {
+    for (const row of lampsEl.querySelectorAll('.lamp')) {
+      const on = !state.lampsOff.has(row.dataset.key), sw = row.querySelector('.sw');
+      row.classList.toggle('on', on); sw.setAttribute('aria-pressed', on); sw.title = on ? 'Switch off' : 'Switch on';
+    }
+    lampsEl.querySelector('.eyebrow').lastChild.textContent = `Lamps · ${keys.length - keys.filter(k => state.lampsOff.has(k)).length} of ${keys.length} on`;
+    return;
+  }
+  lampsEl.dataset.sig = sig;
+  const byStorey = new Map();
+  for (const k of keys) { const s = storeyOf(elements.get(k).storey); if (!byStorey.has(s)) byStorey.set(s, []); byStorey.get(s).push(k); }
+  let html = `<div class="eyebrow"><i></i>Lamps · ${keys.length - keys.filter(k => state.lampsOff.has(k)).length} of ${keys.length} on</div>`
+    + `<label class="bounce" title="Share of each lamp's light spread as soft fill, standing in for the light the walls would bounce back">`
+    + `<span>Bounce <b>${Math.round(NIGHT.bounce * 100)}%</b></span><input type="range" data-bounce min="0" max="1" step="0.05" value="${NIGHT.bounce}"></label>`;
+  for (const s of STOREYS.filter(s => byStorey.has(s))) {
+    html += `<div class="storey">${esc(s)}</div>`;
+    const groups = new Map();
+    for (const k of byStorey.get(s)) { const g = lampGroup(k); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(k); }
+    for (const k of byStorey.get(s)) {
+      const e = elements.get(k), on = !state.lampsOff.has(k), g = lampGroup(k), grouped = g && groups.get(g).length > 1;
+      html += `<div class="lamp ${on ? 'on' : ''}" data-key="${esc(k)}">`
+        + `<button class="sw" data-sw="${esc(k)}" title="${on ? 'Switch off' : 'Switch on'}" aria-pressed="${on}"><i></i></button>`
+        + `<span class="name" data-sel="${esc(k)}" title="${esc(k)}">${esc(e.label || k)}</span>`
+        + `<span class="spec">${Math.round(lampSpec(e).lumen)} lm · ${Math.round(lampSpec(e).kelvin)} K</span>`
+        + (g ? `<button class="grp ${grouped ? 'multi' : ''}" data-grp="${esc(s)}|${esc(g)}" title="${grouped ? `Switch group ${esc(g)}: all ${groups.get(g).length} lamps` : `Switch group ${esc(g)}`}">${esc(g)}</button>` : '')
+        + `</div>`;
+    }
+  }
+  lampsEl.innerHTML = html;
+}
+lampsEl.addEventListener('input', ev => {
+  if (!ev.target.matches('[data-bounce]')) return;
+  NIGHT.bounce = Number(ev.target.value);
+  lampsEl.querySelector('.bounce b').textContent = `${Math.round(NIGHT.bounce * 100)}%`;
+  for (const k of lampKeys()) rebuildLamp(k);
+  scheduleHash();
+});
+lampsEl.addEventListener('click', ev => {
+  const sw = ev.target.closest('[data-sw]'), sel = ev.target.closest('[data-sel]'), grp = ev.target.closest('[data-grp]');
+  if (sw) toggleLamp(sw.dataset.sw);
+  else if (grp) {
+    const [s, g] = grp.dataset.grp.split('|');
+    const keys = lampKeys().filter(k => storeyOf(elements.get(k).storey) === s && lampGroup(k) === g && nodes.get(k)?.visible);
+    setLamps(keys, keys.some(k => state.lampsOff.has(k)));     // any off -> all on, else all off
+  } else if (sel) setSelection(sel.dataset.sel);
+});
 function draw() {
   SKY.visible = !state.plan;                               // plan: flat navy (clear colour)
   renderPass.camera = camera;
@@ -492,6 +698,7 @@ const state = {
   plaques: false,                  // floating Pset_Gallery titles (default on when the model has any)
   measure: false,
   removed: new Set(),              // keys hidden with X: play-around only, never saved, gone on reload
+  lampsOff: new Set(),             // lamp keys switched off in the Night look (hash off=)
 };
 const removedStack = [];           // removal order for Z (undo)
 let model = null;                  // THREE.Group of the loaded glb
@@ -566,6 +773,8 @@ async function loadModel(version) {
   if (!galleryKeys.length) state.plaques = false;
   else if (!hadGallery && loadedVersion !== null) state.plaques = true;   // a reload brought the first exhibits
   buildPlaques();
+  lampParams.clear();                                      // saved edits now live in Pset_Light
+  buildLamps();
   loadedVersion = version;
   loadingVersion = null;
   applyVisibility();
@@ -689,6 +898,7 @@ function applyVisibility() {
   plaqueBox.hidden = !state.plaques || !galleryKeys.length;
   placeGround();
   syncShadows();
+  syncLamps();
   invalidateShadows();
   syncToolbar();
   invalidate();
@@ -843,6 +1053,9 @@ function applyView(v) {
   state.edges = v.edges ?? true;
   state.spaces = v.spaces ?? false;
   state.plaques = v.plaques ?? galleryKeys.length > 0;
+  if (v.off || SNAP) state.lampsOff = new Set(v.off || []);
+  if (v.lux) NIGHT.lux = v.lux;
+  if (v.bounce != null && v.bounce !== NIGHT.bounce) { NIGHT.bounce = v.bounce; if (elements.size) buildLamps(); }   // snaps switch views after the load
   if (v.look) setLook(v.look);
   state.cut = v.cut !== undefined ? v.cut : null;
   if (v.frame && frameView(v.frame, v.cut)) {
@@ -894,7 +1107,10 @@ function currentHash() {
   if (!state.edges) p.push('edges=0');
   if (state.spaces) p.push('spaces=1');
   if (galleryKeys.length && !state.plaques) p.push('plaques=0');
-  if (look === 'true') p.push('look=true');
+  if (look !== 'cinema') p.push(`look=${look}`);
+  if (NIGHT.lux !== 100) p.push(`lux=${NIGHT.lux}`);
+  if (NIGHT.bounce !== 0.35) p.push(`bounce=${NIGHT.bounce}`);
+  if (state.lampsOff.size) p.push(`off=${[...state.lampsOff].map(encodeURIComponent).join(',')}`);
   return '#' + p.join('&').replace(/, /g, ',');
 }
 function scheduleHash() {
@@ -965,6 +1181,53 @@ function materialColours(key) {
 function table(rows) {
   return '<table>' + rows.map(([k, v]) => `<tr><th>${esc(k)}</th><td>${v}</td></tr>`).join('') + '</table>';
 }
+/** Lamp editor: lumen, Kelvin and beam of the selected lamp, previewed live, saved into the model data. */
+function lampEditorHtml(e) {
+  const S = lampSpec(e), P = e.psets.Pset_Light, spot = S.kind === 'spot';
+  const num = (k, v, min, max, step, unit) => `<input type="range" data-lp="${k}" min="${min}" max="${max}" step="${step}" value="${v}">`
+    + `<span class="val"><input type="number" data-lp="${k}" min="${min}" max="${max}" step="${step}" value="${v}">${unit}</span>`;
+  return `<details open class="lampEd"><summary>Light · ${S.edited ? 'edited' : 'as modelled'}</summary>
+    <div class="row"><label>Lumen</label>${num('lumen', Math.round(S.lumen), 10, 5000, 10, 'lm')}</div>
+    <div class="row"><label>Kelvin</label>${num('kelvin', Math.round(S.kelvin), 1800, 6500, 50, 'K')}<i class="kswatch" style="background:#${kelvinColour(S.kelvin).getHexString(THREE.SRGBColorSpace)}"></i></div>
+    <div class="row"><label>Beam</label><select data-lp="kind"><option value="point" ${spot ? '' : 'selected'}>all round</option><option value="spot" ${spot ? 'selected' : ''}>spot</option></select>
+      <span class="angle" ${spot ? '' : 'hidden'}>${num('angle', Math.round(S.angle), 10, 180, 5, '°')}</span></div>
+    <div class="row meta">source ${fmt([P.SourceX, P.SourceY, P.SourceZ], 2)} m${P.SwitchGroup ? ` · switch group ${esc(P.SwitchGroup)}` : ''}${P.LightSource ? ` · ${esc(P.LightSource)}` : ''}</div>
+    <div class="actions"><button data-act="lampSave" title="Writes data/lamp_overrides.json; the model rebuilds and the IFC Pset_Light carries the new values">Save to model</button>
+      <button data-act="lampReset" title="Drops the override; the generator's values return after the rebuild">Reset</button><span class="status" data-lp-status></span></div>
+  </details>`;
+}
+function readLampEditor() {
+  const g = k => Number(panelBody.querySelector(`input[type=range][data-lp="${k}"]`)?.value);
+  return { lumen: g('lumen'), kelvin: g('kelvin'), kind: panelBody.querySelector('select[data-lp="kind"]')?.value, angle: g('angle') };
+}
+panelBody.addEventListener('input', ev => {
+  const t = ev.target, k = t.dataset?.lp;
+  if (!k || !state.sel) return;
+  if (t.matches('input')) {                                 // keep range and number in step
+    for (const other of panelBody.querySelectorAll(`[data-lp="${k}"]`)) if (other !== t) other.value = t.value;
+  }
+  const v = readLampEditor();
+  if (k === 'kind') panelBody.querySelector('.lampEd .angle').hidden = v.kind !== 'spot';
+  if (k === 'kelvin') panelBody.querySelector('.kswatch').style.background = '#' + kelvinColour(v.kelvin).getHexString(THREE.SRGBColorSpace);
+  lampParams.set(state.sel, v);
+  rebuildLamp(state.sel);
+  renderLampList();
+  const st = panelBody.querySelector('[data-lp-status]'); if (st) st.textContent = 'preview, not saved';
+});
+async function saveLamp(reset) {
+  const key = state.sel, st = panelBody.querySelector('[data-lp-status]');
+  const v = readLampEditor();
+  const body = reset ? { key, reset: true } : { key, lumen: v.lumen, kelvin: v.kelvin, kind: v.kind, angle_deg: v.angle };
+  if (st) st.textContent = 'saving…';
+  try {
+    const r = await fetch('/api/lamp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const j = await r.json();
+    if (!j.ok) throw new Error(j.error || r.status);
+    if (reset) { lampParams.delete(key); rebuildLamp(key); renderLampList(); }
+    if (st) st.textContent = reset ? 'override dropped, model rebuilding…' : 'saved, model rebuilding…';
+    diag('lamp', body);
+  } catch (err) { if (st) st.textContent = `save failed: ${err.message}`; }
+}
 function renderPanel() {
   const e = state.sel && elements.get(state.sel);
   panel.hidden = !e || SNAP;
@@ -973,9 +1236,12 @@ function renderPanel() {
   const size = [b[3] - b[0], b[4] - b[1], b[5] - b[2]].map(n => Math.round(n * 1000) / 10);
   let html = `<div class="eyebrow"><i></i>${esc(e.class.replace(/^Ifc/, ''))} · ${esc(e.storey)}</div>`
     + `<h2>${esc(e.label || e.name || e.key)}</h2><div class="key">${esc(e.key)}</div>`;
+  const lamp = e.psets?.Pset_Light?.LuminousFlux_lm > 0, lampOn = lamp && !state.lampsOff.has(e.key);
   html += `<div class="actions"><button data-act="frame">Frame<kbd>F</kbd></button><button data-act="remove">Remove<kbd>X</kbd></button>`
+    + (lamp ? `<button data-act="lamp" class="lamp ${lampOn ? 'on' : ''}">${lampOn ? 'Light off' : 'Light on'}<kbd>L</kbd></button>` : '')
     + `<button data-act="copy">Copy key</button><button data-act="link">Copy link</button></div>`
     + `<div class="hint">Deselect: Esc, ×, or click the object again · Remove hides it for this session only (Z undo, Shift+Z restore all)</div>`;
+  if (lamp) html += lampEditorHtml(e);
   html += table([
     ['Product', e.label ? esc(e.label) : '<span class="muted">(no product name)</span>'],
     ['Class', esc(e.class)],
@@ -1015,6 +1281,9 @@ panelBody.addEventListener('click', ev => {
   const act = ev.target.dataset?.act;
   if (act === 'frame') focusOn(state.sel);
   if (act === 'remove') removeSelected();
+  else if (act === 'lamp') toggleLamp(state.sel);
+  else if (act === 'lampSave') saveLamp(false);
+  else if (act === 'lampReset') saveLamp(true);
   if (act === 'copy') navigator.clipboard?.writeText(state.sel);
   if (act === 'link') navigator.clipboard?.writeText(location.origin + '/' + currentHash());
 });
@@ -1607,6 +1876,7 @@ btn('spaces').onclick = () => { state.spaces = !state.spaces; applyVisibility();
 btn('plaques').onclick = () => { state.plaques = !state.plaques; applyVisibility(); scheduleHash(); };
 btn('home').onclick = () => { exitPlanIfAny(); homeView(); scheduleHash(); };
 btn('trueColour').onclick = toggleLook;
+btn('night').onclick = toggleNight;
 // Segmented control: clicking "Look" always means look, "Orbit" always orbit (a plain toggle
 // switched the owner to Orbit when he clicked "Look" to make sure it was on).
 btn('navMode').onclick = ev => {
@@ -1614,6 +1884,7 @@ btn('navMode').onclick = ev => {
   setNavMode(seg ? (seg.classList.contains('orbit') ? 'orbit' : 'look') : (navMode === 'look' ? 'orbit' : 'look'));
 };
 function toggleLook() { setLook(look === 'true' ? 'cinema' : 'true'); syncToolbar(); scheduleHash(); }
+function toggleNight() { setLook(look === 'night' ? 'cinema' : 'night'); syncToolbar(); scheduleHash(); }
 function exitPlanIfAny() { if (state.plan) exitPlan(); }
 function togglePlan() {
   if (state.plan) exitPlan();
@@ -1641,6 +1912,7 @@ function syncToolbar() {
   btn('plaques').title = galleryKeys.length ? `Floating titles of the ${galleryKeys.length} elements with Pset_Gallery`
     : 'No elements with Pset_Gallery';
   btn('trueColour').classList.toggle('on', look === 'true');
+  btn('night').classList.toggle('on', look === 'night');
   btn('navMode').dataset.mode = navMode;
   btn('hint').textContent = state.measure
     ? `Click two points · Space+drag ${state.plan ? 'pan' : navMode} · right-drag pan · scroll fly · Shift axis · Alt no snap · Esc clear`
@@ -1655,7 +1927,7 @@ const statEl = id => document.getElementById(id);
 function updateStats() {
   const v = state.plan ? `Plan ${state.plan}` : 'Perspective';
   statEl('stView').textContent = v;
-  statEl('stViewSub').textContent = state.plan ? `north up · ${currentSpan().toFixed(1)} m span` : (look === 'true' ? 'true colour' : 'cinema light');
+  statEl('stViewSub').textContent = state.plan ? `north up · ${currentSpan().toFixed(1)} m span` : ({ true: 'true colour', night: `night · ${lampKeys().filter(k => !state.lampsOff.has(k)).length}/${lampKeys().length} lamps on` }[look] || 'cinema light');
   statEl('stCut').innerHTML = state.cut ? `${state.cut.storey}<small>@ ${(+state.cut.height).toFixed(2)} m</small>` : 'off';
   statEl('stCutSub').textContent = state.cut ? `section at ${(ELEV[state.cut.storey] + +state.cut.height).toFixed(2)} m` : 'whole house';
   const shown = STOREYS.filter(s => storeyVisible(s));
@@ -1728,6 +2000,8 @@ window.addEventListener('keydown', ev => {
   else if (k === 'm') setMeasure(!state.measure);
   else if (k === 'p') togglePlan();
   else if (k === 't') toggleLook();
+  else if (k === 'n') toggleNight();
+  else if (k === 'l') toggleLamp(state.sel);
   else if (k === 'o') setNavMode(navMode === 'look' ? 'orbit' : 'look');
   else if (k === 'h') { exitPlanIfAny(); homeView(); scheduleHash(); }
 });
@@ -2012,6 +2286,7 @@ async function boot() {
     hash: currentHash, showStatus, setLook, bench, colourCheck, depthCheck, cameraObstructions, LOOKS, bloomPass, sun, hemi,
     get renderCount() { return renderCount; }, invalidate, scene, THREE, measure, snapAt, setMeasure, MEASURE_CLICK, toScreen: v => { canvasRect = canvas.getBoundingClientRect(); return toScreen(v); },
     get storeys() { return { STOREYS, FLOORS, ELEV, RANK }; }, get house() { return houseName; }, get galleryKeys() { return galleryKeys; },
+    NIGHT, LAMPS, lampKeys, setLamps, toggleLamp, toggleNight, get lampsOff() { return state.lampsOff; },
     reload: () => ensureVersion(`${loadedVersion}-r${Date.now()}`) };   // test the hot-reload path
   window.__monarchReady = true;
   connectEvents();

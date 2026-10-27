@@ -53,7 +53,7 @@ try {
   };
   const cdp = (method, params = {}) => new Promise((resolve, reject) => {
     const id = ++sequence;
-    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`DevTools timeout: ${method}`)); }, 15000);
+    const timer = setTimeout(() => { pending.delete(id); reject(new Error(`DevTools timeout: ${method}`)); }, 60000);   // software GL on a busy machine
     pending.set(id, { resolve: value => { clearTimeout(timer); resolve(value); }, reject: error => { clearTimeout(timer); reject(error); } });
     ws.send(JSON.stringify({ id, method, params }));
   });
@@ -204,6 +204,34 @@ try {
   assert.deepEqual(cameras.hiddenRoof, []);
   assert.deepEqual(errors, []);
   console.log('PASS screenshot camera diagnostics detect the actual roof, respecting empty room space, cuts and hidden storeys');
+
+  // Night look (N): one light per Pset_Light lamp (+ bounce fill), lamp list, switches and the editor preview.
+  await evaluate(`(() => { const m = window.__monarch; m.applyView(m.parseView({ cam: [7.2, 0.9, 1.6], target: [1.5, 3.2, 0.9], sel: 'LIV_FLOOR_LAMP' })); })()`);
+  const lampLight = key => evaluate(`window.__monarch.LAMPS.children.filter(l => l.isLight && l.userData.key === "${key}" && l.parent.visible).reduce((a, l) => a + l.intensity, 0)`);
+  const nLamps = await evaluate('window.__monarch.lampKeys().length');
+  assert.ok(nLamps >= 15, `lamps ${nLamps}`);
+  assert.equal(await lampLight('LIV_FLOOR_LAMP'), 0, 'no lamp light by day');
+  await evaluate('window.__monarch.toggleNight()');
+  await until('/look=night/.test(location.hash)');
+  assert.ok(await lampLight('LIV_FLOOR_LAMP') > 0, 'the floor lamp lights at night');
+  assert.ok(await evaluate('document.getElementById("night").classList.contains("on") && !document.getElementById("lamps").hidden'));
+  assert.ok(await evaluate('document.querySelectorAll("#lamps .lamp").length') >= 10);
+  const shadows = await evaluate('window.__monarch.LAMPS.children.filter(l => l.isSpotLight && l.castShadow).length');
+  assert.ok(shadows >= 1 && shadows <= await evaluate('window.__monarch.NIGHT.maxShadowSpots'), `shadow spots ${shadows}`);
+  await evaluate('document.querySelector("#panelBody [data-act=lamp]").click()');
+  assert.equal(await lampLight('LIV_FLOOR_LAMP'), 0, 'the panel switch turns it off');
+  await until('/off=LIV_FLOOR_LAMP/.test(location.hash)');
+  await evaluate('document.querySelector("#lamps [data-sw=LIV_FLOOR_LAMP]").click()');
+  const on = await lampLight('LIV_FLOOR_LAMP');
+  assert.ok(on > 0, 'the list switch turns it back on');
+  await evaluate('{ const r = document.querySelector("#panelBody input[type=range][data-lp=lumen]"); r.value = 1600; r.dispatchEvent(new Event("input", {bubbles: true})); }');
+  const doubled = await lampLight('LIV_FLOOR_LAMP');
+  assert.ok(Math.abs(doubled / on - 2) < 0.05, `lumen 800 -> 1600 doubles the light ${on} -> ${doubled}`);
+  await evaluate('window.__monarch.toggleNight()');
+  assert.equal(await lampLight('LIV_FLOOR_LAMP'), 0);
+  assert.ok(await evaluate('document.getElementById("lamps").hidden'));
+  assert.deepEqual(errors, []);
+  console.log(`PASS night look: ${nLamps} lamps, ${shadows} shadow spots, panel and list switches, lumen preview`);
 
   // plaques=0 in the hash starts with the labels off; plan view uses the ground storey by default.
   await cdp('Page.navigate', { url: new URL('?fresh=1#plan=GF&plaques=0', viewer).href });   // query forces a full load

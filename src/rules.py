@@ -38,7 +38,7 @@ from geometry_cache import load as load_geometry  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 RULES = ROOT / 'data' / 'rules'
-FURNISHING = ['IfcFurnishingElement', 'IfcSanitaryTerminal', 'IfcElectricAppliance', 'IfcUnitaryEquipment',
+FURNISHING = ['IfcFurnishingElement', 'IfcLightFixture', 'IfcSanitaryTerminal', 'IfcElectricAppliance', 'IfcUnitaryEquipment',
               'IfcTank', 'IfcPump', 'IfcFilter', 'IfcBuildingElementProxy']
 STRUCTURE = ['IfcWall', 'IfcWallStandardCase', 'IfcSlab', 'IfcStairFlight', 'IfcRailing',
              'IfcBeam', 'IfcColumn', 'IfcMember']

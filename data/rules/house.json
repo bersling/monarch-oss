@@ -8,6 +8,7 @@
       "what": {
         "class": [
           "IfcFurnishingElement",
+          "IfcLightFixture",
           "IfcSanitaryTerminal",
           "IfcElectricAppliance"
         ]

@@ -52,7 +52,7 @@ apiReady.catch(e => toast(`web-ifc failed to initialise: ${e.message || e}`));
 // ---------------------------------------------------------------- state
 const state = {
   modelID: null, fileName: '', elements: new Map(), storeys: [], storeyVisible: new Map(), sel: null,
-  nav: 'orbit', plaques: true, spaces: false, tris: 0, parseMs: 0, labels: [], materials: new Map(),
+  nav: 'orbit', spaces: false, tris: 0, parseMs: 0, materials: new Map(),
 };
 function materialFor(materials, c) {
   const key = `${c.x.toFixed(3)},${c.y.toFixed(3)},${c.z.toFixed(3)},${c.w.toFixed(3)}`;
@@ -77,8 +77,7 @@ function clearModel() {
   for (const g of [...root.children]) if (g !== spacesGroup) disposeGroup(g);
   for (const g of [...spacesGroup.children]) disposeGroup(g);
   for (const m of state.materials?.values() || []) m.dispose();
-  for (const l of state.labels) l.el.remove();
-  Object.assign(state, { modelID: null, elements: new Map(), materials: new Map(), storeys: [], storeyVisible: new Map(), sel: null, tris: 0, labels: [] });
+  Object.assign(state, { modelID: null, elements: new Map(), materials: new Map(), storeys: [], storeyVisible: new Map(), sel: null, tris: 0 });
   selectBox.visible = false;
   $('panel').hidden = true;
   $('storeys').replaceChildren();
@@ -157,7 +156,6 @@ async function loadBuffer(bytes, name) {
   root.add(model.root);
   spacesGroup.add(model.spaces);
   buildStoreys(modelID);
-  buildPlaques(modelID);
   state.parseMs = performance.now() - t0;
   let projectName = '';
   try { const p = api.GetLineIDsWithType(modelID, WebIFC.IFCPROJECT); if (p.size()) projectName = val(api.GetLine(modelID, p.get(0)).Name) || ''; } catch { /* optional */ }
@@ -226,54 +224,6 @@ function applyVisibility() {
   if (state.sel != null && !state.elements.get(state.sel)?.group.visible) setSelection(null);
 }
 
-// Plaques: one floating label per element with a Pset_Gallery.Title, found through
-// IfcRelDefinesByProperties (cheap: no per-element property query).
-function buildPlaques(modelID) {
-  const ids = api.GetLineIDsWithType(modelID, WebIFC.IFCRELDEFINESBYPROPERTIES);
-  const labels = [];
-  for (let i = 0; i < ids.size(); i++) {
-    const rel = api.GetLine(modelID, ids.get(i));
-    const psetId = val(rel?.RelatingPropertyDefinition);
-    if (psetId == null) continue;
-    const pset = api.GetLine(modelID, psetId);
-    if (val(pset?.Name) !== 'Pset_Gallery') continue;
-    let title = '';
-    for (const h of pset.HasProperties || []) {
-      const p = api.GetLine(modelID, val(h));
-      if (val(p?.Name) === 'Title') title = String(val(p.NominalValue) ?? '');
-    }
-    if (!title) continue;
-    for (const h of rel.RelatedObjects || []) {
-      const el = state.elements.get(val(h));
-      if (!el || el.isSpace) continue;
-      const div = document.createElement('div');
-      div.className = 'plaque';
-      div.innerHTML = `<small>Plaque</small>${esc(title)}`;
-      div.onclick = () => { setSelection(el.id); };
-      $('labels').appendChild(div);
-      const top = new THREE.Vector3(); el.bbox.getCenter(top); top.y = el.bbox.max.y + 0.15;
-      labels.push({ el, div, pos: top, title });
-    }
-  }
-  state.labels = labels.map(l => ({ el: l.div, element: l.el, pos: l.pos, title: l.title }));
-}
-const _p = new THREE.Vector3();
-function updateLabels() {
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  for (const l of state.labels) {
-    const show = state.plaques && l.element.group.visible;
-    if (!show) { l.el.hidden = true; continue; }
-    // Labels are for reading inside the room: beyond 14 m (or with the exhibit selected,
-    // at any distance) they would only pile up over the facade seen from the garden.
-    const far = camera.position.distanceTo(l.pos) > 14 && l.element.id !== state.sel;
-    _p.copy(l.pos).project(camera);
-    if (far || _p.z > 1 || _p.z < -1) { l.el.hidden = true; continue; }
-    l.el.hidden = false;
-    l.el.style.transform = `translate(-50%, -100%) translate(${((_p.x + 1) / 2 * w).toFixed(1)}px, ${((1 - _p.y) / 2 * h - 10).toFixed(1)}px)`;
-    l.el.classList.toggle('sel', l.element.id === state.sel);
-  }
-}
-
 // ---------------------------------------------------------------- selection + property panel
 const HIGHLIGHT = new THREE.Color(0x3ea6ff);
 let panelToken = 0;
@@ -285,7 +235,7 @@ function setSelection(id) {
   state.sel = id != null && state.elements.has(id) ? id : null;
   selectBox.visible = false;
   const panel = $('panel'), body = $('panelBody');
-  if (state.sel == null) { panel.hidden = true; $('stSel').textContent = '—'; updateLabels(); return; }
+  if (state.sel == null) { panel.hidden = true; $('stSel').textContent = '—'; return; }
   const el = state.elements.get(state.sel);
   el.group.traverse(o => {
     if (!o.isMesh) return;
@@ -318,7 +268,6 @@ function setSelection(id) {
     if (!all.length) { body.insertAdjacentHTML('beforeend', '<p class="empty">No property sets.</p>'); return; }
     body.insertAdjacentHTML('beforeend', all.map(renderPset).join(''));
   }).catch(e => { if (token === panelToken) body.insertAdjacentHTML('beforeend', `<p class="empty">Properties failed: ${esc(e.message || e)}</p>`); });
-  updateLabels();
 }
 function fmt(v) {
   v = val(v);
@@ -451,19 +400,12 @@ window.addEventListener('keydown', ev => {
   else if (ev.key === '/') { $('search').focus(); ev.preventDefault(); }
   else if (k === 'f' && state.sel != null) focusOn(state.elements.get(state.sel));
   else if (k === 'o') setNav(state.nav === 'look' ? 'orbit' : 'look');
-  else if (k === 'l') togglePlaques();
   else if (k === 'h') homeView();
 });
 window.addEventListener('keyup', ev => { held.delete(ev.key.toLowerCase()); fast = ev.shiftKey; });
 window.addEventListener('blur', () => held.clear());
 
 // ---------------------------------------------------------------- toolbar
-function togglePlaques(on = !state.plaques) {
-  state.plaques = on;
-  $('plaques').classList.toggle('on', on);
-  updateLabels();
-}
-$('plaques').onclick = () => togglePlaques();
 $('spaces').onclick = () => { state.spaces = !state.spaces; spacesGroup.visible = state.spaces; $('spaces').classList.toggle('on', state.spaces); };
 $('home').onclick = () => homeView();
 $('navMode').onclick = ev => {
@@ -580,13 +522,12 @@ renderer.setAnimationLoop(now => {
   moveStep(dt);
   orbit.update();
   renderer.render(scene, camera);
-  if (state.labels.length) updateLabels();
   frames++;
 });
 
 // Test hooks (tests drive the page over the DevTools protocol).
 window.__viewer = {
-  api, scene, root, camera, orbit, state, loadBuffer, setSelection, focusOn, homeView, setNav, togglePlaques,
+  api, scene, root, camera, orbit, state, loadBuffer, setSelection, focusOn, homeView, setNav,
   get drawCalls() { return renderer.info.render.calls; }, get frames() { return frames; },
 };
 apiReady.then(() => { window.__viewerReady = true; });

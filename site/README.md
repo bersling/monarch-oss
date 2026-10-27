@@ -28,8 +28,6 @@ example button locally, copy a built IFC next to the page: `cp generated/casa_mo
   and `IfcRelAggregates` so parts of assemblies and furniture inside spaces land in their storey.
   Click toggles, Alt-click solos.
 - Search by name, type, GlobalId or express id; Enter focuses the hit.
-- Plaques: a floating label for every element with a `Pset_Gallery` property set, showing its
-  `Title`. Toggle with the button or `L`. Clicking a plaque selects the element.
 - Orbit (left-drag), pan (right-drag), zoom (scroll), fly with `W A S D` + `Q E` (`Shift` faster).
   `O` switches Look mode (left-drag turns the camera in place). `H` home, `F` focus, `Esc` clear.
 - Stats line: elements, triangles, parse time. Works at phone width.
